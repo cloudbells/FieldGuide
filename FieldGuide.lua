@@ -1,3 +1,7 @@
+function initButtons()
+	
+end
+
 function initGui()
 	-- Frame --
 	FieldGuideFrame:SetWidth(768)
@@ -106,6 +110,20 @@ function initGui()
 	FieldGuideBottomLeftCornerBorderTexture:SetSize(32, 32)
 	FieldGuideBottomLeftCornerBorderTexture:SetTexCoord(1, 0, 0, 1)
 	FieldGuideBottomLeftCornerBorderTexture:SetPoint("BOTTOMLEFT", 9, 8)
+	
+	-- Button textures --
+	-- Normal Texture
+	
+	
+	-- Buttons --
+	FieldGuideButtonTest = CreateFrame("CheckButton", "FieldGuideButtonTest", FieldGuideFrame)
+	FieldGuideButtonTest:SetNormalTexture("Interface/SPELLBOOK/UI-Spellbook-SpellBackground")
+	FieldGuideButtonTest:SetPushedTexture("Interface/BUTTONS/UI-Quickslot-Depress")
+	FieldGuideButtonTest:SetHighlightTexture("Interface/BUTTONS/ButtonHilight-Square")
+	FieldGuideButtonTest:SetWidth(64)
+	FieldGuideButtonTest:SetHeight(64)
+	FieldGuideButtonTest:SetPoint("CENTER")
+	FieldGuideButtonTest:SetText("Test")
 	
 	FieldGuideFrame:Show()
 end
