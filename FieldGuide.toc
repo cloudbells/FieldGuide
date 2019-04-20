@@ -3,4 +3,6 @@
 ## Notes: Addon for visualizing when spells are learned for each class.
 ## Author: cloudbells
 ## 1.0
+Database\Spells.lua
+FieldGuide.xml
 FieldGuide.lua
