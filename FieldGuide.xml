@@ -154,30 +154,34 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<ScrollFrame name="FieldGuideScrollFrame">
-				<Size x="768" y="456" />
+			<ScrollFrame name="$parentScrollFrame">
 				<Anchors>
-					<Anchor point="LEFT" />
+					<Anchor point="TOPLEFT" x="0" y="-22" />
+					<Anchor point="BOTTOMRIGHT" x="-23" y="22" />
 				</Anchors>
 				<Frames>
-					<Slider name="FieldGuideScrollFrameSlider" orientation="VERTICAL" minValue="0" maxValue="1360" defaultValue="0" valueStep="1">
+					<Slider name="$parentSlider" orientation="VERTICAL" minValue="0" maxValue="100" defaultValue="0" valueStep="1">
 						<Size x="25" y="428" />
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="FieldGuideFrame" x="-23" />
+							<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-22" y="-35" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" y="35" />
 						</Anchors>
 						<Scripts>
 							<OnValueChanged>
-								FieldGuideScrollFrame:SetVerticalScroll(self:GetValue())
+								self:GetParent():SetVerticalScroll(self:GetValue())
 							</OnValueChanged>
 						</Scripts>
 						<ThumbTexture name="$parentThumbTexture" file="Interface/BUTTONS/UI-ScrollBar-Knob">
 							<Size x="32" y="32" />
+							<Anchors>
+								<Anchor point="RIGHT" x="-50" y="-50" />
+							</Anchors>
 						</ThumbTexture>
 						<Frames>
 							<Button name="$parentScrollUpButton">
 								<Size x="32" y="32" />
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-19" y="-17"/>
+									<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-19" y="-16" />
 								</Anchors>
 								<NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Up" />
 								<PushedTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Down" />
@@ -187,7 +191,7 @@
 							<Button name="$parentScrollDownButton">
 								<Size x="32" y="32" />
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-19" y="15"/>
+									<Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-19" y="15" />
 								</Anchors>
 								<NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Up" />
 								<PushedTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Down" />
@@ -197,30 +201,30 @@
 						</Frames>
 						<Layers>
 							<Layer level="ARTWORK">
-								<Texture name="$parentBackground" setAllPoints="true" >
+								<Texture name="$parentBackground" setAllPoint="true">
 									<Color a="1" r="0" g="0" b="0" />
 								</Texture>
 								<Texture name="$parentTop" file="Interface/PaperDollInfoFrame/UI-Character-ScrollBar">
-									<Size x="31" y="102"/>
+									<Size x="31" y="102" />
 									<Anchors>
-										<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="FieldGuideFrame" x="-20" y="-20"/>
+										<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="FieldGuideFrame" x="-20" y="-20" />
 									</Anchors>
 									<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
 								</Texture>
 								<Texture name="$parentBottom" file="Interface/PaperDollInfoFrame/UI-Character-ScrollBar">
 									<Size x="31" y="106"/>
 									<Anchors>
-										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-20" y="21"/>
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-20" y="21" />
 									</Anchors>
-									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625"/>
+									<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625" />
 								</Texture>
 								<Texture name="$parentMiddle" file="Interface/PaperDollInfoFrame/UI-Character-ScrollBar">
-									<Size x="31" y="1"/>
+									<Size x="31" y="1" />
 									<Anchors>
-										<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM"/>
-										<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP"/>
+										<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM" />
+										<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP" />
 									</Anchors>
-									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0"/>
+									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0" />
 								</Texture>
 							</Layer>
 						</Layers>
@@ -229,9 +233,6 @@
 				<ScrollChild>
 					<Frame name="FieldGuideContentFrame">
 						<Size x="5" y="5" />
-						<Anchors>
-							<Anchor point="CENTER" />
-						</Anchors>
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>

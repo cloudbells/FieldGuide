@@ -1124,5 +1124,5 @@ FieldGuideMageSpells = {
 			["Texture"] = "Interface/ICONS/Spell_Frost_Frostbolt02",
 			["ID"] = 116
 		}
-	},
+	}
 }
