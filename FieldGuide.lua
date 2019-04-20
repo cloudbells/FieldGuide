@@ -16,12 +16,12 @@
 local function initButtons()
 	for level, spell in pairs(FieldGuideMageSpells) do
 		for spellIndex, spellInfo in pairs(spell) do
-			local button = CreateFrame("Button", "FieldGuideSpellButton" .. level .. spellIndex, _G["FieldGuideContentFrame"], "FieldGuideSpellButtonTemplate")
+			local button = CreateFrame("Button", "FieldGuideSpellButton" .. level .. spellIndex, FieldGuideContentFrame, "FieldGuideSpellButtonTemplate")
 			local spellTexture = _G["FieldGuideSpellButton" .. level .. spellIndex .. "IconTexture"]
 			button:SetID(spellInfo["ID"])
 			spellTexture:SetTexture(spellInfo["Texture"])
 			spellTexture:Show()
-			button:SetPoint("TOPLEFT", (spellIndex * 45) - 10, 30 - (level * 30))
+			button:SetPoint("TOPLEFT", (spellIndex * 45) + 10, 50 - (level * 30))
 		end
 	end
 end
@@ -33,11 +33,17 @@ local function initSlash()
 	SlashCmdList["FIELDGUIDE"] =
 		function()
 			if FieldGuideScrollFrame:IsVisible() then
-				FieldGuideScrollFrame:Hide()
 			else
+				FieldGuideScrollFrame:Hide()
 				FieldGuideScrollFrame:Show()
 			end
 		end
+end
+
+function FieldGuide_OnMouseWheel(self, delta)
+	local currentValue = FieldGuideScrollFrameSlider:GetValue()
+	print(currentValue)
+	FieldGuideScrollFrameSlider:SetValue(currentValue - delta * 50)
 end
 
 function FieldGuide_OnLoad(self)

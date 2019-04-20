@@ -33,10 +33,8 @@
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" />
 	</Button>
-	<ScrollFrame name="FieldGuideScrollFrame" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
-		<Size>
-			<AbsDimension x="768" y="500px" />
-		</Size>
+	<Frame name="FieldGuideFrame" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
+		<Size x="768" y="500" />
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
@@ -147,11 +145,54 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<ScrollChild>
-			<Frame name="FieldGuideContentFrame">
-				<Size x="768" y="500" />
-			</Frame>
-		</ScrollChild>
+		<Frames>
+			<ScrollFrame name="FieldGuideScrollFrame">
+			
+			
+		
+				
+				
+				<Size x="768" y="456" />
+				<Anchors>
+					<Anchor point="LEFT" />
+				</Anchors>
+				<Frames>
+					<Slider name="FieldGuideScrollFrameSlider" orientation="VERTICAL" minValue="0" maxValue="1345" defaultValue="0" valueStep="1">
+						<Size x="25" y="460" />
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="FieldGuideFrame" x="-24" />
+						</Anchors>
+						<Backdrop edgeFile="Interface/BUTTONS/UI-SliderBar-Border" bgFile="Interface/BUTTONS/UI-SliderBar-Background" tile="true">
+							<EdgeSize>
+								<AbsValue val="8" />
+							</EdgeSize>
+							<TileSize>
+								<AbsValue val="8" />
+							</TileSize>
+							<BackgroundInsets>
+								<AbsInset left="3" right="3" top="6" bottom="6" />
+							</BackgroundInsets>
+						</Backdrop>
+						<Scripts>
+							<OnValueChanged>
+								FieldGuideScrollFrame:SetVerticalScroll(self:GetValue())
+							</OnValueChanged>
+						</Scripts>
+						<ThumbTexture name="$parentThumbTexture" file="Interface/BUTTONS/UI-ScrollBar-Knob">
+							<Size x="25" y="25" />
+						</ThumbTexture>
+					</Slider>
+				</Frames>
+				<ScrollChild>
+					<Frame name="FieldGuideContentFrame">
+						<Size x="5" y="5" />
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+		</Frames>
 		<Scripts>
 			<OnLoad>
 				FieldGuide_OnLoad(self)
@@ -162,6 +203,9 @@
 			<OnDragStop>
 				self:StopMovingOrSizing()
 			</OnDragStop>
+			<OnMouseWheel>
+				FieldGuide_OnMouseWheel(self, delta)
+			</OnMouseWheel>
 		</Scripts>
-	</ScrollFrame>
+	</Frame>
 </Ui>
