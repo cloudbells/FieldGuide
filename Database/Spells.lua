@@ -1,7 +1,7 @@
 -- This is a VERY temporary table - only to showcase how wide each 
 -- level of spells is and to test scroll frame functionality.
 FieldGuideMageSpells = {
-	[2] = { -- Technically level 1 but my code relies on this being 2.
+	[2] = { -- Technically level 1 but the code relies on this being 2.
 		[1] = {
 			["Name"] = "Frostbolt",
 			["Rank"] = 1,

@@ -1,32 +1,30 @@
 -- TODO:
 -- 1. Scrape https://classic.wowhead.com/mage-abilities and save in file
--- 2. Add scroll (read the book)
--- 3. Add level fontstrings
+-- 2. Add class icon in top right corner
+-- 3. Change Slider max value to dynamic value
 -- 4. Add price fontstrings (maybe fancy coin icon)
 -- 5. Add option (somewhere/somehow) to hide known spells (or maybe just hide any spells before current level)
 -- 6. Add option (somewhere/somehow) to show other classes spells
 -- 7. Add option (somewhere/somehow) to filter between certain levels?
 -- 8. Add option (somewhere/somehow) to search for a certain spell
--- 9. Make it so that it can't be moved, and it loads in the same place as achievement tab and also make it "push out" other frames or close them, to mimic real Blizzard UI
--- 10. At some point, make UI in XML
 -- 11. At some point in the future, port to 1.12?
 -- ?. Add to interface/addons options?
 
--- Initializes all spell buttons.
-local function initButtons()
-	for level, spell in pairs(FieldGuideMageSpells) do
-		for spellIndex, spellInfo in pairs(spell) do
-			local button = CreateFrame("Button", "FieldGuideSpellButton" .. level .. spellIndex, FieldGuideContentFrame, "FieldGuideSpellButtonTemplate")
-			local spellTexture = _G["FieldGuideSpellButton" .. level .. spellIndex .. "IconTexture"]
-			button:SetID(spellInfo["ID"])
-			spellTexture:SetTexture(spellInfo["Texture"])
-			spellTexture:Show()
-			if spellIndex == 1 then
-				local levelString = button:CreateFontString(nil, "ARTWORK", "FieldGuideLevelStringTemplate")
-				levelString:SetText(level)
-				levelString:SetPoint("RIGHT", -43, 0)
-			end
-			button:SetPoint("TOPLEFT", (spellIndex * 45) + 15, 50 - (level * 30))
+local function initContent()
+	for level, spell in pairs(FieldGuideMageSpells) do -- For every level do:
+		-- Level FontString.
+		local levelString = FieldGuideContentFrame:CreateFontString(nil, "ARTWORK", "FieldGuideLevelStringTemplate")
+		levelString:SetText("Level " .. level)
+		levelString:SetPoint("TOPLEFT", 30, 40 - (level * 30))
+		for spellIndex, spellInfo in pairs(spell) do -- For every spell available at level X do:
+			-- Spell icon button.
+			local button = CreateFrame("Button", nil, FieldGuideContentFrame, "FieldGuideSpellButtonTemplate")
+			local iconTexture = button:CreateTexture(nil, "BORDER")
+			iconTexture:SetTexture(spellInfo["Texture"])
+			iconTexture:SetAllPoints()
+			button:SetID(spellInfo["ID"]) -- Hacky way of making tooltips work.
+			-- If level < 10 the buttons should be spaced more to the right, otherwise only spellIndex * 45.
+			button:SetPoint("RIGHT", levelString, "RIGHT", level < 10 and spellIndex * 45 + 10 or spellIndex * 45, 0)
 		end
 	end
 end
@@ -47,12 +45,13 @@ end
 
 function FieldGuide_OnMouseWheel(self, delta)
 	local currentValue = FieldGuideScrollFrameSlider:GetValue()
-	FieldGuideScrollFrameSlider:SetValue(currentValue - delta * 50)
+	local _, maxValue = FieldGuideScrollFrameSlider:GetMinMaxValues()
+	FieldGuideScrollFrameSlider:SetValue(currentValue - delta * (maxValue/15)) -- FIX TO DYNAMICALLY CHANGE--------------------------------------------------------------------------------------------------------------------------------------------------------
 end
 
 function FieldGuide_OnLoad(self)
 	self:RegisterForDrag("LeftButton")
-	initButtons()
+	initContent()
 	initSlash()
 	FieldGuideFrame:Show()
 	print("FieldGuide loaded!")
