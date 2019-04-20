@@ -23,14 +23,8 @@ local function initButtons()
 			spellTexture:Show()
 			if spellIndex == 1 then
 				local levelString = button:CreateFontString(nil, "ARTWORK", "FieldGuideLevelStringTemplate")
-				if level == 2 then
-					levelString:SetText("  " .. 1)
-				elseif level < 10 then
-					levelString:SetText("  " .. level)
-				else
-					levelString:SetText(level)
-				end
-				levelString:SetPoint("LEFT", -32, 0)
+				levelString:SetText(level)
+				levelString:SetPoint("RIGHT", -43, 0)
 			end
 			button:SetPoint("TOPLEFT", (spellIndex * 45) + 15, 50 - (level * 30))
 		end
