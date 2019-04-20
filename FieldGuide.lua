@@ -21,7 +21,18 @@ local function initButtons()
 			button:SetID(spellInfo["ID"])
 			spellTexture:SetTexture(spellInfo["Texture"])
 			spellTexture:Show()
-			button:SetPoint("TOPLEFT", (spellIndex * 45) + 10, 50 - (level * 30))
+			if spellIndex == 1 then
+				local levelString = button:CreateFontString(nil, "ARTWORK", "FieldGuideLevelStringTemplate")
+				if level == 2 then
+					levelString:SetText("  " .. 1)
+				elseif level < 10 then
+					levelString:SetText("  " .. level)
+				else
+					levelString:SetText(level)
+				end
+				levelString:SetPoint("LEFT", -32, 0)
+			end
+			button:SetPoint("TOPLEFT", (spellIndex * 45) + 15, 50 - (level * 30))
 		end
 	end
 end
@@ -32,24 +43,23 @@ local function initSlash()
 	SLASH_FIELDGUIDE2 = "/fg"
 	SlashCmdList["FIELDGUIDE"] =
 		function()
-			if FieldGuideScrollFrame:IsVisible() then
+			if FieldGuideFrame:IsVisible() then
+				FieldGuideFrame:Hide()
 			else
-				FieldGuideScrollFrame:Hide()
-				FieldGuideScrollFrame:Show()
+				FieldGuideFrame:Show()
 			end
 		end
 end
 
 function FieldGuide_OnMouseWheel(self, delta)
 	local currentValue = FieldGuideScrollFrameSlider:GetValue()
-	print(currentValue)
 	FieldGuideScrollFrameSlider:SetValue(currentValue - delta * 50)
 end
 
 function FieldGuide_OnLoad(self)
 	self:RegisterForDrag("LeftButton")
 	initButtons()
-	FieldGuideScrollFrame:Show()
 	initSlash()
+	FieldGuideFrame:Show()
 	print("FieldGuide loaded!")
 end

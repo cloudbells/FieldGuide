@@ -33,6 +33,12 @@
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" />
 	</Button>
+	<Font name="FieldGuideLevelStringTemplate" font="Fonts/FRIZQT__.ttf" outline="NORMAL" height="16" justifyH="RIGHT" virtual="true">
+		<Shadow>
+          <Color a="0.5" r="0" g="0" b="0" />
+          <Offset x="1" y="-1" />
+        </Shadow>
+	</Font>
 	<Frame name="FieldGuideFrame" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
 		<Size x="768" y="500" />
 		<Anchors>
@@ -147,11 +153,6 @@
 		</Layers>
 		<Frames>
 			<ScrollFrame name="FieldGuideScrollFrame">
-			
-			
-		
-				
-				
 				<Size x="768" y="456" />
 				<Anchors>
 					<Anchor point="LEFT" />
