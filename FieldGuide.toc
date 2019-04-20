@@ -4,5 +4,5 @@
 ## Author: cloudbells
 ## 1.0
 Database\Spells.lua
-FieldGuide.xml
 FieldGuide.lua
+FieldGuide.xml
