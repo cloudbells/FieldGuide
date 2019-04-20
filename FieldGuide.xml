@@ -40,7 +40,7 @@
 		</FontHeight>
 	</FontString>
 	<Frame name="FieldGuideFrame" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
-		<Size x="768" y="500" />
+		<Size x="700" y="500" />
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
@@ -163,12 +163,12 @@
 					<Slider name="$parentSlider" orientation="VERTICAL" minValue="0" maxValue="100" defaultValue="0" valueStep="1">
 						<Size x="25" y="428" />
 						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-22" y="-35" />
-							<Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" y="35" />
+							<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-23" y="-35" />
+							<Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" y="34" />
 						</Anchors>
 						<Scripts>
 							<OnValueChanged>
-								self:GetParent():SetVerticalScroll(self:GetValue())
+								FieldGuide_OnValueChanged(self)
 							</OnValueChanged>
 						</Scripts>
 						<ThumbTexture name="$parentThumbTexture" file="Interface/BUTTONS/UI-ScrollBar-Knob">
@@ -183,16 +183,26 @@
 								<Anchors>
 									<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-19" y="-16" />
 								</Anchors>
+								<Scripts>
+									<OnClick>
+										FieldGuideScrollUp_OnClick(self, false)
+									</OnClick>
+								</Scripts>
 								<NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Up" />
 								<PushedTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Down" />
 								<DisabledTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Disabled" />
-								<HighlightTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Highlight" />
+								<HighlightTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD" />
 							</Button>
 							<Button name="$parentScrollDownButton">
 								<Size x="32" y="32" />
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-19" y="15" />
 								</Anchors>
+								<Scripts>
+									<OnClick>
+										FieldGuideScrollUp_OnClick(self, true)
+									</OnClick>
+								</Scripts>
 								<NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Up" />
 								<PushedTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Down" />
 								<DisabledTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Disabled" />
