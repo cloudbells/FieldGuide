@@ -21,11 +21,10 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-				GameTooltip:SetHyperlink("spell:" .. self:GetID())
+				FieldGuideSpellButton_OnEnter(self)
 			</OnEnter>
 			<OnLeave>
-				GameTooltip:Hide()
+				FieldGuideSpellButton_OnLeave(self)
 			</OnLeave>
 		</Scripts>
 		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" />
@@ -39,8 +38,18 @@
 			<AbsValue val="16" />
 		</FontHeight>
 	</FontString>
+	<FontString name="FieldGuideCostStringTemplate" font="Fonts/ARIALN.ttf" outline="NORMAL" justifyH="LEFT" virtual="true">
+		<Shadow>
+          <Color a="0.5" r="0" g="0" b="0" />
+          <Offset x="1" y="-1" />
+        </Shadow>
+		<FontHeight>
+			<AbsValue val="14" />
+		</FontHeight>
+	</FontString>
 	<Frame name="FieldGuideFrame" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
-		<Size x="670" y="450" />
+		<!-- The height should be >130 and (multiple of 80) - 30. 210 shows 2 spell rows, 290 shows 3 spell rows etc. -->
+		<Size x="680" y="500" />
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
@@ -51,7 +60,7 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="BORDER">
-				<Texture name="FieldGuideBackgroundTexture" file="Interface/ACHIEVEMENTFRAME/UI-GuildAchievement-AchievementBackground">
+				<Texture name="$parentBackgroundTexture" file="Interface/ACHIEVEMENTFRAME/UI-GuildAchievement-AchievementBackground">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-16" />
 						<Anchor point="BOTTOMRIGHT" x="-16" y="16" />
@@ -59,7 +68,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture name="FieldGuideLeftBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Left">
+				<Texture name="$parentLeftBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Left">
 					<Size x="16" y="450" />
 					<Anchors>
 						<ANCHOR point="TOPLEFT" x="14" y="-16" />
@@ -67,7 +76,7 @@
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="0.87" />
 				</Texture>
-				<Texture name="FieldGuideTopBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Top">
+				<Texture name="$parentTopBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Top">
 					<Size x="720" y="16" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="28" y="-12" />
@@ -75,7 +84,7 @@
 					</Anchors>
 					<TexCoords left="0.87" right="0" top="0" bottom="1" />
 				</Texture>
-				<Texture name="FieldGuideRightBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Left">
+				<Texture name="$parentRightBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Left">
 					<Size x="16" y="450" />
 					<Anchors>
 						<ANCHOR point="TOPRIGHT" x="-13" y="-16" />
@@ -83,7 +92,7 @@
 					</Anchors>
 					<TexCoords left="1" right="0" top="0.87" bottom="0" />
 				</Texture>
-				<Texture name="FieldGuideBottomBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Top">
+				<Texture name="$parentBottomBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Top">
 					<Size x="720" y="16" />
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="28" y="13" />
@@ -93,28 +102,28 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture name="FieldGuideTopLeftCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
+				<Texture name="$parentTopLeftCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
 					<Size x="64" y="64" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="4" y="-2" />
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="1" />
 				</Texture>
-				<Texture name="FieldGuideTopRightCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
+				<Texture name="$parentTopRightCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
 					<Size x="64" y="64" />
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-4" y="-2" />
 					</Anchors>
 					<TexCoords left="1" right="0" top="0" bottom="1" />
 				</Texture>
-				<Texture name="FieldGuideBottomRightCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
+				<Texture name="$parentBottomRightCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
 					<Size x="64" y="64" />
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-4" y="3" />
 					</Anchors>
 					<TexCoords left="1" right="0" top="1" bottom="0" />
 				</Texture>
-				<Texture name="FieldGuideBottomLeftCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
+				<Texture name="$parentBottomLeftCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
 					<Size x="64" y="64" />
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="4" y="3" />
@@ -123,28 +132,28 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture name="FieldGuideTopLeftCornerBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
+				<Texture name="$parentTopLeftBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
 					<Size x="32" y="32" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="9" y="-7" />
 					</Anchors>
 					<TexCoords left="1" right="0" top="1" bottom="0" />
 				</Texture>
-				<Texture name="FieldGuideTopRightCornerBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
+				<Texture name="$parentTopRightBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
 					<Size x="32" y="32" />
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-8" y="-7" />
 					</Anchors>
 					<TexCoords left="0" right="1" top="1" bottom="0" />
 				</Texture>
-				<Texture name="FieldGuideBottomRightCornerBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
+				<Texture name="$parentBottomRightBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
 					<Size x="32" y="32" />
 					<Anchors>
 						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="1" />
 				</Texture>
-				<Texture name="FieldGuideBottomLeftCornerBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
+				<Texture name="$parentBottomLeftBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
 					<Size x="32" y="32" />
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="9" y="8" />
@@ -185,7 +194,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										FieldGuideScrollUp_OnClick(self, false)
+										FieldGuideScroll_OnClick(self, false)
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Up" />
@@ -200,7 +209,7 @@
 								</Anchors>
 								<Scripts>
 									<OnClick>
-										FieldGuideScrollUp_OnClick(self, true)
+										FieldGuideScroll_OnClick(self, true)
 									</OnClick>
 								</Scripts>
 								<NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Up" />
@@ -237,6 +246,24 @@
 									<TexCoords left="0" right="0.484375" top=".75" bottom="1.0" />
 								</Texture>
 							</Layer>
+							<!-- These looked ugly
+							<Layer level="OVERLAY">
+								<Texture name="$parentTopLeftCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
+									<Size x="32" y="32" />
+									<Anchors>
+										<Anchor point="TOPLEFT" x="-32" y="15" />
+									</Anchors>
+									<TexCoords left="1" right="0" top="0" bottom="1" />
+								</Texture>
+								<Texture name="$parentTopLeftCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
+									<Size x="32" y="32" />
+									<Anchors>
+										<Anchor point="BOTTOMRIGHT" x="-25" y="-13" />
+									</Anchors>
+									<TexCoords left="1" right="0" top="1" bottom="0" />
+								</Texture>
+							</Layer>
+							-->
 						</Layers>
 					</Slider>
 				</Frames>
