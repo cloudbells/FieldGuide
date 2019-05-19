@@ -44,7 +44,7 @@
           <Offset x="1" y="-1" />
         </Shadow>
 		<FontHeight>
-			<AbsValue val="14" />
+			<AbsValue val="20" />
 		</FontHeight>
 	</FontString>
 	<Frame name="FieldGuideFrame" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
@@ -163,7 +163,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Slider name="$parentSlider" orientation="VERTICAL" minValue="0" maxValue="30" defaultValue="0" valueStep="1">
+			<Slider name="$parentSlider" orientation="VERTICAL" minValue="0" maxValue="0" defaultValue="0" valueStep="1">
 				<Size x="25" y="428" />
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-23" y="-35" />
@@ -247,6 +247,12 @@
 			<OnLoad>
 				FieldGuide_OnLoad(self)
 			</OnLoad>
+			<OnShow>
+				FieldGuide_OnShow()
+			</OnShow>
+			<OnHide>
+				FieldGuide_OnHide()
+			</OnHide>
 			<OnDragStart>
 				self:StartMoving()
 			</OnDragStart>
