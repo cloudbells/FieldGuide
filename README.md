@@ -1,6 +1,11 @@
 # FieldGuide
 A World of Warcraft Addon for displaying visually when you will learn certain spells in WoW: Classic.
 
-![Current Progress](https://i.imgur.com/B4EOGgQ.png)
+Earliest functioning prototype:
 
-![Current Progress](https://i.imgur.com/ymiBdEc.png)
+![Early prototype](https://i.imgur.com/B4EOGgQ.png)
+
+
+Current progress:
+
+![Current progress](https://i.imgur.com/lRO9RFQ.png)
