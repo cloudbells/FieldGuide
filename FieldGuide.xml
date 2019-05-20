@@ -48,7 +48,6 @@
 		</FontHeight>
 	</FontString>
 	<Frame name="FieldGuideFrame" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
-		<!-- The height should be >130 and (multiple of 80) - 30. 210 shows 2 spell rows, 290 shows 3 spell rows etc. -->
 		<Size x="680" y="500" />
 		<Anchors>
 			<Anchor point="CENTER" />
@@ -59,8 +58,17 @@
 			</EdgeSize>
 		</Backdrop>
 		<Layers>
-			<Layer level="BORDER">
+			<Layer level="BACKGROUND">
 				<Texture name="$parentBackgroundTexture" file="Interface/ACHIEVEMENTFRAME/UI-GuildAchievement-AchievementBackground">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="16" y="-16" />
+						<Anchor point="BOTTOMRIGHT" x="-16" y="16" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentBackgroundTextureClass">
+					<Color a="0.4" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="16" y="-16" />
 						<Anchor point="BOTTOMRIGHT" x="-16" y="16" />
@@ -242,6 +250,16 @@
 					</Layer>
 				</Layers>
 			</Slider>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" relativePoint="TOPRIGHT" x="3" y="4"/>
+				</Anchors>
+			</Button>
+			<Frame name="FieldGuideDropdownFrame" inherits="UIDropDownMenuTemplate" frameStrata="FULLSCREEN_DIALOG">
+			<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" relativePoint="TOPRIGHT" x="-46" y="-30"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>
