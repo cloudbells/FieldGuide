@@ -1,6 +1,6 @@
 local _, FieldGuide = ...
 
-FieldGuide.WarriorSpells = {
+FieldGuide.WARRIOR = {
 	[2] = {
 		[1] = {
 			["name"] = "Battle Shout",
@@ -8,42 +8,7 @@ FieldGuide.WarriorSpells = {
 			["cost"] = 0,
 			["texture"] = "Interface/ICONS/ability_warrior_battleshout",
 			["id"] = 6673
-		},
-		[2] = {
-			["name"] = "Battle Stance",
-			["rank"] = 1,
-			["cost"] = 0,
-			["texture"] = "Interface/ICONS/ability_warrior_offensivestance",
-			["id"] = 2457
-		},
-		[3] = {
-			["name"] = "Heroic Strike",
-			["rank"] = 1,
-			["cost"] = 0,
-			["texture"] = "Interface/ICONS/ability_rogue_ambush",
-			["id"] = 78
-		},
-		[4] = {
-			["name"] = "Improved Pummel",
-			["rank"] = 1,
-			["cost"] = 0,
-			["texture"] = "Interface/ICONS/inv_gauntlets_04",
-			["id"] = 12288
-		},
-		[5] = {
-			["name"] = "Improved Pummel",
-			["rank"] = 2,
-			["cost"] = 0,
-			["texture"] = "Interface/ICONS/inv_gauntlets_04",
-			["id"] = 12707
-		},
-		[6] = {
-			["name"] = "Improved Pummel",
-			["rank"] = 3,
-			["cost"] = 0,
-			["texture"] = "Interface/ICONS/inv_gauntlets_04",
-			["id"] = 12708
-		},
+		}
 	},
 	[4] = {
 		[1] = {

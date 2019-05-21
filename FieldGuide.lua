@@ -1,5 +1,4 @@
 -- TODO:
--- PRIO 1: Fix so that when player selects a different class, the buttons update accordingly.
 -- Add option (somewhere/somehow) to hide known spells (or maybe just hide any spells before current level) - IsSpellKnown(spellId, isPetSpell).
 -- Add option (somewhere/somehow) to filter between certain levels?
 -- Add option (somewhere/somehow) to search for a certain spell.
@@ -43,7 +42,8 @@ local classBackgrounds = {
 	["DRUID"] = "DruidFeralCombat",
 }
 
-local selectedClass = select(2, UnitClass("player")) -- For the dropdown list.
+local selectedClass = nil -- For the dropdown list.
+local currentClassSpells = nil -- The table of spells.
 local currentMinLevel = 2 -- We always start by showing level 2.
 
 -- Sets the background to the given class (capitalized string).
@@ -54,10 +54,11 @@ end
 
 -- Changes the class to the given class.
 local function setClass(dropdownButton, class, arg2, checked)
-	setBackground(class)
-	-- Change the dropdown selection.
 	UIDropDownMenu_SetSelectedID(_G["FieldGuideDropdownFrame"], dropdownButton:GetID())
+	setBackground(class)
+	currentClassSpells = FieldGuide[class]
 	selectedClass = class
+	FieldGuide_UpdateButtons(self, 0)
 end
 
 -- Returns true if the given class is currently selected in the dropdown list.
@@ -166,9 +167,6 @@ local function initFrames()
 		end
 	end
 	FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
-	FieldGuide_UpdateButtons(self, 1)
-	initDropDown()
-	setBackground(selectedClass)
 	tinsert(UISpecialFrames, FieldGuideFrame:GetName())
 end
 
@@ -188,22 +186,31 @@ end
 -- Is called whenever user scrolls with mouse wheel or presses up/down buttons.
 function FieldGuide_UpdateButtons(self, value)
 	-- Fix slider.
-	local currentValue = FieldGuideFrameSlider:GetValue()
-	FieldGuideFrameSlider:SetValue(currentValue - value)
-	-- Fix level strings and spell buttons.
-	-- If previous level would be < 2 or next level would be > 52, set level to 2 and 52 respectively, otherwise reduce/increase all levels by 2 (value will be -1 or 1 depending on if player scrolled up or down).
-	-- TODO: make this dynamic ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	currentMinLevel = currentMinLevel - (value * 2) < 2 and 2 or currentMinLevel - (value * 2) > 52 and 52 or currentMinLevel - (value * 2)
-	-- Hide all buttons.
+	if value == 0 then
+		FieldGuideFrameSlider:SetValue(value)
+		currentMinLevel = 2
+	else
+		local currentValue = FieldGuideFrameSlider:GetValue()
+		FieldGuideFrameSlider:SetValue(currentValue - value)
+		-- TODO: make this dynamic ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		if currentMinLevel - value * 2 < 2 then
+			currentMinLevel = 2
+		elseif currentMinLevel - value * 2 > 52 then
+			currentMinLevel = 52
+		else
+			currentMinLevel = currentMinLevel - value * 2
+		end
+	end
 	for index, button in pairs(spellButtons) do
 		button:Hide()
 	end
 	local counter = 1
 	local lastSpellIndex = 0
+	-- Fix level strings and spell buttons.
 	for i = 1, NBR_OF_SPELL_ROWS do
 		local currentLevel = currentMinLevel + (i - 1) * 2
 		levelStrings[i]:SetText("Level " .. currentLevel)
-		for spellIndex, spellInfo in ipairs(FieldGuide.MageSpells[currentLevel]) do
+		for spellIndex, spellInfo in ipairs(currentClassSpells[currentLevel]) do
 			spellTextures[counter]:SetTexture(spellInfo["texture"])
 			spellTextures[counter]:SetAllPoints()
 			spellButtons[counter]:SetID(spellInfo["id"]) -- Hacky way to show price in tooltip.
@@ -263,5 +270,10 @@ function FieldGuide_OnLoad(self)
 	self:RegisterForDrag("LeftButton")
 	initSlash()
 	initFrames()
+	selectedClass = select(2, UnitClass("player"))
+	currentClassSpells = FieldGuide[selectedClass]
+	FieldGuide_UpdateButtons(self, 0) -- Initialize background and spells first time.
+	initDropDown()
+	setBackground(selectedClass)
 	print("FieldGuide loaded!")
 end

@@ -1,6 +1,6 @@
 local _, FieldGuide = ...
 
-FieldGuide.MageSpells = {
+FieldGuide.MAGE = {
 	[2] = {
 		[1] = {
 			["name"] = "Arcane Intellect",
