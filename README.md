@@ -8,4 +8,4 @@ Earliest functioning prototype:
 
 Current progress:
 
-![Current progress](https://i.imgur.com/lRO9RFQ.png)
+![Current progress](https://i.imgur.com/nYR8zW9.png)
