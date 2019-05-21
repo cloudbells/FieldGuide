@@ -196,7 +196,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								FieldGuide_UpdateButtons(self, 1)
+								FieldGuide_OnScroll(1)
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Up" />
@@ -211,7 +211,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								FieldGuide_UpdateButtons(self, -1)
+								FieldGuide_OnScroll(-1)
 							</OnClick>
 						</Scripts>
 						<NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Up" />
@@ -278,7 +278,7 @@
 				self:StopMovingOrSizing()
 			</OnDragStop>
 			<OnMouseWheel>
-				FieldGuide_UpdateButtons(self, delta)
+				FieldGuide_OnScroll(delta)
 			</OnMouseWheel>
 		</Scripts>
 	</Frame>

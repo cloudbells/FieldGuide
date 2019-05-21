@@ -45,6 +45,7 @@ local classBackgrounds = {
 local selectedClass = nil -- For the dropdown list.
 local currentClassSpells = nil -- The table of spells.
 local currentMinLevel = 2 -- We always start by showing level 2.
+local lastValue = 0 -- For the slider to not update 2000000 times a second.
 
 -- Sets the background to the given class (capitalized string).
 local function setBackground(class)
@@ -58,7 +59,7 @@ local function setClass(dropdownButton, class, arg2, checked)
 	setBackground(class)
 	currentClassSpells = FieldGuide[class]
 	selectedClass = class
-	FieldGuide_UpdateButtons(self, 0)
+	FieldGuide_UpdateButtons(true)
 end
 
 -- Returns true if the given class is currently selected in the dropdown list.
@@ -184,22 +185,9 @@ local function initSlash()
 end
 
 -- Is called whenever user scrolls with mouse wheel or presses up/down buttons.
-function FieldGuide_UpdateButtons(self, value)
-	-- Fix slider.
-	if value == 0 then
-		FieldGuideFrameSlider:SetValue(value)
-		currentMinLevel = 2
-	else
-		local currentValue = FieldGuideFrameSlider:GetValue()
-		FieldGuideFrameSlider:SetValue(currentValue - value)
-		-- TODO: make this dynamic ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-		if currentMinLevel - value * 2 < 2 then
-			currentMinLevel = 2
-		elseif currentMinLevel - value * 2 > 52 then
-			currentMinLevel = 52
-		else
-			currentMinLevel = currentMinLevel - value * 2
-		end
+function FieldGuide_UpdateButtons(reset)
+	if reset then
+		FieldGuideFrameSlider:SetValue(0)
 	end
 	for index, button in pairs(spellButtons) do
 		button:Hide()
@@ -244,6 +232,15 @@ end
 -- Is called whenever the value of the slider changes.
 function FieldGuide_OnValueChanged(self, value)
 	value = math.floor(value)
+	if value > lastValue or value < lastValue then -- Throttle.
+		if value * 2 < 2 then
+			currentMinLevel = 2
+		else
+			currentMinLevel = value * 2 + 2
+		end
+		lastValue = value
+		FieldGuide_UpdateButtons()
+	end
 	self:SetValue(value)
 	if value < 1 then
 		_G[self:GetName() .. "ScrollUpButton"]:Disable()
@@ -265,6 +262,11 @@ function FieldGuide_OnHide()
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 end
 
+-- Called when the player either scrolls or clicks the up/down buttons manually.
+function FieldGuide_OnScroll(value)
+	FieldGuideFrameSlider:SetValue(FieldGuideFrameSlider:GetValue() - value)
+end
+
 -- Run when addon has loaded.
 function FieldGuide_OnLoad(self)
 	self:RegisterForDrag("LeftButton")
@@ -272,8 +274,8 @@ function FieldGuide_OnLoad(self)
 	initFrames()
 	selectedClass = select(2, UnitClass("player"))
 	currentClassSpells = FieldGuide[selectedClass]
-	FieldGuide_UpdateButtons(self, 0) -- Initialize background and spells first time.
+	FieldGuide_UpdateButtons(true)
 	initDropDown()
 	setBackground(selectedClass)
-	print("FieldGuide loaded!")
+	print("FieldGuide loaded.")
 end
