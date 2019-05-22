@@ -1,285 +1,285 @@
 <Ui>
-	<Button name="FieldGuideSpellButtonTemplate" virtual="true">
-		<Size>
-			<AbsDimension x="37" y="37" />
-		</Size>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\Spellbook\UI-Spellbook-SpellBackground">
-					<Size>
-						<AbsDimension x="64" y="64" />
-					</Size>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="-3" y="3" />
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
-		<Scripts>
-			<OnEnter>
-				FieldGuideSpellButton_OnEnter(self)
-			</OnEnter>
-			<OnLeave>
-				FieldGuideSpellButton_OnLeave(self)
-			</OnLeave>
-		</Scripts>
-		<HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" />
-	</Button>
-	<FontString name="FieldGuideLevelStringTemplate" font="Fonts/FRIZQT__.ttf" outline="NORMAL" justifyH="LEFT" virtual="true">
-		<Shadow>
+    <Button name="FieldGuideSpellButtonTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="37" y="37" />
+        </Size>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentBackground" file="Interface\Spellbook\UI-Spellbook-SpellBackground">
+                    <Size>
+                        <AbsDimension x="64" y="64" />
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-3" y="3" />
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter>
+                FieldGuideSpellButton_OnEnter(self)
+            </OnEnter>
+            <OnLeave>
+                FieldGuideSpellButton_OnLeave(self)
+            </OnLeave>
+        </Scripts>
+        <HighlightTexture name="$parentHighlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD" />
+    </Button>
+    <FontString name="FieldGuideLevelStringTemplate" font="Fonts/FRIZQT__.ttf" outline="NORMAL" justifyH="LEFT" virtual="true">
+        <Shadow>
           <Color a="0.5" r="0" g="0" b="0" />
           <Offset x="1" y="-1" />
         </Shadow>
-		<FontHeight>
-			<AbsValue val="16" />
-		</FontHeight>
-	</FontString>
-	<FontString name="FieldGuideCostStringTemplate" font="Fonts/ARIALN.ttf" outline="NORMAL" justifyH="LEFT" virtual="true">
-		<Shadow>
+        <FontHeight>
+            <AbsValue val="16" />
+        </FontHeight>
+    </FontString>
+    <FontString name="FieldGuideCostStringTemplate" font="Fonts/ARIALN.ttf" outline="NORMAL" justifyH="LEFT" virtual="true">
+        <Shadow>
           <Color a="0.5" r="0" g="0" b="0" />
           <Offset x="1" y="-1" />
         </Shadow>
-		<FontHeight>
-			<AbsValue val="20" />
-		</FontHeight>
-	</FontString>
-	<Frame name="FieldGuideFrame" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
-		<Size x="680" y="500" />
-		<Anchors>
-			<Anchor point="CENTER" />
-		</Anchors>
-		<Backdrop edgeFile="Interface/AchievementFrame/UI-Achievement-WoodBorder">
-			<EdgeSize>
-				<AbsValue val="64" />
-			</EdgeSize>
-		</Backdrop>
-		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBackgroundTexture" file="Interface/ACHIEVEMENTFRAME/UI-GuildAchievement-AchievementBackground">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="16" y="-16" />
-						<Anchor point="BOTTOMRIGHT" x="-16" y="16" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="BORDER">
-				<Texture name="$parentBackgroundTextureClass">
-					<Color a="0.4" />
-					<Anchors>
-						<Anchor point="TOPLEFT" x="16" y="-16" />
-						<Anchor point="BOTTOMRIGHT" x="-16" y="16" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture name="$parentLeftBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Left">
-					<Size x="16" y="450" />
-					<Anchors>
-						<ANCHOR point="TOPLEFT" x="14" y="-16" />
-						<ANCHOR point="BOTTOMLEFT" x="14" y="16" />
-					</Anchors>
-					<TexCoords left="0" right="1" top="0" bottom="0.87" />
-				</Texture>
-				<Texture name="$parentTopBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Top">
-					<Size x="720" y="16" />
-					<Anchors>
-						<Anchor point="TOPLEFT" x="28" y="-12" />
-						<Anchor point="TOPRIGHT" x="-28" y="-12" />
-					</Anchors>
-					<TexCoords left="0.87" right="0" top="0" bottom="1" />
-				</Texture>
-				<Texture name="$parentRightBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Left">
-					<Size x="16" y="450" />
-					<Anchors>
-						<ANCHOR point="TOPRIGHT" x="-13" y="-16" />
-						<ANCHOR point="BOTTOMRIGHT" x="-13" y="16" />
-					</Anchors>
-					<TexCoords left="1" right="0" top="0.87" bottom="0" />
-				</Texture>
-				<Texture name="$parentBottomBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Top">
-					<Size x="720" y="16" />
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="28" y="13" />
-						<Anchor point="BOTTOMRIGHT" x="-28" y="13" />
-					</Anchors>
-					<TexCoords left="0" right="0.87" top="1" bottom="0" />
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="1">
-				<Texture name="$parentTopLeftCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
-					<Size x="64" y="64" />
-					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-2" />
-					</Anchors>
-					<TexCoords left="0" right="1" top="0" bottom="1" />
-				</Texture>
-				<Texture name="$parentTopRightCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
-					<Size x="64" y="64" />
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-4" y="-2" />
-					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1" />
-				</Texture>
-				<Texture name="$parentBottomRightCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
-					<Size x="64" y="64" />
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-4" y="3" />
-					</Anchors>
-					<TexCoords left="1" right="0" top="1" bottom="0" />
-				</Texture>
-				<Texture name="$parentBottomLeftCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
-					<Size x="64" y="64" />
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="4" y="3" />
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0" />
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture name="$parentTopLeftBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
-					<Size x="32" y="32" />
-					<Anchors>
-						<Anchor point="TOPLEFT" x="9" y="-7" />
-					</Anchors>
-					<TexCoords left="1" right="0" top="1" bottom="0" />
-				</Texture>
-				<Texture name="$parentTopRightBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
-					<Size x="32" y="32" />
-					<Anchors>
-						<Anchor point="TOPRIGHT" x="-8" y="-7" />
-					</Anchors>
-					<TexCoords left="0" right="1" top="1" bottom="0" />
-				</Texture>
-				<Texture name="$parentBottomRightBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
-					<Size x="32" y="32" />
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT" x="-8" y="8" />
-					</Anchors>
-					<TexCoords left="0" right="1" top="0" bottom="1" />
-				</Texture>
-				<Texture name="$parentBottomLeftBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
-					<Size x="32" y="32" />
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="9" y="8" />
-					</Anchors>
-					<TexCoords left="1" right="0" top="0" bottom="1" />
-				</Texture>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Slider name="$parentSlider" orientation="VERTICAL" minValue="0" maxValue="0" defaultValue="0" valueStep="1">
-				<Size x="25" y="428" />
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-23" y="-35" />
-					<Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" y="34" />
-				</Anchors>
-				<Scripts>
-					<OnValueChanged>
-						FieldGuide_OnValueChanged(self, value)
-					</OnValueChanged>
-				</Scripts>
-				<ThumbTexture name="$parentThumbTexture" file="Interface/BUTTONS/UI-ScrollBar-Knob">
-					<Size x="32" y="32" />
-					<Anchors>
-						<Anchor point="RIGHT" x="-50" y="-50" />
-					</Anchors>
-				</ThumbTexture>
-				<Frames>
-					<Button name="$parentScrollUpButton">
-						<Size x="32" y="32" />
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-19" y="-16" />
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								FieldGuide_Scroll(1)
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Up" />
-						<PushedTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Down" />
-						<DisabledTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Disabled" />
-						<HighlightTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD" />
-					</Button>
-					<Button name="$parentScrollDownButton">
-						<Size x="32" y="32" />
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-19" y="15" />
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								FieldGuide_Scroll(-1)
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Up" />
-						<PushedTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Down" />
-						<DisabledTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Disabled" />
-						<HighlightTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD" />
-					</Button>
-				</Frames>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture name="$parentBackground" setAllPoint="true">
-							<Color a="1" r="0" g="0" b="0" />
-						</Texture>
-						<Texture name="$parentTop" file="Interface/PaperDollInfoFrame/UI-Character-ScrollBar">
-							<Size x="31" y="102" />
-							<Anchors>
-								<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="FieldGuideFrame" x="-20" y="-20" />
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
-						</Texture>
-						<Texture name="$parentBottom" file="Interface/PaperDollInfoFrame/UI-Character-ScrollBar">
-							<Size x="31" y="106"/>
-							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-20" y="21" />
-							</Anchors>
-							<TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625" />
-						</Texture>
-						<Texture name="$parentMiddle" file="Interface/PaperDollInfoFrame/UI-Character-ScrollBar">
-							<Size x="31" y="1" />
-							<Anchors>
-								<Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM" />
-								<Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP" />
-							</Anchors>
-							<TexCoords left="0" right="0.484375" top=".75" bottom="1.0" />
-						</Texture>
-					</Layer>
-				</Layers>
-			</Slider>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" relativePoint="TOPRIGHT" x="3" y="4"/>
-				</Anchors>
-			</Button>
-			<Frame name="FieldGuideDropdownFrame" inherits="UIDropDownMenuTemplate" frameStrata="FULLSCREEN_DIALOG">
-			<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" relativePoint="TOPRIGHT" x="-46" y="-30"/>
-				</Anchors>
-			</Frame>
-		</Frames>
-		<Scripts>
-			<OnLoad>
-				FieldGuide_OnLoad(self)
-			</OnLoad>
-			<OnShow>
-				FieldGuide_OnShow()
-			</OnShow>
-			<OnHide>
-				FieldGuide_OnHide()
-			</OnHide>
-			<OnDragStart>
-				self:StartMoving()
-			</OnDragStart>
-			<OnDragStop>
-				self:StopMovingOrSizing()
-			</OnDragStop>
-			<OnMouseWheel>
-				FieldGuide_Scroll(delta)
-			</OnMouseWheel>
-		</Scripts>
-	</Frame>
+        <FontHeight>
+            <AbsValue val="20" />
+        </FontHeight>
+    </FontString>
+    <Frame name="FieldGuideFrame" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
+        <Size x="680" y="500" />
+        <Anchors>
+            <Anchor point="CENTER" />
+        </Anchors>
+        <Backdrop edgeFile="Interface/AchievementFrame/UI-Achievement-WoodBorder">
+            <EdgeSize>
+                <AbsValue val="64" />
+            </EdgeSize>
+        </Backdrop>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentBackgroundTexture" file="Interface/ACHIEVEMENTFRAME/UI-GuildAchievement-AchievementBackground">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="16" y="-16" />
+                        <Anchor point="BOTTOMRIGHT" x="-16" y="16" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BORDER">
+                <Texture name="$parentBackgroundTextureClass">
+                    <Color a="0.4" />
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="16" y="-16" />
+                        <Anchor point="BOTTOMRIGHT" x="-16" y="16" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture name="$parentLeftBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Left">
+                    <Size x="16" y="450" />
+                    <Anchors>
+                        <ANCHOR point="TOPLEFT" x="14" y="-16" />
+                        <ANCHOR point="BOTTOMLEFT" x="14" y="16" />
+                    </Anchors>
+                    <TexCoords left="0" right="1" top="0" bottom="0.87" />
+                </Texture>
+                <Texture name="$parentTopBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Top">
+                    <Size x="720" y="16" />
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="28" y="-12" />
+                        <Anchor point="TOPRIGHT" x="-28" y="-12" />
+                    </Anchors>
+                    <TexCoords left="0.87" right="0" top="0" bottom="1" />
+                </Texture>
+                <Texture name="$parentRightBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Left">
+                    <Size x="16" y="450" />
+                    <Anchors>
+                        <ANCHOR point="TOPRIGHT" x="-13" y="-16" />
+                        <ANCHOR point="BOTTOMRIGHT" x="-13" y="16" />
+                    </Anchors>
+                    <TexCoords left="1" right="0" top="0.87" bottom="0" />
+                </Texture>
+                <Texture name="$parentBottomBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Top">
+                    <Size x="720" y="16" />
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" x="28" y="13" />
+                        <Anchor point="BOTTOMRIGHT" x="-28" y="13" />
+                    </Anchors>
+                    <TexCoords left="0" right="0.87" top="1" bottom="0" />
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY" textureSubLevel="1">
+                <Texture name="$parentTopLeftCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
+                    <Size x="64" y="64" />
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="4" y="-2" />
+                    </Anchors>
+                    <TexCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Texture name="$parentTopRightCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
+                    <Size x="64" y="64" />
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" x="-4" y="-2" />
+                    </Anchors>
+                    <TexCoords left="1" right="0" top="0" bottom="1" />
+                </Texture>
+                <Texture name="$parentBottomRightCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
+                    <Size x="64" y="64" />
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT" x="-4" y="3" />
+                    </Anchors>
+                    <TexCoords left="1" right="0" top="1" bottom="0" />
+                </Texture>
+                <Texture name="$parentBottomLeftCrenTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-WoodBorder-Corner">
+                    <Size x="64" y="64" />
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" x="4" y="3" />
+                    </Anchors>
+                    <TexCoords left="0" right="1" top="1" bottom="0" />
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY" textureSubLevel="2">
+                <Texture name="$parentTopLeftBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
+                    <Size x="32" y="32" />
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="9" y="-7" />
+                    </Anchors>
+                    <TexCoords left="1" right="0" top="1" bottom="0" />
+                </Texture>
+                <Texture name="$parentTopRightBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
+                    <Size x="32" y="32" />
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" x="-8" y="-7" />
+                    </Anchors>
+                    <TexCoords left="0" right="1" top="1" bottom="0" />
+                </Texture>
+                <Texture name="$parentBottomRightBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
+                    <Size x="32" y="32" />
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT" x="-8" y="8" />
+                    </Anchors>
+                    <TexCoords left="0" right="1" top="0" bottom="1" />
+                </Texture>
+                <Texture name="$parentBottomLeftBorderTexture" file="Interface/ACHIEVEMENTFRAME/UI-Achievement-MetalBorder-Joint">
+                    <Size x="32" y="32" />
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT" x="9" y="8" />
+                    </Anchors>
+                    <TexCoords left="1" right="0" top="0" bottom="1" />
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Slider name="$parentSlider" orientation="VERTICAL" minValue="0" maxValue="0" defaultValue="0" valueStep="1">
+                <Size x="25" y="428" />
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-23" y="-35" />
+                    <Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" y="34" />
+                </Anchors>
+                <Scripts>
+                    <OnValueChanged>
+                        FieldGuide_OnValueChanged(self, value)
+                    </OnValueChanged>
+                </Scripts>
+                <ThumbTexture name="$parentThumbTexture" file="Interface/BUTTONS/UI-ScrollBar-Knob">
+                    <Size x="32" y="32" />
+                    <Anchors>
+                        <Anchor point="RIGHT" x="-50" y="-50" />
+                    </Anchors>
+                </ThumbTexture>
+                <Frames>
+                    <Button name="$parentScrollUpButton">
+                        <Size x="32" y="32" />
+                        <Anchors>
+                            <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-19" y="-16" />
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                FieldGuide_Scroll(1)
+                            </OnClick>
+                        </Scripts>
+                        <NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Up" />
+                        <PushedTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Down" />
+                        <DisabledTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Disabled" />
+                        <HighlightTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollUpButton-Highlight" alphaMode="ADD" />
+                    </Button>
+                    <Button name="$parentScrollDownButton">
+                        <Size x="32" y="32" />
+                        <Anchors>
+                            <Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-19" y="15" />
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                FieldGuide_Scroll(-1)
+                            </OnClick>
+                        </Scripts>
+                        <NormalTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Up" />
+                        <PushedTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Down" />
+                        <DisabledTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Disabled" />
+                        <HighlightTexture file="Interface/BUTTONS/UI-ScrollBar-ScrollDownButton-Highlight" alphaMode="ADD" />
+                    </Button>
+                </Frames>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <Texture name="$parentBackground" setAllPoint="true">
+                            <Color a="1" r="0" g="0" b="0" />
+                        </Texture>
+                        <Texture name="$parentTop" file="Interface/PaperDollInfoFrame/UI-Character-ScrollBar">
+                            <Size x="31" y="102" />
+                            <Anchors>
+                                <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="FieldGuideFrame" x="-20" y="-20" />
+                            </Anchors>
+                            <TexCoords left="0" right="0.484375" top="0" bottom="0.4"/>
+                        </Texture>
+                        <Texture name="$parentBottom" file="Interface/PaperDollInfoFrame/UI-Character-ScrollBar">
+                            <Size x="31" y="106"/>
+                            <Anchors>
+                                <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-20" y="21" />
+                            </Anchors>
+                            <TexCoords left="0.515625" right="1.0" top="0" bottom="0.4140625" />
+                        </Texture>
+                        <Texture name="$parentMiddle" file="Interface/PaperDollInfoFrame/UI-Character-ScrollBar">
+                            <Size x="31" y="1" />
+                            <Anchors>
+                                <Anchor point="TOP" relativeTo="$parentTop" relativePoint="BOTTOM" />
+                                <Anchor point="BOTTOM" relativeTo="$parentBottom" relativePoint="TOP" />
+                            </Anchors>
+                            <TexCoords left="0" right="0.484375" top=".75" bottom="1.0" />
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Slider>
+            <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" relativePoint="TOPRIGHT" x="3" y="4"/>
+                </Anchors>
+            </Button>
+            <Frame name="FieldGuideDropdownFrame" inherits="UIDropDownMenuTemplate" frameStrata="FULLSCREEN_DIALOG">
+            <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" relativePoint="TOPRIGHT" x="-46" y="-30"/>
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                FieldGuide_OnLoad(self)
+            </OnLoad>
+            <OnShow>
+                FieldGuide_OnShow()
+            </OnShow>
+            <OnHide>
+                FieldGuide_OnHide()
+            </OnHide>
+            <OnDragStart>
+                self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                self:StopMovingOrSizing()
+            </OnDragStop>
+            <OnMouseWheel>
+                FieldGuide_Scroll(delta)
+            </OnMouseWheel>
+        </Scripts>
+    </Frame>
 </Ui>
