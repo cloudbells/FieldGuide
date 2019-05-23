@@ -1,5 +1,6 @@
 -- TODO:
 -- Add option (somewhere/somehow) to hide known spells (or maybe just hide any spells before current level) - IsSpellKnown(spellId, isPetSpell).
+-- ^ Checkbox?
 -- Add option (somewhere/somehow) to filter between certain levels?
 -- Add option (somewhere/somehow) to search for a certain spell.
 -- Add option to sort spells by cost or by spec.
