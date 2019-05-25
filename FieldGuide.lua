@@ -1,6 +1,5 @@
 -- TODO:
--- Add option (somewhere/somehow) to hide known spells (or maybe just hide any spells before current level) - IsSpellKnown(spellId, isPetSpell).
--- ^ Checkbox?
+-- Add option (somewhere/somehow) to hide known spells (or maybe just hide any spells before current level) - IsSpellKnown(spellId, isPetSpell). Checkbox?
 -- Add option (somewhere/somehow) to filter between certain levels?
 -- Add option (somewhere/somehow) to search for a certain spell.
 -- Add option to sort spells by cost or by spec.
@@ -8,9 +7,11 @@
 -- Add icons for tomes/quests at level 60?
 -- Fix: Some spells are only for horde etc., such as Teleport: Stormwind and Teleport: Orgrimmar.
 -- Distinguish talents from normal spells.
+-- Calculate spell rows dynamically?
 
 -- BUGS:
 -- Highlighting over scroll up and down buttons is too big.
+-- Scroll bar texture sometimes does not load.
 
 local _, FieldGuide = ... -- Namespace.
 local selectedClass = nil -- Which class is currently selected in the dropdown. Will be initialized to player's class on addon load.
@@ -19,7 +20,6 @@ local currentMinLevel = 2 -- We always start by showing level 2.
 local levelStrings = {} -- The table of FontStrings so that we can reuse these.
 local spellButtons = {} -- The table of spell buttons so that we can reuse these.
 local spellTextures = {} -- The table of spell buttons so that we can reuse these. 
-local spellPrices = {} -- The table of spell prices. This is populated each time we call UpdateButtons().
 local classBackgrounds = { -- The name of the backgrounds in the game files.
     ["WARRIOR"] = "WarriorArms",
     ["PALADIN"] = "PaladinHoly",
@@ -29,7 +29,7 @@ local classBackgrounds = { -- The name of the backgrounds in the game files.
     ["SHAMAN"] = "ShamanElementalCombat",
     ["MAGE"] = "MageFrost",
     ["WARLOCK"] = "WarlockCurses",
-    ["DRUID"] = "DruidFeralCombat",
+    ["DRUID"] = "DruidFeralCombat"
 }
 
 local lastValue = 0 -- For the slider to not update a million times a second.
@@ -65,14 +65,42 @@ local function setBackground(class)
     FieldGuideFrameBackgroundTextureClass:SetAlpha(0.4)
 end
 
+-- Is called whenever user scrolls with mouse wheel or presses up/down buttons.
+local function updateButtons(reset)
+    if reset then
+        FieldGuideFrameSlider:SetValue(0)
+    end
+    local counter = 1
+    local lastSpellIndex = 0
+    -- Fix level strings and spell buttons.
+    for i = 1, NBR_OF_SPELL_ROWS do
+        local currentLevel = currentMinLevel + (i - 1) * 2
+        levelStrings[i]:SetText(currentLevel == 2 and "Level 1" or "Level " .. currentLevel)
+        for spellIndex, spellInfo in ipairs(currentClassSpells[currentLevel]) do
+            spellTextures[counter]:SetTexture(spellInfo["texture"])
+            spellTextures[counter]:SetAllPoints()
+            spellButtons[counter].spellId = spellInfo["id"]
+            spellButtons[counter].spellCost = spellInfo["cost"]
+            spellButtons[counter]:Show()
+            counter = counter + 1
+            lastSpellIndex = spellIndex
+        end
+        for i = counter, counter + NBR_OF_SPELL_COLUMNS - lastSpellIndex - 1 do -- Hide all unnecessary buttons.
+            spellButtons[i]:Hide()
+            counter = counter + 1
+        end
+    end
+end
+
 -- Changes the class to the given class.
 local function setClass(dropdownButton, class)
     UIDropDownMenu_SetSelectedID(FieldGuideDropdownFrame, dropdownButton:GetID())
     setBackground(class)
     currentClassSpells = FieldGuide[class]
     selectedClass = class
-    FieldGuide_UpdateButtons(true)
+    updateButtons(true)
 end
+
 
 -- Sets slash commands.
 local function initSlash()
@@ -89,25 +117,21 @@ end
 
 -- Initiates all frames, level strings, and textures for reuse.
 local function initFrames()
-    if #spellButtons == 0 or #levelStrings == 0 then
-        local NBR_OF_SPELL_BUTTONS = math.floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
-        Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.125
-        for i = 1, NBR_OF_SPELL_BUTTONS do
-            -- Create frames.
-            NBR_OF_SPELL_COLUMNS = NBR_OF_SPELL_BUTTONS / NBR_OF_SPELL_ROWS -- The number of buttons in x.
-            local spellBtnX = BUTTON_X_START + BUTTON_X_SPACING * ((i - 1) % 13)
-            local spellBtnY = -Y_SPACING * math.ceil(i / NBR_OF_SPELL_COLUMNS) - BUTTON_Y_START
-            spellButtons[i] = CreateFrame("BUTTON", nil, FieldGuideFrame, "FieldGuideSpellButtonTemplate")
-            spellButtons[i]:SetPoint("TOPLEFT", spellBtnX, spellBtnY)
-            -- Create textures.
-            spellTextures[i] = spellButtons[i]:CreateTexture(nil, "BORDER")
-        end
-        -- Create level strings
-        for i = 1, NBR_OF_SPELL_ROWS do
-            levelStrings[i] = FieldGuideFrame:CreateFontString(nil, "ARTWORK", "FieldGuideLevelStringTemplate")
-            levelStrings[i]:SetPoint("TOPLEFT", LEVEL_STRING_X_START, -LEVEL_STRING_Y_START - Y_SPACING * i)
-            levelStrings[i]:SetText("Level " .. currentMinLevel + (i - 1) * 2)
-        end
+    local temp = (FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING -- Faster than math.floor.
+    local NBR_OF_SPELL_BUTTONS = (temp + 0.5 - (temp + 0.5) % 1) * NBR_OF_SPELL_ROWS
+    Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.125
+    for i = 1, NBR_OF_SPELL_BUTTONS do
+        NBR_OF_SPELL_COLUMNS = NBR_OF_SPELL_BUTTONS / NBR_OF_SPELL_ROWS -- The number of buttons in x.
+        local spellBtnX = BUTTON_X_START + BUTTON_X_SPACING * ((i - 1) % NBR_OF_SPELL_COLUMNS)
+        local spellBtnY = -Y_SPACING * math.ceil(i / NBR_OF_SPELL_COLUMNS) - BUTTON_Y_START
+        spellButtons[i] = CreateFrame("BUTTON", nil, FieldGuideFrame, "FieldGuideSpellButtonTemplate")
+        spellButtons[i]:SetPoint("TOPLEFT", spellBtnX, spellBtnY)
+        spellTextures[i] = spellButtons[i]:CreateTexture(nil, "BORDER")
+    end
+    -- Create level strings
+    for i = 1, NBR_OF_SPELL_ROWS do
+        levelStrings[i] = FieldGuideFrame:CreateFontString(nil, "ARTWORK", "FieldGuideLevelStringTemplate")
+        levelStrings[i]:SetPoint("TOPLEFT", LEVEL_STRING_X_START, -LEVEL_STRING_Y_START - Y_SPACING * i)
     end
     FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
     tinsert(UISpecialFrames, FieldGuideFrame:GetName()) -- Allows us to close the window with escape.
@@ -180,41 +204,14 @@ local function initDropDown()
     UIDropDownMenu_SetText(dropdown, "|c" .. RAID_CLASS_COLORS[selectedClass].colorStr .. selectedClass:sub(1, 1) .. string.lower(selectedClass:sub(2)))
 end
 
--- Is called whenever user scrolls with mouse wheel or presses up/down buttons.
-function FieldGuide_UpdateButtons(reset)
-    if reset then
-        FieldGuideFrameSlider:SetValue(0)
-    end
-    local counter = 1
-    local lastSpellIndex = 0
-    -- Fix level strings and spell buttons.
-    for i = 1, NBR_OF_SPELL_ROWS do
-        local currentLevel = currentMinLevel + (i - 1) * 2
-        levelStrings[i]:SetText("Level " .. currentLevel)
-        for spellIndex, spellInfo in ipairs(currentClassSpells[currentLevel]) do
-            spellTextures[counter]:SetTexture(spellInfo["texture"])
-            spellTextures[counter]:SetAllPoints()
-            spellButtons[counter]:SetID(spellInfo["id"]) -- Hacky way to show price in tooltip.
-            spellButtons[counter]:Show()
-            spellPrices[spellInfo["id"]] = spellInfo["cost"]
-            counter = counter + 1
-            lastSpellIndex = spellIndex
-        end
-        for i = counter, counter + NBR_OF_SPELL_COLUMNS - lastSpellIndex - 1 do -- Hide all unnecessary buttons.
-            spellButtons[i]:Hide()
-            counter = counter + 1
-        end
-    end
-end
-
 -- Called whenever player mouses over an icon.
 function FieldGuideSpellButton_OnEnter(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    local spell = Spell:CreateFromSpellID(self:GetID())
-    spell:ContinueOnSpellLoad(function() -- 8.0.1 changes (will have to change on Classic servers).
-        local canAfford = GetMoney() < spellPrices[self:GetID()] and "|cFFFF0000" or "|cFFFFFFFF" -- Modifies string to be red if player can't afford, white otherwise.
-        local priceString = GetCoinTextureString(spellPrices[self:GetID()] * getRepModifier())
-        GameTooltip:SetHyperlink("spell:" .. self:GetID())
+    local spell = Spell:CreateFromSpellID(self.spellId)
+    spell:ContinueOnSpellLoad(function()
+        local canAfford = GetMoney() < self.spellCost and "|cFFFF0000" or "|cFFFFFFFF" -- Modifies string to be red if player can't afford, white otherwise.
+        local priceString = GetCoinTextureString(self.spellCost * getRepModifier())
+        GameTooltip:SetHyperlink("spell:" .. self.spellId)
         GameTooltip:AddLine("\nPrice: " .. canAfford .. priceString, nil, nil, nil, nil)
         GameTooltip:Show()
     end)
@@ -237,7 +234,7 @@ function FieldGuide_OnValueChanged(self, value)
         currentMinLevel = value * 2 + 2
     end
     lastValue = value
-    FieldGuide_UpdateButtons()
+    updateButtons()
     self:SetValue(value)
     if value < 1 then
         _G[self:GetName() .. "ScrollUpButton"]:Disable()
@@ -272,6 +269,6 @@ function FieldGuide_OnLoad(self)
     selectedClass = select(2, UnitClass("player"))
     currentClassSpells = FieldGuide[selectedClass]
     setBackground(selectedClass)
-    FieldGuide_UpdateButtons(true)
+    updateButtons(true) -- Sets initial textures etc. Without this, everything is empty until we scroll.
     initDropDown()
 end
