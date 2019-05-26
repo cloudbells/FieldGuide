@@ -1,19 +1,21 @@
 -- TODO:
 -- Add option (somewhere/somehow) to hide known spells (or maybe just hide any spells before current level) - IsSpellKnown(spellId, isPetSpell). Checkbox?
--- Add option (somewhere/somehow) to filter between certain levels?
 -- Add option (somewhere/somehow) to search for a certain spell.
--- Add option to sort spells by cost or by spec.
--- Add option to show talents or not.
 -- Add icons for tomes/quests at level 60?
--- Fix: Some spells are only for horde etc., such as Teleport: Stormwind and Teleport: Orgrimmar.
 -- Distinguish talents from normal spells.
--- Calculate spell rows dynamically?
+-- Calculate amount of spell rows dynamically.
+-- Add UI checkbox to show talents or not.
+-- Add UI checkbox to show enemy faction spells or not.
+-- Hide priests race-specific spells not available to current race.
+-- Sort spells alphabetically.
 
 -- BUGS:
 -- Highlighting over scroll up and down buttons is too big.
 -- Scroll bar texture sometimes does not load.
 
-local _, FieldGuide = ... -- Namespace.
+local _, FieldGuide = ...
+
+-- Variables.
 local selectedClass = nil -- Which class is currently selected in the dropdown. Will be initialized to player's class on addon load.
 local currentClassSpells = nil -- The table of spells. Will be initialized to player's class on addon load.
 local currentMinLevel = 2 -- We always start by showing level 2.
@@ -32,6 +34,7 @@ local classBackgrounds = { -- The name of the backgrounds in the game files.
     ["DRUID"] = "DruidFeralCombat"
 }
 
+-- UI variables.
 local lastValue = 0 -- For the slider to not update a million times a second.
 local BUTTON_X_START = 38 -- How far to the right the buttons start.
 local BUTTON_Y_START = -25 -- How far down the first button is placed.
@@ -43,15 +46,24 @@ local NBR_OF_SPELL_ROWS = 5 -- We want to display this many rows of spells.
 local NBR_OF_SPELL_COLUMNS = 0 -- Will be calculated later when initializing the frames.
 local NBR_OF_SPELL_BUTTONS = 0 -- Will be calculated later when initializing the frames.
 
+-- Options variables.
+local showEnemySpells = true
+local showTalents = true
+
 -- Returns true if the given class is currently selected in the dropdown list.
 local function isSelected(class)
     return selectedClass == class
 end
 
+-- Returns true if the player is Alliance.
+function isAlliance()
+    return UnitFactionGroup("player") == "Alliance"
+end
+
 -- Returns the reputation modifier (0.9 if player is honored with any faction, 1 otherwise).
 local function getRepModifier()
     local honored = false
-    if UnitFactionGroup("player") == "Horde" then
+    if not isAlliance() then
         honored = select(3, GetFactionInfoByID(530)) > 5 or select(3, GetFactionInfoByID(76)) > 5 or select(3, GetFactionInfoByID(81)) > 5 or select(3, GetFactionInfoByID(68)) > 5
     else
         honored = select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(54)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(72)) > 5
@@ -71,19 +83,24 @@ local function updateButtons(reset)
         FieldGuideFrameSlider:SetValue(0)
     end
     local counter = 1
-    local lastSpellIndex = 0
     -- Fix level strings and spell buttons.
     for i = 1, NBR_OF_SPELL_ROWS do
+        local lastSpellIndex = 0
         local currentLevel = currentMinLevel + (i - 1) * 2
         levelStrings[i]:SetText(currentLevel == 2 and "Level 1" or "Level " .. currentLevel)
         for spellIndex, spellInfo in ipairs(currentClassSpells[currentLevel]) do
-            spellTextures[counter]:SetTexture(spellInfo["texture"])
-            spellTextures[counter]:SetAllPoints()
-            spellButtons[counter].spellId = spellInfo["id"]
-            spellButtons[counter].spellCost = spellInfo["cost"]
-            spellButtons[counter]:Show()
-            counter = counter + 1
-            lastSpellIndex = spellIndex
+            if showEnemySpells or (isAlliance() and spellInfo["faction"] == 1) or -- Whether or not to show enemy faction spells.
+                    (not isAlliance() and spellInfo["faction"] == 2) or not spellInfo["faction"] then
+                if (showTalents and spellInfo["talent"]) or not spellInfo["talent"] then -- Whether or not to show talents.
+                    spellTextures[counter]:SetTexture(spellInfo["texture"])
+                    spellTextures[counter]:SetAllPoints()
+                    spellButtons[counter].spellId = spellInfo["id"]
+                    spellButtons[counter].spellCost = spellInfo["cost"]
+                    spellButtons[counter]:Show()
+                    counter = counter + 1
+                    lastSpellIndex = lastSpellIndex + 1
+                end
+            end
         end
         for i = counter, counter + NBR_OF_SPELL_COLUMNS - lastSpellIndex - 1 do -- Hide all unnecessary buttons.
             spellButtons[i]:Hide()
