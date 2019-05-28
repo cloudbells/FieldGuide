@@ -3,6 +3,7 @@
 ## Notes: Addon for visualizing when spells are learned for each class.
 ## Author: cloudbells
 ## 1.0
+## SavedVariablesPerCharacter: FieldGuideOptions
 Database\Mage.lua
 Database\Warrior.lua
 FieldGuide.lua

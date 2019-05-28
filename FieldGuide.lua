@@ -2,9 +2,7 @@
 -- Add option (somewhere/somehow) to hide known spells (or maybe just hide any spells before current level) - IsSpellKnown(spellId, isPetSpell). Checkbox?
 -- Add option (somewhere/somehow) to search for a certain spell.
 -- Calculate amount of spell rows dynamically.
--- Add UI checkbox to show talents or not.
--- Add UI checkbox to show enemy faction spells or not.
--- Sort spells alphabetically.
+-- Sort spells by spec then alphabetically.
 -- Distinguish talents from normal spells.
 -- Add icons for tomes/quests at level 60?
 
@@ -53,10 +51,6 @@ local NBR_OF_SPELL_ROWS = 5 -- We want to display this many rows of spells.
 local NBR_OF_SPELL_COLUMNS = 0 -- Will be calculated later when initializing the frames.
 local NBR_OF_SPELL_BUTTONS = 0 -- Will be calculated later when initializing the frames.
 
--- Options variables.
-local showEnemySpells = true
-local showTalents = true
-
 -- Returns true if the given class is currently selected in the dropdown list.
 local function isSelected(class)
     return selectedClass == class
@@ -98,9 +92,9 @@ local function updateButtons(reset)
         levelStrings[i]:SetText(currentLevel == 2 and "Level 1" or "Level " .. currentLevel)
         for spellIndex, spellInfo in ipairs(currentClassSpells[currentLevel]) do
         -- FieldGuide[currentClass].updateSpell(spellIndex, spellInfo, showTalents, showEnemySpells, )
-            if showEnemySpells or (isAlliance() and spellInfo["faction"] == 1) or -- Whether or not to show enemy faction spells.
+            if FieldGuideOptions.showEnemySpells or (isAlliance() and spellInfo["faction"] == 1) or -- Whether or not to show enemy faction spells.
                     (not isAlliance() and spellInfo["faction"] == 2) or not spellInfo["faction"] then
-                if (showTalents and spellInfo["talent"]) or not spellInfo["talent"] then -- Whether or not to show talents.
+                if (FieldGuideOptions.showTalents and spellInfo["talent"]) or not spellInfo["talent"] then -- Whether or not to show talents.
                     spellTextures[counter]:SetTexture(spellInfo["texture"])
                     spellTextures[counter]:SetAllPoints()
                     spellButtons[counter].spellId = spellInfo["id"]
@@ -127,7 +121,6 @@ local function setClass(dropdownButton, class)
     updateButtons(true)
 end
 
-
 -- Sets slash commands.
 local function initSlash()
     SLASH_FIELDGUIDE1 = "/FieldGuide"
@@ -141,7 +134,19 @@ local function initSlash()
     end
 end
 
--- Initiates all frames, level strings, and textures for reuse.
+-- Initializes all checkboxes.
+local function initCheckboxes()
+    FieldGuideFrameTalentsCheckBoxText:SetFont("Fonts/FRIZQT__.TTF", 12, "OUTLINE")
+    FieldGuideFrameTalentsCheckBoxText:SetTextColor(1, 1, 1, 1)
+    FieldGuideFrameTalentsCheckBoxText:SetText("Talents")
+    FieldGuideFrameTalentsCheckBox:SetPoint("RIGHT", FieldGuideDropdownFrame, "LEFT", 10 - FieldGuideFrameTalentsCheckBoxText:GetWidth(), 2)
+    FieldGuideFrameEnemySpellsCheckBoxText:SetFont("Fonts/FRIZQT__.TTF", 12, "OUTLINE")
+    FieldGuideFrameEnemySpellsCheckBoxText:SetTextColor(1, 1, 1, 1)
+    FieldGuideFrameEnemySpellsCheckBoxText:SetText((isAlliance() and "Horde" or "Alliance") .. " spells")
+    FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth(), 0)
+end
+
+-- Initializes all frames, level strings, and textures for reuse.
 local function initFrames()
     local temp = (FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING -- Faster than math.floor.
     local NBR_OF_SPELL_BUTTONS = (temp + 0.5 - (temp + 0.5) % 1) * NBR_OF_SPELL_ROWS
@@ -164,8 +169,8 @@ local function initFrames()
 end
 
 -- Initializes the dropdown menu.
-local function initDropDown()
-    local dropdown = _G["FieldGuideDropdownFrame"]
+local function initDropdown()
+    local dropdown = FieldGuideDropdownFrame
     UIDropDownMenu_Initialize(dropdown, function(self)
         local info = UIDropDownMenu_CreateInfo()
         -- Warrior.
@@ -278,14 +283,46 @@ function FieldGuide_Scroll(delta)
     FieldGuideFrameSlider:SetValue(FieldGuideFrameSlider:GetValue() - delta)
 end
 
--- Called when the addon has loaded.
+-- Toggles showing talents off or on.
+function FieldGuide_ToggleTalents()
+    FieldGuideOptions.showTalents = not FieldGuideOptions.showTalents
+    updateButtons()
+end
+
+-- Toggles showing enemy spells off or on.
+function FieldGuide_ToggleEnemySpells()
+    FieldGuideOptions.showEnemySpells = not FieldGuideOptions.showEnemySpells
+    updateButtons()
+end
+
+-- Called when the frame has loaded.
 function FieldGuide_OnLoad(self)
     self:RegisterForDrag("LeftButton")
+    self:RegisterEvent("ADDON_LOADED")
     initSlash()
     initFrames()
+    initCheckboxes()
     selectedClass = select(2, UnitClass("player"))
     currentClassSpells = FieldGuide[selectedClass]
     setBackground(selectedClass)
-    updateButtons(true) -- Sets initial textures etc. Without this, everything is empty until we scroll.
-    initDropDown()
+    initDropdown()
+end
+
+-- Called on each event the frame receives.
+function FieldGuide_OnEvent(self, event, ...)
+    if event == "ADDON_LOADED" then
+        if ... == "FieldGuide" then
+            if FieldGuideOptions == nil then -- Defaults.
+                FieldGuideOptions = {
+                    showTalents = true,
+                    showEnemySpells = false
+                }
+            end
+            FieldGuideFrameTalentsCheckBox:SetChecked(FieldGuideOptions.showTalents)
+            FieldGuideFrameEnemySpellsCheckBox:SetChecked(FieldGuideOptions.showEnemySpells)
+            updateButtons(true) -- Sets initial textures etc. Without this, everything is empty until we scroll.
+            print("Field Guide loaded!")
+            self:UnregisterEvent("ADDON_LOADED")
+        end
+    end
 end

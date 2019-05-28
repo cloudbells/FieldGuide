@@ -31,7 +31,7 @@
     </Button>
     <FontString name="FieldGuideLevelStringTemplate" font="Fonts/FRIZQT__.ttf" outline="NORMAL" justifyH="LEFT" virtual="true">
         <Shadow>
-          <Color a="0.5" r="0" g="0" b="0" />
+          <Color a="1" r="0" g="0" b="0" />
           <Offset x="1" y="-1" />
         </Shadow>
         <FontHeight>
@@ -252,12 +252,26 @@
             </Slider>
             <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
                 <Anchors>
-                    <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" relativePoint="TOPRIGHT" x="3" y="4"/>
+                    <Anchor point="TOPRIGHT" x="3" y="4" />
                 </Anchors>
             </Button>
+            <CheckButton name="$parentTalentsCheckBox" inherits="UICheckButtonTemplate">
+                <Scripts>
+                    <OnClick>
+                        FieldGuide_ToggleTalents()
+                    </OnClick>
+                </Scripts>
+            </CheckButton>
+            <CheckButton name="$parentEnemySpellsCheckBox" inherits="UICheckButtonTemplate">
+                <Scripts>
+                    <OnClick>
+                        FieldGuide_ToggleEnemySpells()
+                    </OnClick>
+                </Scripts>
+            </CheckButton>
             <Frame name="FieldGuideDropdownFrame" inherits="UIDropDownMenuTemplate" frameStrata="FULLSCREEN_DIALOG">
             <Anchors>
-                    <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" relativePoint="TOPRIGHT" x="-46" y="-30"/>
+                    <Anchor point="TOPRIGHT" x="-46" y="-30"/>
                 </Anchors>
             </Frame>
         </Frames>
@@ -280,6 +294,9 @@
             <OnMouseWheel>
                 FieldGuide_Scroll(delta)
             </OnMouseWheel>
+            <OnEvent>
+                FieldGuide_OnEvent(self, event, ...)
+            </OnEvent>
         </Scripts>
     </Frame>
 </Ui>
