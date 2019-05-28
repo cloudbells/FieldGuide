@@ -266,10 +266,10 @@
                 FieldGuide_OnLoad(self)
             </OnLoad>
             <OnShow>
-                FieldGuide_OnShow()
+                PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
             </OnShow>
             <OnHide>
-                FieldGuide_OnHide()
+                PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE)
             </OnHide>
             <OnDragStart>
                 self:StartMoving()

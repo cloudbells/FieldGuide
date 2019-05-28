@@ -1,13 +1,20 @@
 -- TODO:
 -- Add option (somewhere/somehow) to hide known spells (or maybe just hide any spells before current level) - IsSpellKnown(spellId, isPetSpell). Checkbox?
 -- Add option (somewhere/somehow) to search for a certain spell.
--- Add icons for tomes/quests at level 60?
--- Distinguish talents from normal spells.
 -- Calculate amount of spell rows dynamically.
 -- Add UI checkbox to show talents or not.
 -- Add UI checkbox to show enemy faction spells or not.
--- Hide priests race-specific spells not available to current race.
 -- Sort spells alphabetically.
+-- Distinguish talents from normal spells.
+-- Add icons for tomes/quests at level 60?
+
+-- SPECIAL CASES:
+-- Warlock pet spells.
+-- Hide priests race-specific spells not available to current race.
+-- Concerning Priest race specific spells: make a separate function for this.
+-- ^ also for warlocks.
+-- Hunter/Shaman mail.
+-- Warrior/Paladin plate. 
 
 -- BUGS:
 -- Highlighting over scroll up and down buttons is too big.
@@ -56,19 +63,20 @@ local function isSelected(class)
 end
 
 -- Returns true if the player is Alliance.
-function isAlliance()
+local function isAlliance()
     return UnitFactionGroup("player") == "Alliance"
 end
 
--- Returns the reputation modifier (0.9 if player is honored with any faction, 1 otherwise).
-local function getRepModifier()
+-- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
+local function getCostModifier()
     local honored = false
+    -- local rankThree = UnitPVPRank("player") -- Classic exclusive code.
     if not isAlliance() then
         honored = select(3, GetFactionInfoByID(530)) > 5 or select(3, GetFactionInfoByID(76)) > 5 or select(3, GetFactionInfoByID(81)) > 5 or select(3, GetFactionInfoByID(68)) > 5
     else
         honored = select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(54)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(72)) > 5
     end
-    return honored and 0.9 or 1
+    return rankThree and honored and 0.8 or honored and 0.9 or rankThree and 0.9 or 1
 end
 
 -- Sets the background to the given class.
@@ -89,6 +97,7 @@ local function updateButtons(reset)
         local currentLevel = currentMinLevel + (i - 1) * 2
         levelStrings[i]:SetText(currentLevel == 2 and "Level 1" or "Level " .. currentLevel)
         for spellIndex, spellInfo in ipairs(currentClassSpells[currentLevel]) do
+        -- FieldGuide[currentClass].updateSpell(spellIndex, spellInfo, showTalents, showEnemySpells, )
             if showEnemySpells or (isAlliance() and spellInfo["faction"] == 1) or -- Whether or not to show enemy faction spells.
                     (not isAlliance() and spellInfo["faction"] == 2) or not spellInfo["faction"] then
                 if (showTalents and spellInfo["talent"]) or not spellInfo["talent"] then -- Whether or not to show talents.
@@ -225,9 +234,10 @@ end
 function FieldGuideSpellButton_OnEnter(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     local spell = Spell:CreateFromSpellID(self.spellId)
+    local modifier = getCostModifier()
     spell:ContinueOnSpellLoad(function()
         local canAfford = GetMoney() < self.spellCost and "|cFFFF0000" or "|cFFFFFFFF" -- Modifies string to be red if player can't afford, white otherwise.
-        local priceString = GetCoinTextureString(self.spellCost * getRepModifier())
+        local priceString = GetCoinTextureString(self.spellCost * modifier)
         GameTooltip:SetHyperlink("spell:" .. self.spellId)
         GameTooltip:AddLine("\nPrice: " .. canAfford .. priceString, nil, nil, nil, nil)
         GameTooltip:Show()
@@ -261,16 +271,6 @@ function FieldGuide_OnValueChanged(self, value)
         _G[self:GetName() .. "ScrollUpButton"]:Enable()
         _G[self:GetName() .. "ScrollDownButton"]:Enable()
     end
-end
-
--- Called whenever player opens the window.
-function FieldGuide_OnShow()
-    PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
-end
-
--- Called whenever player closes the window.
-function FieldGuide_OnHide()
-    PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE);
 end
 
 -- Called when the player either scrolls or clicks the up/down buttons manually.
