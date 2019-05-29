@@ -269,6 +269,13 @@
                     </OnClick>
                 </Scripts>
             </CheckButton>
+            <CheckButton name="$parentKnownSpellsCheckBox" inherits="UICheckButtonTemplate">
+                <Scripts>
+                    <OnClick>
+                        FieldGuide_ToggleKnownSpells()
+                    </OnClick>
+                </Scripts>
+            </CheckButton>
             <Frame name="FieldGuideDropdownFrame" inherits="UIDropDownMenuTemplate" frameStrata="FULLSCREEN_DIALOG">
             <Anchors>
                     <Anchor point="TOPRIGHT" x="-46" y="-30"/>
