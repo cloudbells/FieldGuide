@@ -9,12 +9,17 @@
 
 -- Spells left to add:
 ---------------------------------------
--- Druid
--- Hunter: add Mail at level 40.
--- Paladin: add Plate at level 40.
 -- Priest: show all friendly faction race-specific spells, but add in tooltip which race each spell can be learned by.
--- Rogue
 -- Shaman: add Mail at level 40.
+---------------------------------------
+
+
+-- Spells left to organize:
+---------------------------------------
+-- Paladin: add Plate at level 40.
+-- Hunter: add Mail at level 40.
+-- Rogue
+-- Druid
 -- Warlock: do I add pet spells?
 ---------------------------------------
 
