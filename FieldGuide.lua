@@ -103,7 +103,7 @@ local function updateButtons(reset)
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
             if FieldGuideOptions.showKnownSpells or not IsSpellKnown(spellInfo["id"]) then -- Whether or not to show known spells.
                 if FieldGuideOptions.showEnemySpells or (isAlliance() and spellInfo["faction"] == 1) or -- Whether or not to show enemy faction spells.
-                        spellInfo["faction"] == 2 or not spellInfo["faction"] then
+                        (not isAlliance() and spellInfo["faction"] == 2) or not spellInfo["faction"] then
                     if (FieldGuideOptions.showTalents and spellInfo["talent"]) or not spellInfo["talent"] then -- Whether or not to show talents.
                         spellTextures[counter]:SetTexture(spellInfo["texture"])
                         spellTextures[counter]:SetAllPoints()

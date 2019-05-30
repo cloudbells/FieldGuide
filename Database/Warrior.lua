@@ -33,7 +33,7 @@ FieldGuide.WARRIOR = {
             ["cost"] = 100,
             ["texture"] = "Interface/ICONS/ability_parry",
             ["id"] = 3127
-        }
+        },
         [2] = {
             ["name"] = "Thunder Clap",
             ["rank"] = 1,

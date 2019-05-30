@@ -456,7 +456,8 @@ FieldGuide.MAGE = {
             ["rank"] = 1,
             ["cost"] = 8000,
             ["texture"] = "Interface/ICONS/spell_arcane_teleportthunderbluff",
-            ["id"] = 3566
+            ["id"] = 3566,
+            ["faction"] = 2
         },
         [3] = {
             ["name"] = "Amplify Magic",
