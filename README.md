@@ -3,4 +3,4 @@ A World of Warcraft Addon for displaying visually when you will learn certain sp
 
 Current progress:
 
-![Current progress](https://i.imgur.com/vGHBRcu.png)
+![Current progress](https://i.imgur.com/LxQXcjU.png)

@@ -1,4 +1,4 @@
-## Interface: 11302
+## Interface: 80100
 ## Title: Field Guide
 ## Notes: Shows when spells are trainable and how much each spell costs to train, along with other features.
 ## Author: cloudbells
@@ -6,5 +6,11 @@
 ## SavedVariablesPerCharacter: FieldGuideOptions
 Database\Mage.lua
 Database\Warrior.lua
+Database\Druid.lua
+Database\Paladin.lua
+Database\Rogue.lua
+Database\Warlock.lua
+Database\Hunter.lua
 FieldGuide.lua
 FieldGuide.xml
+#11302
