@@ -1,19 +1,29 @@
--- TODO:
--- Add option (somewhere/somehow) to search for a certain spell.
--- Sort spells by spec then alphabetically.
--- Add icons for tomes/quests at level 60?
+-- Features:
+---------------------------------------
+-- 1. Add icons for tomes/quests at level 60. AQ ones, but also Mage drink quest in DM/Arcane Brilliance etc.
+-- 2. (Add option (somewhere/somehow) to search for a certain spell.)
+-- 3. (Add info for where to learn spells – e.g. if player is honored with only Ironforge, then tell her to go to Ironforge to train.)
+-- 4. (Mark spells that the player does not wish to train and save between sessions. Perhaps make them grey?)
+---------------------------------------
 
--- SPECIAL CASES:
--- Warlock pet spells.
--- Hide priests race-specific spells not available to current race.
--- Concerning Priest race specific spells: make a separate function for this.
--- ^ also for warlocks.
--- Hunter/Shaman mail.
--- Warrior/Paladin plate. 
 
--- BUGS:
--- Highlighting over scroll up and down buttons is too big.
--- Scroll bar texture sometimes does not load.
+-- Spells left to add:
+---------------------------------------
+-- Druid
+-- Hunter: add Mail at level 40.
+-- Paladin: add Plate at level 40.
+-- Priest: show all friendly faction race-specific spells, but add in tooltip which race each spell can be learned by.
+-- Rogue
+-- Shaman: add Mail at level 40.
+-- Warlock: do I add pet spells?
+---------------------------------------
+
+
+-- Bugs:
+---------------------------------------
+-- 1. Scroll bar texture sometimes does not load.
+-- 2. Highlighting over scroll up and down buttons is too big.
+---------------------------------------
 
 local _, FieldGuide = ...
 

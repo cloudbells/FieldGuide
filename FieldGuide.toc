@@ -1,8 +1,8 @@
-## Interface: 80100
+## Interface: 11302
 ## Title: Field Guide
-## Notes: Addon for visualizing when spells are learned for each class.
+## Notes: Shows when spells are trainable and how much each spell costs to train, along with other features.
 ## Author: cloudbells
-## 1.0
+## Version: 0.8
 ## SavedVariablesPerCharacter: FieldGuideOptions
 Database\Mage.lua
 Database\Warrior.lua
