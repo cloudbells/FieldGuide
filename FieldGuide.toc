@@ -6,19 +6,19 @@
 ## SavedVariablesPerCharacter: FieldGuideOptions
 
 # Load libraries.
-libs\LibStub\LibStub.lua
-libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
-libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
-libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+Libraries\LibStub\LibStub.lua
+Libraries\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libraries\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libraries\LibDBIcon-1.0\LibDBIcon-1.0.lua
 
 # Load spell tables.
-spells\Mage.lua
-spells\Warrior.lua
-spells\Druid.lua
-spells\Paladin.lua
-spells\Rogue.lua
-spells\Warlock.lua
-spells\Hunter.lua
+Database\Mage.lua
+Database\Warrior.lua
+Database\Druid.lua
+Database\Paladin.lua
+Database\Rogue.lua
+Database\Warlock.lua
+Database\Hunter.lua
 
 # Load core files.
 FieldGuide.lua
