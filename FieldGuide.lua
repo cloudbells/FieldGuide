@@ -1,12 +1,14 @@
 --[[
     Features:
     ---------------------------------------
-    1. Add icons for tomes/quests at level 60. AQ ones, but also Mage drink quest in DM/Arcane Brilliance etc.
+    0. Auto change width per class.
+    1. Add icons for tomes/quests at level 60. AQ ones, but also Mage drink quest in DM/Arcane Brilliance and Warlock Shadow Ward rank 4 etc.
     2. Add weapon skills.
     3. (Add option (somewhere/somehow) to search for a certain spell.)
     4. (Add info for where to learn spells – e.g. if player is honored with only Ironforge, then tell her to go to Ironforge to train.)
     5. (Mark spells that the player does not wish to train and save between sessions. Perhaps make them grey?)
-    6. Fix PvP rank spell cost modification function for Classic release.
+    6. (Add Warlock pet skills.)
+    7. Fix PvP rank spell cost modification function for Classic release.
     ---------------------------------------
 
     Spells left to add:
@@ -17,11 +19,8 @@
 
     Spells left to organize:
     ---------------------------------------
-    1. Paladin: add Plate at level 40.
-    2. Hunter: add Mail at level 40.
-    3. Rogue
-    4. Druid
-    5. Warlock: add pet spells?
+    1. Priest: show all friendly faction race-specific spells, but add in tooltip which race each spell can be learned by.
+    2. Shaman: add Mail at level 40.
     ---------------------------------------
 
     Bugs:
@@ -29,6 +28,7 @@
     1. Scroll bar texture sometimes does not load.
     2. Highlighting over scroll up and down buttons is too big.
     3. Ranks do not show in the tooltip (even in Classic) – add manually?
+    4. Shadowburn rank 6 does not show price – need info from Classic.
     ---------------------------------------
 --]]
 
