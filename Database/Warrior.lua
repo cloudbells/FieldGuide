@@ -8,7 +8,7 @@ FieldGuide.WARRIOR = {
             ["cost"] = 10,
             ["texture"] = "Interface/ICONS/ability_warrior_battleshout",
             ["id"] = 6673
-        }
+        },
     },
     [4] = {
         [1] = {

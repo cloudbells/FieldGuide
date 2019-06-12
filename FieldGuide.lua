@@ -1,14 +1,12 @@
 --[[
     Features:
     ---------------------------------------
-    0. Auto change width per class.
     1. Add icons for tomes/quests at level 60. AQ ones, but also Mage drink quest in DM/Arcane Brilliance and Warlock Shadow Ward rank 4 etc.
     2. Add weapon skills.
-    3. (Add option (somewhere/somehow) to search for a certain spell.)
-    4. (Add info for where to learn spells – e.g. if player is honored with only Ironforge, then tell her to go to Ironforge to train.)
-    5. (Mark spells that the player does not wish to train and save between sessions. Perhaps make them grey?)
-    6. (Add Warlock pet skills.)
-    7. Fix PvP rank spell cost modification function for Classic release.
+    3. (Add info for where to learn spells – e.g. if player is honored with only Ironforge, then tell her to go to Ironforge to train.)
+    4. (Mark spells that the player does not wish to train and save between sessions. Perhaps make them grey?)
+    5. (Add Warlock pet skills.)
+    6. Fix PvP rank spell cost modification function for Classic release.
     ---------------------------------------
 
     Spells left to add:
@@ -92,24 +90,34 @@ local function updateButtons(reset)
         FieldGuideFrameSlider:SetValue(0)
     end
     local counter = 1
+    local extraButtons = {}
     -- Fix level strings and spell buttons.
     for i = 1, NBR_OF_SPELL_ROWS do
         local lastSpellIndex = 0
         local currentLevel = currentMinLevel + (i - 1) * 2
-        levelStrings[i]:SetText(currentLevel == 2 and "Level 1" or "Level " .. currentLevel)
-        for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
-            if buttonConditions(spellInfo) then
-                spellTextures[counter]:SetTexture(spellInfo["texture"])
-                spellTextures[counter]:SetAllPoints()
-                spellButtons[counter]:Hide() -- So that tooltip updates when we scroll.
-                spellButtons[counter].spellId = spellInfo["id"]
-                spellButtons[counter].spellCost = spellInfo["cost"]
-                spellButtons[counter]:Show()
-                counter = counter + 1
-                lastSpellIndex = lastSpellIndex + 1
+        levelStrings[i]:SetText(currentLevel == 2 and "Level 1" or (currentLevel > 60 and "Level 60 – continued") or "Level " .. currentLevel)
+        if currentLevel <= 60 then
+            for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
+                if buttonConditions(spellInfo) then
+                    if counter > NBR_OF_SPELL_COLUMNS * NBR_OF_SPELL_ROWS then
+                        break
+                    end
+                    spellTextures[counter]:SetTexture(spellInfo["texture"])
+                    spellTextures[counter]:SetAllPoints()
+                    spellButtons[counter]:Hide() -- So that tooltip updates when we scroll.
+                    spellButtons[counter].talent = spellInfo["talent"]
+                    spellButtons[counter].spellId = spellInfo["id"]
+                    spellButtons[counter].spellCost = spellInfo["cost"]
+                    spellButtons[counter]:Show()
+                    counter = counter + 1
+                    lastSpellIndex = lastSpellIndex + 1
+                end
             end
         end
         for i = counter, counter + NBR_OF_SPELL_COLUMNS - lastSpellIndex - 1 do -- Hide all unnecessary buttons.
+            if i > NBR_OF_SPELL_COLUMNS * NBR_OF_SPELL_ROWS then
+                break
+            end
             spellButtons[i]:Hide()
             counter = counter + 1
         end
@@ -127,6 +135,15 @@ local function setClass(dropdownButton, class)
     UIDropDownMenu_SetSelectedID(FieldGuideDropdownFrame, dropdownButton:GetID())
     setBackground(class)
     selectedClass = class
+    FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS)
+    for i = 1, 30 do
+        for spellIndex in ipairs(FieldGuide[selectedClass][i * 2]) do
+            if spellIndex > NBR_OF_SPELL_COLUMNS then
+                FieldGuideFrameSlider:SetMinMaxValues(0, 31 - NBR_OF_SPELL_ROWS)
+                break
+            end
+        end
+    end
     updateButtons(true)
 end
 
@@ -334,7 +351,11 @@ function FieldGuideSpellButton_OnEnter(self)
         local canAfford = GetMoney() < self.spellCost and "|cFFFF0000" or "|cFFFFFFFF" -- Modifies string to be red if player can't afford, white otherwise.
         local priceString = GetCoinTextureString(self.spellCost * modifier)
         GameTooltip:SetHyperlink("spell:" .. self.spellId)
-        GameTooltip:AddLine("\nPrice: " .. canAfford .. priceString, nil, nil, nil, nil)
+        GameTooltip:AddLine(" ")
+        if self.talent then
+            GameTooltip:AddLine("Talent")
+        end
+        GameTooltip:AddLine("Price: " .. canAfford .. priceString)
         GameTooltip:Show()
     end)
 end
