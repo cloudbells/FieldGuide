@@ -1,6 +1,12 @@
 local _, FieldGuide = ...
 
 FieldGuide.ROGUE = {
+    ["weapons"] = {
+        FieldGuide.WEAPONS.daggers,
+        FieldGuide.WEAPONS.oneHandedSwords,
+        FieldGuide.WEAPONS.staves,
+        FieldGuide.WEAPONS.wands,
+    },
     [2] = {
         [1] = {
             ["name"] = "Stealth",
@@ -11,7 +17,7 @@ FieldGuide.ROGUE = {
         },
     },
     [4] = {
-        [1] = {
+        [1] = { -- Indexing for easier read and search.
             ["name"] = "Backstab",
             ["rank"] = 1,
             ["cost"] = 100,

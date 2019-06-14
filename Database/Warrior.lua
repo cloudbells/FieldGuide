@@ -1,8 +1,14 @@
 local _, FieldGuide = ...
 
 FieldGuide.WARRIOR = {
+    ["weapons"] = {
+        FieldGuide.WEAPONS.daggers,
+        FieldGuide.WEAPONS.oneHandedSwords,
+        FieldGuide.WEAPONS.staves,
+        FieldGuide.WEAPONS.wands,
+    },
     [2] = {
-        [1] = {
+        [1] = { -- Indexing for easier read and search.
             ["name"] = "Battle Shout",
             ["rank"] = 1,
             ["cost"] = 10,

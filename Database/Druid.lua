@@ -1,8 +1,14 @@
 local _, FieldGuide = ...
 
 FieldGuide.DRUID = {
+    ["weapons"] = {
+        FieldGuide.WEAPONS.daggers,
+        FieldGuide.WEAPONS.oneHandedSwords,
+        FieldGuide.WEAPONS.staves,
+        FieldGuide.WEAPONS.wands,
+    },
     [2] = {
-        [1] = {
+        [1] = { -- Indexing for easier read and search.
             ["name"] = "Mark of the Wild",
             ["rank"] = 1,
             ["cost"] = 10,

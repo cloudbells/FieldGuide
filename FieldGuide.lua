@@ -1,4 +1,11 @@
 --[[
+
+
+    TODO:
+        1. When player chooses weapons, hide talents and alliance spells checkbox (possibly move known spells to current talents checkbox position)
+            (These call updateButtons())
+        2. Fix all class weapon skills
+
     Features:
     ---------------------------------------
     1. Add icons for tomes/quests at level 60. AQ ones, but also Mage drink quest in DM/Arcane Brilliance and Warlock Shadow Ward rank 4 etc.
@@ -39,15 +46,27 @@ local levelStrings = {} -- The table of FontStrings so that we can reuse these.
 local spellButtons = {} -- The table of spell buttons so that we can reuse these.
 local spellTextures = {} -- The table of spell textures so that we can reuse these. 
 local classBackgrounds = { -- The name of the backgrounds in the game files.
-    ["WARRIOR"] = "WarriorArms",
-    ["PALADIN"] = "PaladinHoly",
-    ["HUNTER"] = "HunterBeastMastery",
-    ["ROGUE"] = "RogueAssassination",
-    ["PRIEST"] = "PriestHoly",
-    ["SHAMAN"] = "ShamanElementalCombat",
-    ["MAGE"] = "MageFrost",
-    ["WARLOCK"] = "WarlockCurses",
-    ["DRUID"] = "DruidFeralCombat"
+    WARRIOR = "WarriorArms",
+    PALADIN = "PaladinHoly",
+    HUNTER = "HunterBeastMastery",
+    ROGUE = "RogueAssassination",
+    PRIEST = "PriestHoly",
+    SHAMAN = "ShamanElementalCombat",
+    MAGE = "MageFrost",
+    WARLOCK = "WarlockCurses",
+    DRUID = "DruidFeralCombat",
+    WEAPONS = "MageFrost"
+}
+local classColors = {
+    WARRIOR = "|cFFC79C6E",
+    PALADIN = "|cFFF58CBA",
+    HUNTER = "|cFFABD473",
+    ROGUE = "|cFFFFF569",
+    PRIEST = "|cFFFFFFFF",
+    SHAMAN = "|cFF0070DE",
+    MAGE = "|cFF40C7EB",
+    WARLOCK = "|cFF8787ED",
+    DRUID = "|cFFFF7D0A",
 }
 
 -- UI variables.
@@ -78,10 +97,53 @@ end
 
 -- Returns true if the current spell with the given spellInfo is supposed to be shown.
 local function buttonConditions(spellInfo)
-    return (FieldGuideOptions.showKnownSpells or not IsSpellKnown(spellInfo["id"])) and
-            (FieldGuideOptions.showEnemySpells or (isAlliance() and spellInfo["faction"] == 1) or
-            (not isAlliance() and spellInfo["faction"] == 2) or not spellInfo["faction"]) and
-            ((FieldGuideOptions.showTalents and spellInfo["talent"]) or not spellInfo["talent"])
+    return (FieldGuideOptions.showKnownSpells or not IsSpellKnown(spellInfo.id)) and
+            (FieldGuideOptions.showEnemySpells or (isAlliance() and spellInfo.faction == 1) or
+            (not isAlliance() and spellInfo.faction == 2) or not spellInfo.faction) and
+            ((FieldGuideOptions.showTalents and spellInfo.talent) or not spellInfo.talent)
+end
+
+-- Shows all the weapon skills.
+local function updateWeapons(reset)
+    if reset then
+        FieldGuideFrameSlider:SetValue(0)
+    end
+    local classes = {
+        "Warrior",
+        "Paladin",
+        "Hunter",
+        "Rogue",
+        "Priest",
+        "Shaman",
+        "Mage",
+        "Warlock",
+        "Druid"
+    }
+    local counter = 1
+    for i = 1, NBR_OF_SPELL_ROWS do
+        local lastSpellIndex = 0
+        local currentClass = classes[i + FieldGuideFrameSlider:GetValue()]
+        levelStrings[i]:SetText(classColors[currentClass:upper()] .. currentClass)
+        for j = 1, #FieldGuide[currentClass:upper()].weapons do
+            local weaponInfo = FieldGuide[currentClass:upper()].weapons[j]
+            spellTextures[counter]:SetTexture(weaponInfo.texture)
+            spellTextures[counter]:SetAllPoints()
+            spellButtons[counter]:Hide() -- So that tooltip updates when we scroll.
+            spellButtons[counter].talent = weaponInfo.talent
+            spellButtons[counter].spellId = weaponInfo.id
+            spellButtons[counter].spellCost = weaponInfo.cost
+            spellButtons[counter]:Show()
+            counter = counter + 1
+            lastSpellIndex = lastSpellIndex + 1
+        end
+        for j = counter, counter + NBR_OF_SPELL_COLUMNS - lastSpellIndex - 1 do -- Hide all unnecessary buttons.
+            if j > NBR_OF_SPELL_COLUMNS * NBR_OF_SPELL_ROWS then
+                break
+            end
+            spellButtons[j]:Hide()
+            counter = counter + 1
+        end
+    end
 end
 
 -- Is called whenever user scrolls with mouse wheel or presses up/down buttons.
@@ -93,24 +155,30 @@ local function updateButtons(reset)
     local extraButtons = {}
     -- Fix level strings and spell buttons.
     for i = 1, NBR_OF_SPELL_ROWS do
+        local hiddenCounter = 0
+        local nbrOfSpells = 0
         local lastSpellIndex = 0
         local currentLevel = currentMinLevel + (i - 1) * 2
         levelStrings[i]:SetText(currentLevel == 2 and "Level 1" or (currentLevel > 60 and "Level 60 – continued") or "Level " .. currentLevel)
         if currentLevel <= 60 then
             for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
                 if buttonConditions(spellInfo) then
-                    if counter > NBR_OF_SPELL_COLUMNS * NBR_OF_SPELL_ROWS then
+                    if currentLevel == 60 and counter > NBR_OF_SPELL_COLUMNS * NBR_OF_SPELL_ROWS then -- Only for Paladins.
+                        FieldGuideFrameSlider:SetMinMaxValues(0, 31 - NBR_OF_SPELL_ROWS)
                         break
                     end
-                    spellTextures[counter]:SetTexture(spellInfo["texture"])
+                    spellTextures[counter]:SetTexture(spellInfo.texture)
                     spellTextures[counter]:SetAllPoints()
                     spellButtons[counter]:Hide() -- So that tooltip updates when we scroll.
-                    spellButtons[counter].talent = spellInfo["talent"]
-                    spellButtons[counter].spellId = spellInfo["id"]
-                    spellButtons[counter].spellCost = spellInfo["cost"]
+                    spellButtons[counter].talent = spellInfo.talent
+                    spellButtons[counter].spellId = spellInfo.id
+                    spellButtons[counter].spellCost = spellInfo.cost
                     spellButtons[counter]:Show()
                     counter = counter + 1
+                    nbrOfSpells = #FieldGuide[selectedClass][currentLevel]
                     lastSpellIndex = lastSpellIndex + 1
+                else
+                    hiddenCounter = hiddenCounter + 1 -- For Paladins.
                 end
             end
         end
@@ -120,6 +188,9 @@ local function updateButtons(reset)
             end
             spellButtons[i]:Hide()
             counter = counter + 1
+        end
+        if currentLevel == 60 and nbrOfSpells - hiddenCounter <= NBR_OF_SPELL_COLUMNS then -- The only time we need to do this is at level 60 as Paladin.
+            FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS)
         end
     end
 end
@@ -135,16 +206,13 @@ local function setClass(dropdownButton, class)
     UIDropDownMenu_SetSelectedID(FieldGuideDropdownFrame, dropdownButton:GetID())
     setBackground(class)
     selectedClass = class
-    FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS)
-    for i = 1, 30 do
-        for spellIndex in ipairs(FieldGuide[selectedClass][i * 2]) do
-            if spellIndex > NBR_OF_SPELL_COLUMNS then
-                FieldGuideFrameSlider:SetMinMaxValues(0, 31 - NBR_OF_SPELL_ROWS)
-                break
-            end
-        end
+    if class ~= "WEAPONS" then
+        FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS)
+        updateButtons(true)
+    else
+        FieldGuideFrameSlider:SetMinMaxValues(0, 4)
+        updateWeapons(true)
     end
-    updateButtons(true)
 end
 
 -- Returns true if the given class is currently selected in the dropdown list.
@@ -236,58 +304,64 @@ local function initDropdown()
         local info = UIDropDownMenu_CreateInfo()
         -- Warrior.
         info.text = "Warrior"
-        info.colorCode = "|cFFC79C6E"
+        info.colorCode = classColors.WARRIOR
         info.arg1 = "WARRIOR"
         info.checked = isSelected("WARRIOR")
         info.func = setClass
         UIDropDownMenu_AddButton(info)
         -- Paladin.
         info.text = "Paladin"
-        info.colorCode = "|cFFF58CBA"
+        info.colorCode = classColors.PALADIN
         info.arg1 = "PALADIN"
         info.checked = isSelected("PALADIN")
         UIDropDownMenu_AddButton(info)
         -- Hunter.
         info.text = "Hunter"
-        info.colorCode = "|cFFABD473"
+        info.colorCode = classColors.HUNTER
         info.arg1 = "HUNTER"
         info.checked = isSelected("HUNTER")
         UIDropDownMenu_AddButton(info)
         -- Rogue.
         info.text = "Rogue"
-        info.colorCode = "|cFFFFF569"
+        info.colorCode = classColors.ROGUE
         info.arg1 = "ROGUE"
         info.checked = isSelected("ROGUE")
         UIDropDownMenu_AddButton(info)
         -- Priest.
         info.text = "Priest"
-        info.colorCode = "|cFFFFFFFF"
+        info.colorCode = classColors.PRIEST
         info.arg1 = "PRIEST"
         info.checked = isSelected("PRIEST")
         UIDropDownMenu_AddButton(info)
         -- Shaman.
         info.text = "Shaman"
-        info.colorCode = "|cFF0070DE"
+        info.colorCode = classColors.SHAMAN
         info.arg1 = "SHAMAN"
         info.checked = isSelected("SHAMAN")
         UIDropDownMenu_AddButton(info)
         -- Mage.
         info.text = "Mage"
-        info.colorCode = "|cFF40C7EB"
+        info.colorCode = classColors.MAGE
         info.checked = isSelected("MAGE")
         info.arg1 = "MAGE"
         UIDropDownMenu_AddButton(info)
         -- Warlock.
         info.text = "Warlock"
-        info.colorCode = "|cFF8787ED"
+        info.colorCode = classColors.WARLOCK
         info.arg1 = "WARLOCK"
         info.checked = isSelected("WARLOCK")
         UIDropDownMenu_AddButton(info)
         -- Druid.
         info.text = "Druid"
-        info.colorCode = "|cFFFF7D0A"
+        info.colorCode = classColors.DRUID
         info.arg1 = "DRUID"
         info.checked = isSelected("DRUID")
+        UIDropDownMenu_AddButton(info)
+        -- Weapon skills.
+        info.text = "Weapons"
+        info.colorCode = "|cFFDFDFDF"
+        info.arg1 = "WEAPONS"
+        info.checked = isSelected("WEAPONS")
         UIDropDownMenu_AddButton(info)
     end)
     UIDropDownMenu_SetWidth(dropdown, 100);
@@ -302,9 +376,9 @@ local function initFrames()
     Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.125
     FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
     local NBR_OF_SPELL_BUTTONS = math.floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
+    NBR_OF_SPELL_COLUMNS = NBR_OF_SPELL_BUTTONS / NBR_OF_SPELL_ROWS -- The number of buttons in x.
     -- Create spell buttons.
     for i = 1, NBR_OF_SPELL_BUTTONS do
-        NBR_OF_SPELL_COLUMNS = NBR_OF_SPELL_BUTTONS / NBR_OF_SPELL_ROWS -- The number of buttons in x.
         local spellBtnX = BUTTON_X_START + BUTTON_X_SPACING * ((i - 1) % NBR_OF_SPELL_COLUMNS)
         local spellBtnY = -Y_SPACING * math.ceil(i / NBR_OF_SPELL_COLUMNS) - BUTTON_Y_START
         spellButtons[i] = CreateFrame("BUTTON", nil, FieldGuideFrame, "FieldGuideSpellButtonTemplate")
@@ -372,7 +446,11 @@ function FieldGuide_OnValueChanged(self, value)
         currentMinLevel = value * 2 + 2
     end
     lastValue = value
-    updateButtons()
+    if selectedClass ~= "WEAPONS" then
+        updateButtons()
+    else
+        updateWeapons()
+    end
     self:SetValue(value)
     if value < 1 then
         _G[self:GetName() .. "ScrollUpButton"]:Disable()

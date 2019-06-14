@@ -1,6 +1,10 @@
 local _, FieldGuide = ...
 
 FieldGuide.PALADIN = {
+    ["weapons"] = {
+        FieldGuide.WEAPONS.daggers,
+        FieldGuide.WEAPONS.oneHandedSwords,
+    },
     [2] = {
         [1] = {
             ["name"] = "Devotion Aura",
@@ -11,7 +15,7 @@ FieldGuide.PALADIN = {
         },
     },
     [4] = {
-        [1] = {
+        [1] = { -- Indexing for easier read and search.
             ["name"] = "Blessing of Might",
             ["rank"] = 1,
             ["cost"] = 100,

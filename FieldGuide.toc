@@ -12,13 +12,16 @@ Libraries\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libraries\LibDBIcon-1.0\LibDBIcon-1.0.lua
 
 # Load spell tables.
-Database\Mage.lua
-Database\Warrior.lua
+Database\WeaponSkills.lua
 Database\Druid.lua
-Database\Paladin.lua
-Database\Rogue.lua
-Database\Warlock.lua
 Database\Hunter.lua
+Database\Mage.lua
+Database\Paladin.lua
+Database\Priest.lua
+Database\Rogue.lua
+Database\Shaman.lua
+Database\Warlock.lua
+Database\Warrior.lua
 
 # Load core files.
 FieldGuide.lua
