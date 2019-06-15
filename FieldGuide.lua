@@ -1,13 +1,11 @@
 --[[
-
-
     TODO:
-        0. Make frame pool.
-      0.5. Make horizontal scroll.
-        1. When player chooses weapons, hide talents and alliance spells checkbox (possibly move known spells to current talents checkbox position)
-            (These call updateButtons())
-        2. When player chooses anything but alliance and priest, hide "alliance checkbox"
-
+    ---------------------------------------
+        1. Make it scroll horizontally whenever there are more than 13 spells on a row (disable when there are <= 13 spells on all 5 rows).
+        2. When player chooses weapons, hide talents and enemy faction spells checkboxes (possibly move known spells to current talents checkbox position) – these call updateButtons().
+        3. When player chooses anything but Mage and Priest, hide enemy faction checkbox.
+    ---------------------------------------
+    
     Features:
     ---------------------------------------
     1. Add icons for tomes/quests at level 60. AQ ones, but also Mage drink quest in DM/Arcane Brilliance and Warlock Shadow Ward rank 4 etc.
@@ -36,6 +34,7 @@
     2. Highlighting over scroll up and down buttons is too big.
     3. Ranks do not show in the tooltip (even in Classic) – add manually?
     4. Shadowburn rank 6 does not show price – need info from Classic.
+    5. Warlocks Shadowburn rank 6 cost is not correct.
     ---------------------------------------
 --]]
 
@@ -175,10 +174,9 @@ local function updateButtons(reset)
         if currentLevel <= 60 then
             for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
                 if buttonConditions(spellInfo) then
-                    if currentLevel == 60 and counter > NBR_OF_SPELL_COLUMNS * NBR_OF_SPELL_ROWS then -- Only for Paladins.
-                        FieldGuideFrameSlider:SetMinMaxValues(0, 31 - NBR_OF_SPELL_ROWS)
-                        break
-                    end
+                    -- if currentLevel == 60 and counter > NBR_OF_SPELL_COLUMNS * NBR_OF_SPELL_ROWS then -- Only for Paladins.
+                        -- break
+                    -- end
                     updateFrame(spellTextures[counter], spellButtons[counter], spellInfo)
                     counter = counter + 1
                     nbrOfSpells = #FieldGuide[selectedClass][currentLevel]
@@ -189,9 +187,6 @@ local function updateButtons(reset)
             end
         end
         counter = hideExtraFrames(counter, lastSpellIndex)
-        if currentLevel == 60 and nbrOfSpells - hiddenCounter <= NBR_OF_SPELL_COLUMNS then -- The only time we need to do this is at level 60 as Paladin.
-            FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS)
-        end
     end
 end
 
