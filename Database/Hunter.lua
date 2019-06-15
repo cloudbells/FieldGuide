@@ -2,13 +2,21 @@ local _, FieldGuide = ...
 
 FieldGuide.HUNTER = {
     ["weapons"] = {
+        FieldGuide.WEAPONS.bows,
+        FieldGuide.WEAPONS.crossbows,
         FieldGuide.WEAPONS.daggers,
+        FieldGuide.WEAPONS.fistWeapons,
+        FieldGuide.WEAPONS.guns,
+        FieldGuide.WEAPONS.oneHandedAxes,
         FieldGuide.WEAPONS.oneHandedSwords,
+        FieldGuide.WEAPONS.polearms,
         FieldGuide.WEAPONS.staves,
-        FieldGuide.WEAPONS.wands,
+        FieldGuide.WEAPONS.thrown,
+        FieldGuide.WEAPONS.twoHandedAxes,
+        FieldGuide.WEAPONS.twoHandedSwords
     },
     [2] = {
-        [1] = { -- Indexing for easier read and search.
+        [1] = { -- Indexing for readability + easy searching.
             ["name"] = "Track Beasts",
             ["rank"] = 1,
             ["cost"] = 10,
@@ -76,7 +84,7 @@ FieldGuide.HUNTER = {
             ["name"] = "Beast Training",
             ["rank"] = 1,
             ["cost"] = 0,
-            ["texture"] = "Interface/ICONS/ability-hunter-beastcall02",
+            ["texture"] = "Interface/ICONS/ability_hunter_beastcall02",
             ["id"] = 5149
         },
         [2] = {
@@ -556,7 +564,7 @@ FieldGuide.HUNTER = {
             ["name"] = "Mail",
             ["rank"] = 1,
             ["cost"] = 18000,
-            ["texture"] = "Interface/ICONS/inv-chest-chain-05",
+            ["texture"] = "Interface/ICONS/inv_chest_chain-05",
             ["id"] = 8737
         },
         [2] = {
@@ -750,7 +758,7 @@ FieldGuide.HUNTER = {
             ["name"] = "Trueshot Aura",
             ["rank"] = 2,
             ["cost"] = 1800,
-            ["texture"] = "Interface/ICONS/ability-trueshot",
+            ["texture"] = "Interface/ICONS/ability_trueshot",
             ["id"] = 20905,
             ["talent"] = true
         },
@@ -933,7 +941,7 @@ FieldGuide.HUNTER = {
             ["name"] = "Trueshot Aura",
             ["rank"] = 3,
             ["cost"] = 2500,
-            ["texture"] = "Interface/ICONS/ability-trueshot",
+            ["texture"] = "Interface/ICONS/ability_trueshot",
             ["id"] = 20906,
             ["talent"] = true
         },

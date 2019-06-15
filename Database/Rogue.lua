@@ -2,13 +2,17 @@ local _, FieldGuide = ...
 
 FieldGuide.ROGUE = {
     ["weapons"] = {
+        FieldGuide.WEAPONS.bows,
+        FieldGuide.WEAPONS.crossbows,
         FieldGuide.WEAPONS.daggers,
+        FieldGuide.WEAPONS.fistWeapons,
+        FieldGuide.WEAPONS.guns,
+        FieldGuide.WEAPONS.oneHandedMaces,
         FieldGuide.WEAPONS.oneHandedSwords,
-        FieldGuide.WEAPONS.staves,
-        FieldGuide.WEAPONS.wands,
+        FieldGuide.WEAPONS.thrown
     },
     [2] = {
-        [1] = {
+        [1] = { -- Indexing for readability + easy searching.
             ["name"] = "Stealth",
             ["rank"] = 1,
             ["cost"] = 10,
@@ -17,7 +21,7 @@ FieldGuide.ROGUE = {
         },
     },
     [4] = {
-        [1] = { -- Indexing for easier read and search.
+        [1] = {
             ["name"] = "Backstab",
             ["rank"] = 1,
             ["cost"] = 100,

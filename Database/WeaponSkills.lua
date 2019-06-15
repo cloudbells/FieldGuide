@@ -60,7 +60,7 @@ FieldGuide.WEAPONS = {
     ["polearms"] = {
         ["name"] = "Polearms",
         ["rank"] = 1,
-        ["cost"] = 1000,
+        ["cost"] = 10000,
         ["texture"] = "Interface/ICONS/inv_spear_06",
         ["id"] = 200
     },

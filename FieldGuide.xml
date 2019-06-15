@@ -48,7 +48,7 @@
         </FontHeight>
     </FontString>
     <Frame name="FieldGuideFrame" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
-        <Size x="680" y="500" />
+        <Size x="725" y="500" />
         <Anchors>
             <Anchor point="CENTER" />
         </Anchors>

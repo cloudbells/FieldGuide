@@ -2,11 +2,16 @@ local _, FieldGuide = ...
 
 FieldGuide.PALADIN = {
     ["weapons"] = {
-        FieldGuide.WEAPONS.daggers,
+        FieldGuide.WEAPONS.oneHandedAxes,
+        FieldGuide.WEAPONS.oneHandedMaces,
         FieldGuide.WEAPONS.oneHandedSwords,
+        FieldGuide.WEAPONS.polearms,
+        FieldGuide.WEAPONS.twoHandedAxes,
+        FieldGuide.WEAPONS.twoHandedMaces,
+        FieldGuide.WEAPONS.twoHandedSwords
     },
     [2] = {
-        [1] = {
+        [1] = { -- Indexing for readability + easy searching.
             ["name"] = "Devotion Aura",
             ["rank"] = 1,
             ["cost"] = 10,
@@ -15,7 +20,7 @@ FieldGuide.PALADIN = {
         },
     },
     [4] = {
-        [1] = { -- Indexing for easier read and search.
+        [1] = {
             ["name"] = "Blessing of Might",
             ["rank"] = 1,
             ["cost"] = 100,

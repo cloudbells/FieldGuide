@@ -5,10 +5,10 @@ FieldGuide.MAGE = {
         FieldGuide.WEAPONS.daggers,
         FieldGuide.WEAPONS.oneHandedSwords,
         FieldGuide.WEAPONS.staves,
-        FieldGuide.WEAPONS.wands,
+        FieldGuide.WEAPONS.wands
     },
     [2] = {
-        [1] = { -- Indexing for easier read and search.
+        [1] = { -- Indexing for readability + easy searching.
             ["name"] = "Arcane Intellect",
             ["rank"] = 1,
             ["cost"] = 10,

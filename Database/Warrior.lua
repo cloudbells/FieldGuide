@@ -2,10 +2,20 @@ local _, FieldGuide = ...
 
 FieldGuide.WARRIOR = {
     ["weapons"] = {
+        FieldGuide.WEAPONS.bows,
+        FieldGuide.WEAPONS.crossbows,
         FieldGuide.WEAPONS.daggers,
+        FieldGuide.WEAPONS.fistWeapons,
+        FieldGuide.WEAPONS.guns,
+        FieldGuide.WEAPONS.oneHandedAxes,
+        FieldGuide.WEAPONS.oneHandedMaces,
         FieldGuide.WEAPONS.oneHandedSwords,
+        FieldGuide.WEAPONS.polearms,
         FieldGuide.WEAPONS.staves,
-        FieldGuide.WEAPONS.wands,
+        FieldGuide.WEAPONS.thrown,
+        FieldGuide.WEAPONS.twoHandedAxes,
+        FieldGuide.WEAPONS.twoHandedMaces,
+        FieldGuide.WEAPONS.twoHandedSwords
     },
     [2] = {
         [1] = { -- Indexing for easier read and search.

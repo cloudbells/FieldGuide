@@ -2,9 +2,11 @@
 
 
     TODO:
+        0. Make frame pool.
+      0.5. Make horizontal scroll.
         1. When player chooses weapons, hide talents and alliance spells checkbox (possibly move known spells to current talents checkbox position)
             (These call updateButtons())
-        2. Fix all class weapon skills
+        2. When player chooses anything but alliance and priest, hide "alliance checkbox"
 
     Features:
     ---------------------------------------
@@ -103,6 +105,29 @@ local function buttonConditions(spellInfo)
             ((FieldGuideOptions.showTalents and spellInfo.talent) or not spellInfo.talent)
 end
 
+-- Updates the given frame with the given texture and info.
+local function updateFrame(texture, frame, info)
+    texture:SetTexture(info.texture)
+    texture:SetAllPoints()
+    frame:Hide() -- So that tooltip updates when we scroll.
+    frame.talent = info.talent
+    frame.spellId = info.id
+    frame.spellCost = info.cost
+    frame:Show()
+end
+
+-- Hides all empty buttons between the counter and last spell index.
+local function hideExtraFrames(counter, lastSpellIndex)
+    for i = counter, counter + NBR_OF_SPELL_COLUMNS - lastSpellIndex - 1 do -- Hide all unnecessary buttons.
+        if i > NBR_OF_SPELL_COLUMNS * NBR_OF_SPELL_ROWS then
+            break
+        end
+        spellButtons[i]:Hide()
+        counter = counter + 1
+    end
+    return counter
+end
+
 -- Shows all the weapon skills.
 local function updateWeapons(reset)
     if reset then
@@ -125,24 +150,11 @@ local function updateWeapons(reset)
         local currentClass = classes[i + FieldGuideFrameSlider:GetValue()]
         levelStrings[i]:SetText(classColors[currentClass:upper()] .. currentClass)
         for j = 1, #FieldGuide[currentClass:upper()].weapons do
-            local weaponInfo = FieldGuide[currentClass:upper()].weapons[j]
-            spellTextures[counter]:SetTexture(weaponInfo.texture)
-            spellTextures[counter]:SetAllPoints()
-            spellButtons[counter]:Hide() -- So that tooltip updates when we scroll.
-            spellButtons[counter].talent = weaponInfo.talent
-            spellButtons[counter].spellId = weaponInfo.id
-            spellButtons[counter].spellCost = weaponInfo.cost
-            spellButtons[counter]:Show()
+            updateFrame(spellTextures[counter], spellButtons[counter], FieldGuide[currentClass:upper()].weapons[j])
             counter = counter + 1
             lastSpellIndex = lastSpellIndex + 1
         end
-        for j = counter, counter + NBR_OF_SPELL_COLUMNS - lastSpellIndex - 1 do -- Hide all unnecessary buttons.
-            if j > NBR_OF_SPELL_COLUMNS * NBR_OF_SPELL_ROWS then
-                break
-            end
-            spellButtons[j]:Hide()
-            counter = counter + 1
-        end
+        counter = hideExtraFrames(counter, lastSpellIndex)
     end
 end
 
@@ -167,13 +179,7 @@ local function updateButtons(reset)
                         FieldGuideFrameSlider:SetMinMaxValues(0, 31 - NBR_OF_SPELL_ROWS)
                         break
                     end
-                    spellTextures[counter]:SetTexture(spellInfo.texture)
-                    spellTextures[counter]:SetAllPoints()
-                    spellButtons[counter]:Hide() -- So that tooltip updates when we scroll.
-                    spellButtons[counter].talent = spellInfo.talent
-                    spellButtons[counter].spellId = spellInfo.id
-                    spellButtons[counter].spellCost = spellInfo.cost
-                    spellButtons[counter]:Show()
+                    updateFrame(spellTextures[counter], spellButtons[counter], spellInfo)
                     counter = counter + 1
                     nbrOfSpells = #FieldGuide[selectedClass][currentLevel]
                     lastSpellIndex = lastSpellIndex + 1
@@ -182,13 +188,7 @@ local function updateButtons(reset)
                 end
             end
         end
-        for i = counter, counter + NBR_OF_SPELL_COLUMNS - lastSpellIndex - 1 do -- Hide all unnecessary buttons.
-            if i > NBR_OF_SPELL_COLUMNS * NBR_OF_SPELL_ROWS then
-                break
-            end
-            spellButtons[i]:Hide()
-            counter = counter + 1
-        end
+        counter = hideExtraFrames(counter, lastSpellIndex)
         if currentLevel == 60 and nbrOfSpells - hiddenCounter <= NBR_OF_SPELL_COLUMNS then -- The only time we need to do this is at level 60 as Paladin.
             FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS)
         end
@@ -201,17 +201,57 @@ local function setBackground(class)
     FieldGuideFrameBackgroundTextureClass:SetAlpha(0.4)
 end
 
+-- Hides all spellbutton frames and level strings.
+local function hideFrames()
+    for k, v in ipairs(spellButtons) do
+        v:Hide()
+    end
+    for k, v in ipairs(levelStrings) do
+        v:Hide()
+    end
+end
+
+-- Initializes all frames, level strings, and textures for reuse.
+local function initFrames()
+    hideFrames()
+    NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100) -- Good enough.
+    Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.125
+    FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
+    local NBR_OF_SPELL_BUTTONS = math.floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
+    NBR_OF_SPELL_COLUMNS = NBR_OF_SPELL_BUTTONS / NBR_OF_SPELL_ROWS -- The number of buttons in x.
+    -- Create spell buttons.
+    for i = 1, NBR_OF_SPELL_BUTTONS do
+        local spellBtnX = BUTTON_X_START + BUTTON_X_SPACING * ((i - 1) % NBR_OF_SPELL_COLUMNS)
+        local spellBtnY = -Y_SPACING * math.ceil(i / NBR_OF_SPELL_COLUMNS) - BUTTON_Y_START
+        spellButtons[i] = CreateFrame("BUTTON", nil, FieldGuideFrame, "FieldGuideSpellButtonTemplate")
+        spellButtons[i]:SetPoint("TOPLEFT", spellBtnX, spellBtnY)
+        spellTextures[i] = spellButtons[i]:CreateTexture(nil, "BORDER")
+    end
+    -- Create level strings.
+    for i = 1, NBR_OF_SPELL_ROWS do
+        levelStrings[i] = FieldGuideFrame:CreateFontString(nil, "ARTWORK", "FieldGuideLevelStringTemplate")
+        levelStrings[i]:SetPoint("TOPLEFT", LEVEL_STRING_X_START, -LEVEL_STRING_Y_START - Y_SPACING * i)
+    end
+end
+
 -- Changes the class to the given class.
 local function setClass(dropdownButton, class)
     UIDropDownMenu_SetSelectedID(FieldGuideDropdownFrame, dropdownButton:GetID())
     setBackground(class)
     selectedClass = class
-    if class ~= "WEAPONS" then
-        FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS)
+    FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS)
+    if class == "PALADIN" then
+        FieldGuideFrame:SetWidth(860)
+        initFrames()
         updateButtons(true)
-    else
-        FieldGuideFrameSlider:SetMinMaxValues(0, 4)
+    elseif class == "WEAPONS" then
+        FieldGuideFrameSlider:SetMinMaxValues(0, NBR_OF_SPELL_ROWS - 1)
         updateWeapons(true)
+        FieldGuideFrame:SetWidth(725)
+    else
+        initFrames()
+        updateButtons(true)
+        FieldGuideFrame:SetWidth(725)
     end
 end
 
@@ -370,28 +410,6 @@ local function initDropdown()
     UIDropDownMenu_SetText(dropdown, "|c" .. RAID_CLASS_COLORS[selectedClass].colorStr .. selectedClass:sub(1, 1) .. string.lower(selectedClass:sub(2)))
 end
 
--- Initializes all frames, level strings, and textures for reuse.
-local function initFrames()
-    NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100) -- Good enough.
-    Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.125
-    FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
-    local NBR_OF_SPELL_BUTTONS = math.floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
-    NBR_OF_SPELL_COLUMNS = NBR_OF_SPELL_BUTTONS / NBR_OF_SPELL_ROWS -- The number of buttons in x.
-    -- Create spell buttons.
-    for i = 1, NBR_OF_SPELL_BUTTONS do
-        local spellBtnX = BUTTON_X_START + BUTTON_X_SPACING * ((i - 1) % NBR_OF_SPELL_COLUMNS)
-        local spellBtnY = -Y_SPACING * math.ceil(i / NBR_OF_SPELL_COLUMNS) - BUTTON_Y_START
-        spellButtons[i] = CreateFrame("BUTTON", nil, FieldGuideFrame, "FieldGuideSpellButtonTemplate")
-        spellButtons[i]:SetPoint("TOPLEFT", spellBtnX, spellBtnY)
-        spellTextures[i] = spellButtons[i]:CreateTexture(nil, "BORDER")
-    end
-    -- Create level strings.
-    for i = 1, NBR_OF_SPELL_ROWS do
-        levelStrings[i] = FieldGuideFrame:CreateFontString(nil, "ARTWORK", "FieldGuideLevelStringTemplate")
-        levelStrings[i]:SetPoint("TOPLEFT", LEVEL_STRING_X_START, -LEVEL_STRING_Y_START - Y_SPACING * i)
-    end
-end
-
 -- Initializes everything.
 local function init()
     tinsert(UISpecialFrames, FieldGuideFrame:GetName()) -- Allows us to close the window with escape.
@@ -436,7 +454,7 @@ end
 
 -- Is called whenever the value of the slider changes.
 function FieldGuide_OnValueChanged(self, value)
-    value = value + 0.5 - (value + 0.5) % 1 -- Apparently faster than math.floor().
+    value = value + 0.5 - (value + 0.5) % 1
     if not (value > lastValue or value < lastValue) then -- Throttle.
         return
     end

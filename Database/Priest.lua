@@ -3,8 +3,8 @@ local _, FieldGuide = ...
 FieldGuide.PRIEST = {
     ["weapons"] = {
         FieldGuide.WEAPONS.daggers,
-        FieldGuide.WEAPONS.oneHandedSwords,
+        FieldGuide.WEAPONS.oneHandedMaces,
         FieldGuide.WEAPONS.staves,
-        FieldGuide.WEAPONS.wands,
+        FieldGuide.WEAPONS.wands
     },
 }

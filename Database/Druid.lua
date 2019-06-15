@@ -3,9 +3,9 @@ local _, FieldGuide = ...
 FieldGuide.DRUID = {
     ["weapons"] = {
         FieldGuide.WEAPONS.daggers,
-        FieldGuide.WEAPONS.oneHandedSwords,
+        FieldGuide.WEAPONS.oneHandedMaces,
         FieldGuide.WEAPONS.staves,
-        FieldGuide.WEAPONS.wands,
+        FieldGuide.WEAPONS.wands
     },
     [2] = {
         [1] = { -- Indexing for easier read and search.
