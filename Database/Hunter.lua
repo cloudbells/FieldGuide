@@ -564,7 +564,7 @@ FieldGuide.HUNTER = {
             ["name"] = "Mail",
             ["rank"] = 1,
             ["cost"] = 18000,
-            ["texture"] = "Interface/ICONS/inv_chest_chain-05",
+            ["texture"] = "Interface/ICONS/inv_chest_chain_05",
             ["id"] = 8737
         },
         [2] = {
