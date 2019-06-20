@@ -1,12 +1,15 @@
 --[[
     TODO:
     ---------------------------------------
-        1. Make it scroll horizontally whenever there are more than 13 spells on a row (disable when there are <= 13 spells on all 5 rows).
-        2. When player chooses weapons, hide talents and enemy faction spells checkboxes (possibly move known spells to current talents checkbox position) – these call updateButtons().
-        3. When player chooses anything but Mage and Priest, hide enemy faction checkbox.
+    1. Fix horizontal scroll logic – hide buttons above index 13, then show spells with index 2-14, 3-15 etc when scrolling horizontally.
+  0.5. Make sure to disable left button when resetting horizontal slider.
+    2. Make scroll bars look better – add small texture at bottom right to separate?
+    3. When player chooses weapons, hide talents and enemy faction spells checkboxes (possibly move known spells to current talents checkbox position) – these call updateButtons().
+    4. When player chooses anything but Mage and Priest, hide enemy faction checkbox.
+    5. Add a weapon skills background.
     ---------------------------------------
     
-    Features:
+    Features (in no particular order):
     ---------------------------------------
     1. Add icons for tomes/quests at level 60. AQ ones, but also Mage drink quest in DM/Arcane Brilliance and Warlock Shadow Ward rank 4 etc.
     2. Add weapon skills.
@@ -14,6 +17,8 @@
     4. (Mark spells that the player does not wish to train and save between sessions. Perhaps make them grey?)
     5. (Add Warlock pet skills.)
     6. Fix PvP rank spell cost modification function for Classic release.
+    7. (Possibly allow player to drag spells onto bars from the addon.)
+    8. Make it look better.
     ---------------------------------------
 
     Spells left to add:
@@ -30,11 +35,9 @@
 
     Bugs:
     ---------------------------------------
-    1. Scroll bar texture sometimes does not load.
+    1. Scroll bar texture sometimes does not load – maybe FieldGuideFrameVerticalSlider does not load sometimes, or the black background loads after.
     2. Highlighting over scroll up and down buttons is too big.
     3. Ranks do not show in the tooltip (even in Classic) – add manually?
-    4. Shadowburn rank 6 does not show price – need info from Classic.
-    5. Warlocks Shadowburn rank 6 cost is not correct.
     ---------------------------------------
 --]]
 
@@ -127,10 +130,16 @@ local function hideExtraFrames(counter, lastSpellIndex)
     return counter
 end
 
+-- Resets the scroll bar to top position.
+local function resetScroll()
+    FieldGuideFrameVerticalSlider:SetValue(0)
+    FieldGuideFrameVerticalSliderScrollUpButton:Disable()
+end
+
 -- Shows all the weapon skills.
 local function updateWeapons(reset)
     if reset then
-        FieldGuideFrameSlider:SetValue(0)
+        resetScroll()
     end
     local classes = {
         "Warrior",
@@ -146,7 +155,8 @@ local function updateWeapons(reset)
     local counter = 1
     for i = 1, NBR_OF_SPELL_ROWS do
         local lastSpellIndex = 0
-        local currentClass = classes[i + FieldGuideFrameSlider:GetValue()]
+        local value = (FieldGuideFrameVerticalSlider:GetValue() < 0.5 and 0 or math.ceil(FieldGuideFrameVerticalSlider:GetValue()))
+        local currentClass = classes[i + value]
         levelStrings[i]:SetText(classColors[currentClass:upper()] .. currentClass)
         for j = 1, #FieldGuide[currentClass:upper()].weapons do
             updateFrame(spellTextures[counter], spellButtons[counter], FieldGuide[currentClass:upper()].weapons[j])
@@ -160,7 +170,7 @@ end
 -- Is called whenever user scrolls with mouse wheel or presses up/down buttons.
 local function updateButtons(reset)
     if reset then
-        FieldGuideFrameSlider:SetValue(0)
+        resetScroll()
     end
     local counter = 1
     local extraButtons = {}
@@ -196,22 +206,12 @@ local function setBackground(class)
     FieldGuideFrameBackgroundTextureClass:SetAlpha(0.4)
 end
 
--- Hides all spellbutton frames and level strings.
-local function hideFrames()
-    for k, v in ipairs(spellButtons) do
-        v:Hide()
-    end
-    for k, v in ipairs(levelStrings) do
-        v:Hide()
-    end
-end
-
 -- Initializes all frames, level strings, and textures for reuse.
 local function initFrames()
-    hideFrames()
     NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100) -- Good enough.
-    Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.125
-    FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
+    Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.185
+    FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
+    FieldGuideFrameHorizontalSlider:SetMinMaxValues(0, 5) -- Change ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     local NBR_OF_SPELL_BUTTONS = math.floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
     NBR_OF_SPELL_COLUMNS = NBR_OF_SPELL_BUTTONS / NBR_OF_SPELL_ROWS -- The number of buttons in x.
     -- Create spell buttons.
@@ -234,19 +234,12 @@ local function setClass(dropdownButton, class)
     UIDropDownMenu_SetSelectedID(FieldGuideDropdownFrame, dropdownButton:GetID())
     setBackground(class)
     selectedClass = class
-    FieldGuideFrameSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS)
-    if class == "PALADIN" then
-        FieldGuideFrame:SetWidth(860)
-        initFrames()
-        updateButtons(true)
-    elseif class == "WEAPONS" then
-        FieldGuideFrameSlider:SetMinMaxValues(0, NBR_OF_SPELL_ROWS - 1)
+    FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS)
+    if class == "WEAPONS" then
+        FieldGuideFrameVerticalSlider:SetMinMaxValues(0, NBR_OF_SPELL_ROWS - 1)
         updateWeapons(true)
-        FieldGuideFrame:SetWidth(725)
     else
-        initFrames()
         updateButtons(true)
-        FieldGuideFrame:SetWidth(725)
     end
 end
 
@@ -447,8 +440,8 @@ function FieldGuideSpellButton_OnEnter(self)
     end)
 end
 
--- Is called whenever the value of the slider changes.
-function FieldGuide_OnValueChanged(self, value)
+-- Is called whenever the value of the vertical slider changes.
+function FieldGuide_OnVerticalValueChanged(self, value)
     value = value + 0.5 - (value + 0.5) % 1
     if not (value > lastValue or value < lastValue) then -- Throttle.
         return
@@ -476,8 +469,39 @@ function FieldGuide_OnValueChanged(self, value)
 end
 
 -- Called when the player either scrolls or clicks the up/down buttons manually.
+function FieldGuide_VerticalScroll(delta)
+    FieldGuideFrameVerticalSlider:SetValue(FieldGuideFrameVerticalSlider:GetValue() - delta)
+end
+
+function FieldGuide_OnHorizontalValueChanged(self, value)
+    value = value + 0.5 - (value + 0.5) % 1
+    if not (value > lastValue or value < lastValue) then -- Throttle.
+        return
+    end
+    lastValue = value
+    self:SetValue(value)
+    if value < 1 then
+        _G[self:GetName() .. "ScrollLeftButton"]:Disable()
+    elseif value >= select(2, self:GetMinMaxValues()) then
+        _G[self:GetName() .. "ScrollRightButton"]:Disable()
+    else
+        _G[self:GetName() .. "ScrollLeftButton"]:Enable()
+        _G[self:GetName() .. "ScrollRightButton"]:Enable()
+    end
+end
+
+-- Called when the player scrolls while holding shift.
+function FieldGuide_HorizontalScroll(delta)
+    FieldGuideFrameHorizontalSlider:SetValue(FieldGuideFrameHorizontalSlider:GetValue() - delta)
+end
+
+-- Called whenever the player scrolls.
 function FieldGuide_Scroll(delta)
-    FieldGuideFrameSlider:SetValue(FieldGuideFrameSlider:GetValue() - delta)
+    if IsShiftKeyDown() then
+        FieldGuide_HorizontalScroll(delta)
+    else
+        FieldGuide_VerticalScroll(delta)
+    end
 end
 
 -- Toggles showing talents on or off Called when the player checks/unchecks the talents checkbox.
