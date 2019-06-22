@@ -17,7 +17,7 @@
     1. When clicking on weapon skill, show where the trainer is using TomTom.
     2. When clicking on any spell, show where the nearest trainer is using TomTom (maybe give player option to show nearest cheapest trainer or just nearest).
     3. Add icons for tomes/quests at level 60. AQ ones, but also Mage drink quest in DM/Arcane Brilliance and Warlock Shadow Ward rank 4 etc.
-    6. (Mark spells that the player does not wish to train and save between sessions. Perhaps make them grey?)
+    6. (Mark spells that the player does not wish to train and save between sessions. Perhaps make them grey?) - Allow player to import/export these?
     7. (Add Warlock pet skills.)
     8. Fix PvP rank spell cost modification function for Classic release.
     9. (Possibly allow player to drag spells onto bars from the addon.)
