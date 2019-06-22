@@ -18,7 +18,7 @@ FieldGuide.WARRIOR = {
         FieldGuide.WEAPONS.twoHandedSwords
     },
     [2] = {
-        [1] = { -- Indexing for easier read and search.
+        [1] = {
             ["name"] = "Battle Shout",
             ["rank"] = 1,
             ["cost"] = 10,

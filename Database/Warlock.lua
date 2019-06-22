@@ -8,7 +8,7 @@ FieldGuide.WARLOCK = {
         FieldGuide.WEAPONS.wands
     },
     [2] = {
-        [1] = { -- Indexing for easier read and search.
+        [1] = {
             ["name"] = "Summon Imp",
             ["rank"] = 1,
             ["cost"] = 0,

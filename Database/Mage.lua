@@ -8,7 +8,7 @@ FieldGuide.MAGE = {
         FieldGuide.WEAPONS.wands
     },
     [2] = {
-        [1] = { -- Indexing for readability + easy searching.
+        [1] = {
             ["name"] = "Arcane Intellect",
             ["rank"] = 1,
             ["cost"] = 10,
@@ -55,7 +55,6 @@ FieldGuide.MAGE = {
             ["id"] = 143
         },
     },
-
     [8] = {
         [1] = {
             ["name"] = "Arcane Missiles",

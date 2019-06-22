@@ -8,7 +8,7 @@ FieldGuide.DRUID = {
         FieldGuide.WEAPONS.wands
     },
     [2] = {
-        [1] = { -- Indexing for easier read and search.
+        [1] = {
             ["name"] = "Mark of the Wild",
             ["rank"] = 1,
             ["cost"] = 10,

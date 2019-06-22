@@ -1,0 +1,7 @@
+Updated readme, refactoring, added Priest and Shaman abilities
+
+- Updated readme.
+- Major refactoring: instead of checking a bunch of conditions on all frames every time player scrolls, it now checks for all these conditions only when toggling a checkbox and on addon load. Now it only checks for one condition every frame.
+- Added Priest and Shaman abilities, however due to horizontal scroll not working yet errors will happen.
+- Other, smaller non-functional changes.
+- Weapon skills still do not work properly (will fix later) – Warriors will also by default have horizontal value of 14 since they can learn all weapon skills (all 14 of them).

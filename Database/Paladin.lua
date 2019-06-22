@@ -11,7 +11,7 @@ FieldGuide.PALADIN = {
         FieldGuide.WEAPONS.twoHandedSwords
     },
     [2] = {
-        [1] = { -- Indexing for readability + easy searching.
+        [1] = {
             ["name"] = "Devotion Aura",
             ["rank"] = 1,
             ["cost"] = 10,

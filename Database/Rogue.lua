@@ -12,7 +12,7 @@ FieldGuide.ROGUE = {
         FieldGuide.WEAPONS.thrown
     },
     [2] = {
-        [1] = { -- Indexing for readability + easy searching.
+        [1] = {
             ["name"] = "Stealth",
             ["rank"] = 1,
             ["cost"] = 10,

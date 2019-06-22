@@ -2,35 +2,26 @@
     TODO:
     ---------------------------------------
     1. Fix horizontal scroll logic – hide buttons above index 13, then show spells with index 2-14, 3-15 etc when scrolling horizontally.
-  0.5. Make sure to disable left button when resetting horizontal slider.
     2. Make scroll bars look better – add small texture at bottom right to separate?
     3. When player chooses weapons, hide talents and enemy faction spells checkboxes (possibly move known spells to current talents checkbox position) – these call updateButtons().
     4. When player chooses anything but Mage and Priest, hide enemy faction checkbox.
     5. Add a weapon skills background.
+    6. (Reduce horizontal slider's height and make the knob vertical again.)
+    7. Change so that conditions for showing buttons aren't checked every single frame update.
+    8. Certain spells are learned through spells (i.e. Desperate Prayer as Priest, Resurrection as Paladin).
+    9. Make sure all spells are correct.
     ---------------------------------------
     
     Features (in no particular order):
     ---------------------------------------
-    1. Add icons for tomes/quests at level 60. AQ ones, but also Mage drink quest in DM/Arcane Brilliance and Warlock Shadow Ward rank 4 etc.
-    2. Add weapon skills.
-    3. (Add info for where to learn spells – e.g. if player is honored with only Ironforge, then tell her to go to Ironforge to train.)
-    4. (Mark spells that the player does not wish to train and save between sessions. Perhaps make them grey?)
-    5. (Add Warlock pet skills.)
-    6. Fix PvP rank spell cost modification function for Classic release.
-    7. (Possibly allow player to drag spells onto bars from the addon.)
-    8. Make it look better.
-    ---------------------------------------
-
-    Spells left to add:
-    ---------------------------------------
-    1. Priest: show all friendly faction race-specific spells, but add in tooltip which race each spell can be learned by.
-    2. Shaman: add Mail at level 40.
-    ---------------------------------------
-
-    Spells left to organize:
-    ---------------------------------------
-    1. Priest: show all friendly faction race-specific spells, but add in tooltip which race each spell can be learned by.
-    2. Shaman: add Mail at level 40.
+    1. When clicking on weapon skill, show where the trainer is using TomTom.
+    2. When clicking on any spell, show where the nearest trainer is using TomTom (maybe give player option to show nearest cheapest trainer or just nearest).
+    3. Add icons for tomes/quests at level 60. AQ ones, but also Mage drink quest in DM/Arcane Brilliance and Warlock Shadow Ward rank 4 etc.
+    6. (Mark spells that the player does not wish to train and save between sessions. Perhaps make them grey?)
+    7. (Add Warlock pet skills.)
+    8. Fix PvP rank spell cost modification function for Classic release.
+    9. (Possibly allow player to drag spells onto bars from the addon.)
+   10. (Add racials?)
     ---------------------------------------
 
     Bugs:
@@ -38,6 +29,8 @@
     1. Scroll bar texture sometimes does not load – maybe FieldGuideFrameVerticalSlider does not load sometimes, or the black background loads after.
     2. Highlighting over scroll up and down buttons is too big.
     3. Ranks do not show in the tooltip (even in Classic) – add manually?
+    4. (Is Shackle Undead rank 3 a real thing?)
+    5. (Cure Disease/Cure Poison for Shamans might be wrong)
     ---------------------------------------
 --]]
 
@@ -46,6 +39,7 @@ local _, FieldGuide = ...
 -- Variables.
 local selectedClass = nil -- Which class is currently selected in the dropdown. Will be initialized to player's class on addon load.
 local currentMinLevel = 2 -- We always start by showing level 2.
+local maxSpellIndex = 0 -- Used to know how much to scroll horizontally.
 local levelStrings = {} -- The table of FontStrings so that we can reuse these.
 local spellButtons = {} -- The table of spell buttons so that we can reuse these.
 local spellTextures = {} -- The table of spell textures so that we can reuse these. 
@@ -94,17 +88,9 @@ local function toggleFrame()
     end
 end
 
--- Returns true if the player is Alliance.
+-- Returns true if the player is Alliance, false otherwise (which means the player is Horde).
 local function isAlliance()
     return UnitFactionGroup("player") == "Alliance"
-end
-
--- Returns true if the current spell with the given spellInfo is supposed to be shown.
-local function buttonConditions(spellInfo)
-    return (FieldGuideOptions.showKnownSpells or not IsSpellKnown(spellInfo.id)) and
-            (FieldGuideOptions.showEnemySpells or (isAlliance() and spellInfo.faction == 1) or
-            (not isAlliance() and spellInfo.faction == 2) or not spellInfo.faction) and
-            ((FieldGuideOptions.showTalents and spellInfo.talent) or not spellInfo.talent)
 end
 
 -- Updates the given frame with the given texture and info.
@@ -134,6 +120,8 @@ end
 local function resetScroll()
     FieldGuideFrameVerticalSlider:SetValue(0)
     FieldGuideFrameVerticalSliderScrollUpButton:Disable()
+    FieldGuideFrameHorizontalSlider:SetValue(0)
+    FieldGuideFrameHorizontalSliderScrollLeftButton:Disable()
 end
 
 -- Shows all the weapon skills.
@@ -176,24 +164,16 @@ local function updateButtons(reset)
     local extraButtons = {}
     -- Fix level strings and spell buttons.
     for i = 1, NBR_OF_SPELL_ROWS do
-        local hiddenCounter = 0
         local nbrOfSpells = 0
         local lastSpellIndex = 0
         local currentLevel = currentMinLevel + (i - 1) * 2
         levelStrings[i]:SetText(currentLevel == 2 and "Level 1" or (currentLevel > 60 and "Level 60 – continued") or "Level " .. currentLevel)
-        if currentLevel <= 60 then
-            for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
-                if buttonConditions(spellInfo) then
-                    -- if currentLevel == 60 and counter > NBR_OF_SPELL_COLUMNS * NBR_OF_SPELL_ROWS then -- Only for Paladins.
-                        -- break
-                    -- end
-                    updateFrame(spellTextures[counter], spellButtons[counter], spellInfo)
-                    counter = counter + 1
-                    nbrOfSpells = #FieldGuide[selectedClass][currentLevel]
-                    lastSpellIndex = lastSpellIndex + 1
-                else
-                    hiddenCounter = hiddenCounter + 1 -- For Paladins.
-                end
+        for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
+            if not spellInfo.hidden then
+                updateFrame(spellTextures[counter], spellButtons[counter], spellInfo)
+                counter = counter + 1
+                nbrOfSpells = #FieldGuide[selectedClass][currentLevel]
+                lastSpellIndex = lastSpellIndex + 1
             end
         end
         counter = hideExtraFrames(counter, lastSpellIndex)
@@ -211,7 +191,6 @@ local function initFrames()
     NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100) -- Good enough.
     Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.185
     FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
-    FieldGuideFrameHorizontalSlider:SetMinMaxValues(0, 5) -- Change ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     local NBR_OF_SPELL_BUTTONS = math.floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
     NBR_OF_SPELL_COLUMNS = NBR_OF_SPELL_BUTTONS / NBR_OF_SPELL_ROWS -- The number of buttons in x.
     -- Create spell buttons.
@@ -229,12 +208,45 @@ local function initFrames()
     end
 end
 
+-- Iterates all spells.
+local function iterSpells()
+    return coroutine.wrap(function()
+        for level, value in pairs(FieldGuide[selectedClass]) do
+            if selectedClass ~= "WEAPONS" then
+                for spellIndex, spellInfo in pairs(value) do
+                    coroutine.yield(spellIndex, spellInfo)
+                end
+            end
+        end 
+    end)
+end
+
+-- Iterates through each spell and adjusts the horizontal slider if there are more spells than can be shown in the window.
+local function adjustHorizontalSlider(maxValue)
+    maxSpellIndex = maxValue or 0
+    if not maxValue then
+        for spellIndex, spellInfo in iterSpells() do
+            if not spellInfo.hidden and spellIndex > maxSpellIndex then
+                maxSpellIndex = spellIndex
+            end
+        end
+    end
+    FieldGuideFrameHorizontalSlider:SetMinMaxValues(0, (maxSpellIndex >= NBR_OF_SPELL_COLUMNS) and maxSpellIndex - NBR_OF_SPELL_COLUMNS or 0)
+    FieldGuideFrameHorizontalSlider:SetValue(0)
+    if maxSpellIndex - NBR_OF_SPELL_COLUMNS <= 0 then
+        FieldGuideFrameHorizontalSliderScrollRightButton:Disable()
+    else
+        FieldGuideFrameHorizontalSliderScrollRightButton:Enable()
+    end
+end
+
 -- Changes the class to the given class.
 local function setClass(dropdownButton, class)
     UIDropDownMenu_SetSelectedID(FieldGuideDropdownFrame, dropdownButton:GetID())
-    setBackground(class)
     selectedClass = class
+    setBackground(selectedClass)
     FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS)
+    adjustHorizontalSlider()
     if class == "WEAPONS" then
         FieldGuideFrameVerticalSlider:SetMinMaxValues(0, NBR_OF_SPELL_ROWS - 1)
         updateWeapons(true)
@@ -326,7 +338,6 @@ end
 
 -- Initializes the dropdown menu.
 local function initDropdown()
-    selectedClass = select(2, UnitClass("player"))
     local dropdown = FieldGuideDropdownFrame
     UIDropDownMenu_Initialize(dropdown, function(self)
         local info = UIDropDownMenu_CreateInfo()
@@ -402,6 +413,8 @@ end
 local function init()
     tinsert(UISpecialFrames, FieldGuideFrame:GetName()) -- Allows us to close the window with escape.
     initFrames()
+    selectedClass = select(2, UnitClass("player"))
+    FieldGuide_ToggleButtons() -- Need to call this, or spells won't be hidden regardless of saved variables.
     initDropdown()
     initCheckboxes()
     initMinimapButton()
@@ -460,8 +473,10 @@ function FieldGuide_OnVerticalValueChanged(self, value)
     self:SetValue(value)
     if value < 1 then
         _G[self:GetName() .. "ScrollUpButton"]:Disable()
+        _G[self:GetName() .. "ScrollDownButton"]:Enable()
     elseif value >= select(2, self:GetMinMaxValues()) then
         _G[self:GetName() .. "ScrollDownButton"]:Disable()
+        _G[self:GetName() .. "ScrollUpButton"]:Enable()
     else
         _G[self:GetName() .. "ScrollUpButton"]:Enable()
         _G[self:GetName() .. "ScrollDownButton"]:Enable()
@@ -482,8 +497,10 @@ function FieldGuide_OnHorizontalValueChanged(self, value)
     self:SetValue(value)
     if value < 1 then
         _G[self:GetName() .. "ScrollLeftButton"]:Disable()
+        _G[self:GetName() .. "ScrollRightButton"]:Enable()
     elseif value >= select(2, self:GetMinMaxValues()) then
         _G[self:GetName() .. "ScrollRightButton"]:Disable()
+        _G[self:GetName() .. "ScrollLeftButton"]:Enable()
     else
         _G[self:GetName() .. "ScrollLeftButton"]:Enable()
         _G[self:GetName() .. "ScrollRightButton"]:Enable()
@@ -504,21 +521,23 @@ function FieldGuide_Scroll(delta)
     end
 end
 
--- Toggles showing talents on or off Called when the player checks/unchecks the talents checkbox.
-function FieldGuide_ToggleTalents()
-    FieldGuideOptions.showTalents = not FieldGuideOptions.showTalents
-    updateButtons()
-end
-
--- Toggles showing enemy spells on or off. Called when the player checks/unchecks the enemy faction spells checkbox.
-function FieldGuide_ToggleEnemySpells()
-    FieldGuideOptions.showEnemySpells = not FieldGuideOptions.showEnemySpells
-    updateButtons()
-end
-
--- Toggles showing known spells on or off. Called when the player checks/unchecks the known spells checkbox.
-function FieldGuide_ToggleKnownSpells()
-    FieldGuideOptions.showKnownSpells = not FieldGuideOptions.showKnownSpells
+-- Shows or hides the talents (type == 1), enemy spells (type == 2), or known spells (type == 3).
+function FieldGuide_ToggleButtons(type)
+    if type == 1 then -- Talents.
+        FieldGuideOptions.showTalents = not FieldGuideOptions.showTalents
+    elseif type == 2 then -- Enemy spells.
+        FieldGuideOptions.showEnemySpells = not FieldGuideOptions.showEnemySpells
+    elseif type == 3 then -- Known spells.
+        FieldGuideOptions.showKnownSpells = not FieldGuideOptions.showKnownSpells
+    end
+    local maxValue = 0
+    for spellIndex, spellInfo in iterSpells() do
+        spellInfo.hidden = (not FieldGuideOptions.showTalents and spellInfo.talent) or
+                (not FieldGuideOptions.showEnemySpells and (isAlliance() and spellInfo.faction == 2 or (not isAlliance() and spellInfo.faction == 1))) or
+                (not FieldGuideOptions.showKnownSpells and IsSpellKnown(spellInfo.id))
+        maxValue = spellIndex >= maxValue and not spellInfo.hidden and spellIndex or maxValue
+    end
+    adjustHorizontalSlider(maxValue)
     updateButtons()
 end
 

@@ -331,21 +331,21 @@
             <CheckButton name="$parentTalentsCheckBox" inherits="UICheckButtonTemplate">
                 <Scripts>
                     <OnClick>
-                        FieldGuide_ToggleTalents()
+                        FieldGuide_ToggleButtons(1)
                     </OnClick>
                 </Scripts>
             </CheckButton>
             <CheckButton name="$parentEnemySpellsCheckBox" inherits="UICheckButtonTemplate">
                 <Scripts>
                     <OnClick>
-                        FieldGuide_ToggleEnemySpells()
+                        FieldGuide_ToggleButtons(2)
                     </OnClick>
                 </Scripts>
             </CheckButton>
             <CheckButton name="$parentKnownSpellsCheckBox" inherits="UICheckButtonTemplate">
                 <Scripts>
                     <OnClick>
-                        FieldGuide_ToggleKnownSpells()
+                        FieldGuide_ToggleButtons(3)
                     </OnClick>
                 </Scripts>
             </CheckButton>
