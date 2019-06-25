@@ -1,16 +1,6 @@
 local _, FieldGuide = ...
 
 FieldGuide.ROGUE = {
-    ["weapons"] = {
-        FieldGuide.WEAPONS.bows,
-        FieldGuide.WEAPONS.crossbows,
-        FieldGuide.WEAPONS.daggers,
-        FieldGuide.WEAPONS.fistWeapons,
-        FieldGuide.WEAPONS.guns,
-        FieldGuide.WEAPONS.oneHandedMaces,
-        FieldGuide.WEAPONS.oneHandedSwords,
-        FieldGuide.WEAPONS.thrown
-    },
     [2] = {
         [1] = {
             ["name"] = "Stealth",

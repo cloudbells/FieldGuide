@@ -1,22 +1,8 @@
 local _, FieldGuide = ...
 
 FieldGuide.HUNTER = {
-    ["weapons"] = {
-        FieldGuide.WEAPONS.bows,
-        FieldGuide.WEAPONS.crossbows,
-        FieldGuide.WEAPONS.daggers,
-        FieldGuide.WEAPONS.fistWeapons,
-        FieldGuide.WEAPONS.guns,
-        FieldGuide.WEAPONS.oneHandedAxes,
-        FieldGuide.WEAPONS.oneHandedSwords,
-        FieldGuide.WEAPONS.polearms,
-        FieldGuide.WEAPONS.staves,
-        FieldGuide.WEAPONS.thrown,
-        FieldGuide.WEAPONS.twoHandedAxes,
-        FieldGuide.WEAPONS.twoHandedSwords
-    },
     [2] = {
-        [1] = { -- Indexing for readability + easy searching.
+        [1] = {
             ["name"] = "Track Beasts",
             ["rank"] = 1,
             ["cost"] = 10,

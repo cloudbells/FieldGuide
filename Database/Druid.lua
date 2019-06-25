@@ -1,12 +1,6 @@
 local _, FieldGuide = ...
 
 FieldGuide.DRUID = {
-    ["weapons"] = {
-        FieldGuide.WEAPONS.daggers,
-        FieldGuide.WEAPONS.oneHandedMaces,
-        FieldGuide.WEAPONS.staves,
-        FieldGuide.WEAPONS.wands
-    },
     [2] = {
         [1] = {
             ["name"] = "Mark of the Wild",

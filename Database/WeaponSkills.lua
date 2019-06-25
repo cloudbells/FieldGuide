@@ -1,6 +1,6 @@
 local _, FieldGuide = ...
 
-FieldGuide.WEAPONS = {
+local weapons = {
     ["bows"] = {
         ["name"] = "Bows",
         ["rank"] = 1,
@@ -105,5 +105,88 @@ FieldGuide.WEAPONS = {
         ["cost"] = 1000,
         ["texture"] = "Interface/ICONS/ability_shootwand",
         ["id"] = 5009
+    },
+}
+
+FieldGuide.WEAPONS = {
+    { -- Warrior.
+        weapons.bows,
+        weapons.crossbows,
+        weapons.daggers,
+        weapons.fistWeapons,
+        weapons.guns,
+        weapons.oneHandedAxes,
+        weapons.oneHandedMaces,
+        weapons.oneHandedSwords,
+        weapons.polearms,
+        weapons.staves,
+        weapons.thrown,
+        weapons.twoHandedAxes,
+        weapons.twoHandedMaces,
+        weapons.twoHandedSwords
+    },
+    { -- Paladin.
+        weapons.oneHandedAxes,
+        weapons.oneHandedMaces,
+        weapons.oneHandedSwords,
+        weapons.polearms,
+        weapons.twoHandedAxes,
+        weapons.twoHandedMaces,
+        weapons.twoHandedSwords
+    },
+    { -- Hunter.
+        weapons.bows,
+        weapons.crossbows,
+        weapons.daggers,
+        weapons.fistWeapons,
+        weapons.guns,
+        weapons.oneHandedAxes,
+        weapons.oneHandedSwords,
+        weapons.polearms,
+        weapons.staves,
+        weapons.thrown,
+        weapons.twoHandedAxes,
+        weapons.twoHandedSwords
+    },
+    { -- Rogue.
+        weapons.bows,
+        weapons.crossbows,
+        weapons.daggers,
+        weapons.fistWeapons,
+        weapons.guns,
+        weapons.oneHandedMaces,
+        weapons.oneHandedSwords,
+        weapons.thrown
+    },
+    { -- Priest.
+        weapons.daggers,
+        weapons.oneHandedMaces,
+        weapons.staves,
+        weapons.wands
+    },
+    { -- Shaman.
+        weapons.oneHandedAxes,
+        weapons.oneHandedMaces,
+        weapons.staves,
+        weapons.twoHandedAxes,
+        weapons.twoHandedMaces
+    },
+    { -- Mage.
+        weapons.daggers,
+        weapons.oneHandedSwords,
+        weapons.staves,
+        weapons.wands
+    },
+    { -- Warlock.
+        weapons.daggers,
+        weapons.oneHandedSwords,
+        weapons.staves,
+        weapons.wands
+    },
+    { -- Druid
+        weapons.daggers,
+        weapons.oneHandedMaces,
+        weapons.staves,
+        weapons.wands
     },
 }

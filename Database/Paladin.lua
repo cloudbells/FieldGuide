@@ -1,15 +1,6 @@
 local _, FieldGuide = ...
 
 FieldGuide.PALADIN = {
-    ["weapons"] = {
-        FieldGuide.WEAPONS.oneHandedAxes,
-        FieldGuide.WEAPONS.oneHandedMaces,
-        FieldGuide.WEAPONS.oneHandedSwords,
-        FieldGuide.WEAPONS.polearms,
-        FieldGuide.WEAPONS.twoHandedAxes,
-        FieldGuide.WEAPONS.twoHandedMaces,
-        FieldGuide.WEAPONS.twoHandedSwords
-    },
     [2] = {
         [1] = {
             ["name"] = "Devotion Aura",

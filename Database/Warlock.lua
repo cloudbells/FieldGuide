@@ -1,12 +1,6 @@
 local _, FieldGuide = ...
 
 FieldGuide.WARLOCK = {
-    ["weapons"] = {
-        FieldGuide.WEAPONS.daggers,
-        FieldGuide.WEAPONS.oneHandedSwords,
-        FieldGuide.WEAPONS.staves,
-        FieldGuide.WEAPONS.wands
-    },
     [2] = {
         [1] = {
             ["name"] = "Summon Imp",
