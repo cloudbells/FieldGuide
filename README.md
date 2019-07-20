@@ -1,4 +1,4 @@
-# FieldGuide
+# Field Guide
 An addon for World of Warcraft: Classic.
 
 `/fg` and `/fieldguide` will open the window.
@@ -6,7 +6,7 @@ An addon for World of Warcraft: Classic.
 
 *This is a work in progress*.
 
-![Current progress](https://i.imgur.com/LxQXcjU.png)
+![Current progress](https://i.imgur.com/AiLWPcX.png)
 
 ## Features
 - Shows you which spells each class learns every level to plan when you need to go back to town.
