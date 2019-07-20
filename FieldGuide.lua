@@ -1,18 +1,17 @@
 --[[
     TODO:
-    ---------------------------------------
-    
-    FIX WEAPONS
-    
-    1. Add race info in Priest race-specific spells on hover.
-    2. Make scroll bars look better – add small texture at bottom right to separate?
-    3. Add a weapon skills background.
-    4. Check if weapon skills are cheaper if you are Honored and/or rank 3.
-    5. (Reduce horizontal slider's height and make the knob vertical again.)
-    6. Certain spells are learned through quests (i.e. Desperate Prayer as Priest, Resurrection as Paladin).
-    7. Make sure all spells are correct.
-    8. change this calculation: NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100) in initFrames().
-    9. Make it so that when unchecking spells, don't reset to top.
+    -------------------------------------
+    1. Fix the weapons bug.
+    2. Add race info in Priest race-specific spells on hover.
+    3. Make scroll bars look better – add small texture at bottom right to separate?
+    4. Add a weapon skills background.
+    5. Check if weapon skills are cheaper if you are Honored and/or rank 3.
+    6. (Reduce horizontal slider's height and make the knob vertical again.)
+    7. Certain spells are learned through quests (i.e. Desperate Prayer as Priest, Resurrection as Paladin).
+    8. Make sure all spells are correct.
+    9. change this calculation: NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100) in initFrames().
+   10. Make it so that when unchecking spells, don't reset to top.
+   11. Show where to buy weapon skill in tooltip.
     ---------------------------------------
     
     Features (in no particular order):
@@ -30,10 +29,11 @@
 
     Bugs:
     ---------------------------------------
-    1. Scroll bar texture sometimes does not load – maybe FieldGuideFrameVerticalSlider does not load sometimes, or the black background loads after.
-    2. Highlighting over scroll up and down buttons is too big.
-    3. Ranks do not show in the tooltip (even in Classic) – add manually?
-    4. (Cure Disease/Cure Poison for Shamans might be wrong)
+    1. If you know one weapon skill, it will hide it for all classes instead of only the player's class.
+    2. Scroll bar texture sometimes does not load – maybe FieldGuideFrameVerticalSlider does not load sometimes, or the black background loads after.
+    3. Highlighting over scroll up and down buttons is too big.
+    4. Ranks do not show in the tooltip (even in Classic) – add manually?
+    5. (Cure Disease/Cure Poison for Shamans might be wrong)
     ---------------------------------------
 ]]
 
@@ -81,6 +81,17 @@ local classIndeces = {
     ["MAGE"] = 7,
     ["WARLOCK"] = 8,
     ["DRUID"] = 9
+}
+local classes = {
+    "Warrior",
+    "Paladin",
+    "Hunter",
+    "Rogue",
+    "Priest",
+    "Shaman",
+    "Mage",
+    "Warlock",
+    "Druid"
 }
 local emptyLevels = {} -- Holds info on if a row is empty or not.
 
@@ -149,38 +160,35 @@ local function setHorizontalSliderMaxValue(value)
     end
 end
 
--- Iterates all weapon skills for the current class and shows/hides any known ones. Also adjusts the horizontal slider appropriately.
+-- Iterates all weapon skills for the current class and shows/hides any known ones.
 local function hideUnwantedWeapons()
-    local maxSpellIndex = 0
-    local class = select(2, UnitClass("player"))
-    for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[classIndeces[class]]) do
-        local hiddenCounter = 0
-        weaponInfo.hidden = false
-        if not FieldGuideOptions.showKnownSpells and IsSpellKnown(weaponInfo.id) then
-            weaponInfo.hidden = true
+    local maxValue = 0
+    local index = 1
+    local class = string.upper(classes[index])
+    while index < 9 do
+        local nbrOfSpells = 0
+        for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[classIndeces[string.upper(class)]]) do
+        --[[
+            THE BUG HERE IS THAT IT WILL FIRST COUNT NBROFSPELLS FOR WARRIOR, THEN PALADIN ETC AND WHEN IT REACHES MAGE IT HAS THE WRONG VALUES (11 INSTEAD OF 14)
+            THIS IS FIXED BY HAVING SEPARATE WEAPON SKILLS FOR EACH CLASS - OR SOME OTHER SOLUTION
+        --]]
+            if class == select(2, UnitClass("player")) then
+                weaponInfo.hidden = false
+                if not FieldGuideOptions.showKnownSpells and IsSpellKnown(weaponInfo.id) then
+                    weaponInfo.hidden = true
+                end
+            end
+            nbrOfSpells = not weaponInfo.hidden and nbrOfSpells + 1 or nbrOfSpells
         end
-        if weaponInfo.hidden then
-            hiddenCounter = hiddenCounter + 1
-        elseif weaponIndex - hiddenCounter > maxSpellIndex then
-            maxSpellIndex = weaponIndex - hiddenCounter
-        end
+        maxValue = nbrOfSpells > maxValue and nbrOfSpells or maxValue
+        index = index + 1
+        class = string.upper(classes[index])
     end
-    setHorizontalSliderMaxValue(maxSpellIndex)
+    setHorizontalSliderMaxValue(maxValue)
 end
 
 -- Updates all the buttons in the frame if weapons are selected.
 local function updateWeapons()
-    local classes = {
-        "Warrior",
-        "Paladin",
-        "Hunter",
-        "Rogue",
-        "Priest",
-        "Shaman",
-        "Mage",
-        "Warlock",
-        "Druid"
-    }
     local frameCounter = 1
     for row = 1, NBR_OF_SPELL_ROWS do
         local hiddenCounter = 0
@@ -523,6 +531,7 @@ function FieldGuide_OnVerticalValueChanged(self, value)
     if not (value > lastVerticalValue or value < lastVerticalValue) then -- Throttle.
         return
     end
+    verticalOffset = value
     if value ~= 0 then
         currentMinLevel = value - lastVerticalValue > 0 and currentMinLevel + 2 or currentMinLevel - 2
         while emptyLevels[currentMinLevel] do
@@ -601,8 +610,8 @@ function FieldGuide_ToggleButtons(type)
         resetScroll()
         updateButtons()
     else
-        resetScroll()
         hideUnwantedWeapons()
+        resetScroll()
         updateWeapons()
     end
 end
