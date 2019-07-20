@@ -7,7 +7,8 @@ FieldGuide.MAGE = {
             ["rank"] = 1,
             ["cost"] = 10,
             ["texture"] = "Interface/ICONS/spell_holy_magicalsentry",
-            ["id"] = 1459
+            ["id"] = 1459,
+            ["talent"] = true
         },
     },
     [4] = {
@@ -16,14 +17,16 @@ FieldGuide.MAGE = {
             ["rank"] = 1,
             ["cost"] = 100,
             ["texture"] = "Interface/ICONS/inv_drink_06",
-            ["id"] = 5504
+            ["id"] = 5504,
+            ["talent"] = true
         },
         [2] = {
             ["name"] = "Frostbolt",
             ["rank"] = 1,
             ["cost"] = 100,
             ["texture"] = "Interface/ICONS/spell_frost_frostbolt02",
-            ["id"] = 116
+            ["id"] = 116,
+            ["talent"] = true
         },
     },
     [6] = {
@@ -32,21 +35,24 @@ FieldGuide.MAGE = {
             ["rank"] = 1,
             ["cost"] = 100,
             ["texture"] = "Interface/ICONS/inv_misc_food_10",
-            ["id"] = 587
+            ["id"] = 587,
+            ["talent"] = true
         },
         [2] = {
             ["name"] = "Fire Blast",
             ["rank"] = 1,
             ["cost"] = 100,
             ["texture"] = "Interface/ICONS/spell_fire_fireball",
-            ["id"] = 2136
+            ["id"] = 2136,
+            ["talent"] = true
         },
         [3] = {
             ["name"] = "Fireball",
             ["rank"] = 2,
             ["cost"] = 100,
             ["texture"] = "Interface/ICONS/spell_fire_flamebolt",
-            ["id"] = 143
+            ["id"] = 143,
+            ["talent"] = true
         },
     },
     [8] = {
@@ -55,21 +61,24 @@ FieldGuide.MAGE = {
             ["rank"] = 1,
             ["cost"] = 200,
             ["texture"] = "Interface/ICONS/spell_nature_starfall",
-            ["id"] = 5143
+            ["id"] = 5143,
+            ["talent"] = true
         },
         [2] = {
             ["name"] = "Polymorph",
             ["rank"] = 1,
             ["cost"] = 200,
             ["texture"] = "Interface/ICONS/spell_nature_polymorph",
-            ["id"] = 118
+            ["id"] = 118,
+            ["talent"] = true
         },
         [3] = {
             ["name"] = "Frostbolt",
             ["rank"] = 2,
             ["cost"] = 200,
             ["texture"] = "Interface/ICONS/spell_frost_frostbolt02",
-            ["id"] = 205
+            ["id"] = 205,
+            ["talent"] = true
         },
     },
     [10] = {
@@ -184,21 +193,24 @@ FieldGuide.MAGE = {
             ["rank"] = 1,
             ["cost"] = 1800,
             ["texture"] = "Interface/ICONS/spell_holy_flashheal",
-            ["id"] = 1008
+            ["id"] = 1008,
+            ["talent"] = true
         },
         [2] = {
             ["name"] = "Remove Lesser Curse",
             ["rank"] = 1,
             ["cost"] = 1800,
             ["texture"] = "Interface/ICONS/spell_nature_removecurse",
-            ["id"] = 475
+            ["id"] = 475,
+            ["talent"] = true
         },
         [3] = {
             ["name"] = "Fireball",
             ["rank"] = 4,
             ["cost"] = 1800,
             ["texture"] = "Interface/ICONS/spell_fire_flamebolt",
-            ["id"] = 3140
+            ["id"] = 3140,
+            ["talent"] = true
         },
     },
     [20] = {

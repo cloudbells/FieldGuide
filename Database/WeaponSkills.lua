@@ -183,7 +183,7 @@ FieldGuide.WEAPONS = {
         weapons.staves,
         weapons.wands
     },
-    { -- Druid
+    { -- Druid.
         weapons.daggers,
         weapons.oneHandedMaces,
         weapons.staves,

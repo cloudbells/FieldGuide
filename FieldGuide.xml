@@ -193,7 +193,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                FieldGuide_VerticalScroll(1)
+                                FieldGuide_Scroll(1)
                             </OnClick>
                         </Scripts>
                         <NormalTexture file="Interface/Addons/FieldGuide/Media/Buttons/ScrollUpButton-Up" />
@@ -208,7 +208,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                FieldGuide_VerticalScroll(-1)
+                                FieldGuide_Scroll(-1)
                             </OnClick>
                         </Scripts>
                         <NormalTexture file="Interface/Addons/FieldGuide/Media/Buttons/ScrollDownButton-Up" />
@@ -269,7 +269,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                FieldGuide_HorizontalScroll(1)
+                                FieldGuide_Scroll(1, true)
                             </OnClick>
                         </Scripts>
                         <NormalTexture file="Interface/Addons/FieldGuide/Media/Buttons/ScrollLeftButton-Up" />
@@ -284,7 +284,7 @@
                         </Anchors>
                         <Scripts>
                             <OnClick>
-                                FieldGuide_HorizontalScroll(-1)
+                                FieldGuide_Scroll(-1, true)
                             </OnClick>
                         </Scripts>
                         <NormalTexture file="Interface/Addons/FieldGuide/Media/Buttons/ScrollRightButton-Up" />

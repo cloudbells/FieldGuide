@@ -1,8 +1,8 @@
-## Interface: 80100
+## Interface: 80200
 ## Title: Field Guide
 ## Notes: Shows when spells are trainable and how much each spell costs to train, along with other features.
 ## Author: cloudbells
-## Version: 0.8
+## Version: 0.9
 ## SavedVariablesPerCharacter: FieldGuideOptions
 
 # Load libraries.
