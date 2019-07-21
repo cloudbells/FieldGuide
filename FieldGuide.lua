@@ -1,16 +1,17 @@
 --[[
     TODO:
     -------------------------------------
-    1. Add race info in Priest race-specific spells on hover.
-    2. Make scroll bars look better – add small texture at bottom right to separate?
-    3. Add a weapon skills background.
-    4. Check if weapon skills are cheaper if you are Honored and/or rank 3.
-    5. (Reduce horizontal slider's height and make the knob vertical again.)
-    6. Certain spells are learned through quests (i.e. Desperate Prayer as Priest, Resurrection as Paladin).
-    7. Make sure all spells are correct.
-    8. change this calculation: NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100) in initFrames().
-    9. Make it so that when unchecking spells, don't reset to top.
-   10. Show where to buy weapon skill in tooltip.
+    1. Fix manual scrolling bug.
+    2. Add race info in Priest race-specific spells on hover.
+    3. Make scroll bars look better – add small texture at bottom right to separate?
+    4. Add a weapon skills background.
+    5. Check if weapon skills are cheaper if you are Honored and/or rank 3.
+    6. (Reduce horizontal slider's height and make the knob vertical again.)
+    7. Certain spells are learned through quests (i.e. Desperate Prayer as Priest, Resurrection as Paladin).
+    8. Make sure all spells are correct.
+    9. change this calculation: NBR_OF_SPELL_ROWS = floor(FieldGuideFrame:GetHeight() / 100) in initFrames().
+   10. Make it so that when unchecking spells, don't reset to top.
+   11. Show where to buy weapon skill in tooltip.
     ---------------------------------------
     
     Features (in no particular order):
@@ -28,16 +29,20 @@
 
     Bugs:
     ---------------------------------------
-    1. Scroll bar texture sometimes does not load – maybe FieldGuideFrameVerticalSlider does not load sometimes, or the black background loads after.
-    2. Highlighting over scroll up and down buttons is too big.
-    3. Ranks do not show in the tooltip (even in Classic) – add manually?
-    4. (Cure Disease/Cure Poison for Shamans might be wrong)
+    1. Manually scrolling seems to not keep up.
+    2. Scroll bar texture sometimes does not load – maybe FieldGuideFrameVerticalSlider does not load sometimes, or the black background loads after.
+    3. Highlighting over scroll up and down buttons is too big.
+    4. Ranks do not show in the tooltip (even in Classic) – add manually?
+    5. (Cure Disease/Cure Poison for Shamans might be wrong)
     ---------------------------------------
 ]]
 
 local _, FieldGuide = ...
+local pairs, ipairs, select, floor = pairs, ipairs, select, math.floor
+local GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString = GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString
 
 -- Variables.
+local faction = UnitFactionGroup("player")
 local lowestLevel = 52 -- Used for figuring out which row is at the top when hiding entire rows.
 local currentMinLevel = 2 -- The current top row to show.
 local selectedClass -- The currently selected class.
@@ -107,7 +112,7 @@ local NBR_OF_SPELL_COLUMNS = 0
 
 -- Returns true if the player is Alliance, false otherwise.
 local function isAlliance()
-    return UnitFactionGroup("player") == "Alliance"
+    return faction == "Alliance"
 end
 
 -- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
@@ -467,10 +472,10 @@ end
 
 -- Initializes all frames, level strings, and textures for reuse.
 local function initFrames()
-    NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100)
+    NBR_OF_SPELL_ROWS = floor(FieldGuideFrame:GetHeight() / 100)
     Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.185
     FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
-    local nbrOfSpellBtns = math.floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
+    local nbrOfSpellBtns = floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
     NBR_OF_SPELL_COLUMNS = nbrOfSpellBtns / NBR_OF_SPELL_ROWS -- The number of buttons in x.
     -- Create spell buttons.
     for frameIndex = 1, nbrOfSpellBtns do
