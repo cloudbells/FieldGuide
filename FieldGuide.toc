@@ -1,8 +1,8 @@
 ## Interface: 80200
 ## Title: Field Guide
-## Notes: Shows when spells are trainable and how much each spell costs to train, along with other features.
+## Notes: Shows when spells are trainable and how much each spell costs to train, and other stuff.
 ## Author: cloudbells
-## Version: 0.9
+## Version: 0.9.9
 ## SavedVariablesPerCharacter: FieldGuideOptions
 
 # Load libraries.
@@ -10,6 +10,9 @@ Libraries\LibStub\LibStub.lua
 Libraries\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libraries\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libraries\LibDBIcon-1.0\LibDBIcon-1.0.lua
+
+# Load utilites.
+Util.lua
 
 # Load spell tables.
 Database\WeaponSkills.lua

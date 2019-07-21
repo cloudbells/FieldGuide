@@ -1,17 +1,16 @@
 --[[
     TODO:
     -------------------------------------
-    1. Fix the weapons bug.
-    2. Add race info in Priest race-specific spells on hover.
-    3. Make scroll bars look better – add small texture at bottom right to separate?
-    4. Add a weapon skills background.
-    5. Check if weapon skills are cheaper if you are Honored and/or rank 3.
-    6. (Reduce horizontal slider's height and make the knob vertical again.)
-    7. Certain spells are learned through quests (i.e. Desperate Prayer as Priest, Resurrection as Paladin).
-    8. Make sure all spells are correct.
-    9. change this calculation: NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100) in initFrames().
-   10. Make it so that when unchecking spells, don't reset to top.
-   11. Show where to buy weapon skill in tooltip.
+    1. Add race info in Priest race-specific spells on hover.
+    2. Make scroll bars look better – add small texture at bottom right to separate?
+    3. Add a weapon skills background.
+    4. Check if weapon skills are cheaper if you are Honored and/or rank 3.
+    5. (Reduce horizontal slider's height and make the knob vertical again.)
+    6. Certain spells are learned through quests (i.e. Desperate Prayer as Priest, Resurrection as Paladin).
+    7. Make sure all spells are correct.
+    8. change this calculation: NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100) in initFrames().
+    9. Make it so that when unchecking spells, don't reset to top.
+   10. Show where to buy weapon skill in tooltip.
     ---------------------------------------
     
     Features (in no particular order):
@@ -29,26 +28,21 @@
 
     Bugs:
     ---------------------------------------
-    1. If you know one weapon skill, it will hide it for all classes instead of only the player's class.
-    2. Scroll bar texture sometimes does not load – maybe FieldGuideFrameVerticalSlider does not load sometimes, or the black background loads after.
-    3. Highlighting over scroll up and down buttons is too big.
-    4. Ranks do not show in the tooltip (even in Classic) – add manually?
-    5. (Cure Disease/Cure Poison for Shamans might be wrong)
+    1. Scroll bar texture sometimes does not load – maybe FieldGuideFrameVerticalSlider does not load sometimes, or the black background loads after.
+    2. Highlighting over scroll up and down buttons is too big.
+    3. Ranks do not show in the tooltip (even in Classic) – add manually?
+    4. (Cure Disease/Cure Poison for Shamans might be wrong)
     ---------------------------------------
 ]]
 
 local _, FieldGuide = ...
 
 -- Variables.
-local lowestLevel = 52
-local currentMinLevel = 2
-local verticalOffset = 0
-local horizontalOffset = 0
-local selectedClass = nil
-local levelStrings = {}
-local spellButtons = {}
-local spellTextures = {}
-local classBackgrounds = {
+local lowestLevel = 52 -- Used for figuring out which row is at the top when hiding entire rows.
+local currentMinLevel = 2 -- The current top row to show.
+local selectedClass -- The currently selected class.
+local emptyLevels = {} -- Holds info on if a row is empty or not.
+local CLASS_BACKGROUNDS = {
     WARRIOR = "WarriorArms",
     PALADIN = "PaladinHoly",
     HUNTER = "HunterBeastMastery",
@@ -60,7 +54,7 @@ local classBackgrounds = {
     DRUID = "DruidFeralCombat",
     WEAPONS = "MageFrost"
 }
-local classColors = {
+local CLASS_COLORS = {
     WARRIOR = "|cFFC79C6E",
     PALADIN = "|cFFF58CBA",
     HUNTER = "|cFFABD473",
@@ -71,7 +65,7 @@ local classColors = {
     WARLOCK = "|cFF8787ED",
     DRUID = "|cFFFF7D0A",
 }
-local classIndeces = {
+local CLASS_INDECES = {
     ["WARRIOR"] = 1,
     ["PALADIN"] = 2,
     ["HUNTER"] = 3,
@@ -82,7 +76,7 @@ local classIndeces = {
     ["WARLOCK"] = 8,
     ["DRUID"] = 9
 }
-local classes = {
+local CLASSES = {
     "Warrior",
     "Paladin",
     "Hunter",
@@ -93,11 +87,15 @@ local classes = {
     "Warlock",
     "Druid"
 }
-local emptyLevels = {} -- Holds info on if a row is empty or not.
 
 -- UI variables.
+local levelStrings = {} -- All the level font strings.
+local spellButtons = {} -- All the spell frames.
+local spellTextures = {} -- All the frames' textures.
 local lastVerticalValue = 0 -- For the vertical slider to not update a million times a second.
 local lastHorizontalValue = 0 -- For the horizontal slider to not update a million times a second.
+local verticalOffset = 0 -- Used exclusively for weapon skills.
+local horizontalOffset = 0 -- Used for scrolling horizontally.
 local BUTTON_X_START = 38 -- How far to the right the buttons start.
 local BUTTON_Y_START = -25 -- How far down the first button is placed.
 local BUTTON_X_SPACING = 45 -- The spacing between all buttons in x.
@@ -107,239 +105,29 @@ local Y_SPACING = 0 -- The spacing between all elements in y.
 local NBR_OF_SPELL_ROWS = 0
 local NBR_OF_SPELL_COLUMNS = 0
 
+-- Returns true if the player is Alliance, false otherwise.
+local function isAlliance()
+    return UnitFactionGroup("player") == "Alliance"
+end
+
+-- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
+local function getCostModifier()
+    local honored = false
+    -- local rankThree = UnitPVPRank("player") -- Classic exclusive code.
+    if not isAlliance() then
+        honored = select(3, GetFactionInfoByID(530)) > 5 or select(3, GetFactionInfoByID(76)) > 5 or select(3, GetFactionInfoByID(81)) > 5 or select(3, GetFactionInfoByID(68)) > 5
+    else
+        honored = select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(54)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(72)) > 5
+    end
+    return rankThree and honored and 0.8 or honored and 0.9 or rankThree and 0.9 or 1
+end
+
 -- Shows/hides the frame.
 local function toggleFrame()
     if FieldGuideFrame:IsVisible() then
         FieldGuideFrame:Hide()
     else
         FieldGuideFrame:Show()
-    end
-end
-
--- Returns true if the player is Alliance, false otherwise.
-local function isAlliance()
-    return UnitFactionGroup("player") == "Alliance"
-end
-
--- Updates the given frame with the given texture and info.
-local function updateFrame(texture, frame, info)
-    texture:SetTexture(info.texture)
-    texture:SetAllPoints()
-    frame:Hide() -- So that tooltip updates when scrolling.
-    frame.talent = info.talent
-    frame.spellId = info.id
-    frame.spellCost = info.cost
-    frame:Show()
-end
-
--- Hides all empty buttons between the given frameCounter and shownCounter.
-local function hideExtraFrames(frameCounter, shownCounter)
-    for i = frameCounter, frameCounter + NBR_OF_SPELL_COLUMNS - shownCounter - 1 do -- Hide all unnecessary buttons.
-        spellButtons[i]:Hide()
-        frameCounter = frameCounter + 1
-    end
-    return frameCounter
-end
-
--- Resets the scroll bar to top left position.
-local function resetScroll()
-    FieldGuideFrameVerticalSlider:SetValue(0)
-    FieldGuideFrameVerticalSliderScrollUpButton:Disable()
-    FieldGuideFrameHorizontalSlider:SetValue(0)
-    FieldGuideFrameHorizontalSliderScrollLeftButton:Disable()
-end
-
--- Sets the horizontal slider's max value to the given value.
-local function setHorizontalSliderMaxValue(value)
-    if value - NBR_OF_SPELL_COLUMNS <= 0 then
-        FieldGuideFrameHorizontalSlider:SetMinMaxValues(0, 0)
-        FieldGuideFrameHorizontalSliderScrollRightButton:Disable()
-    else
-        FieldGuideFrameHorizontalSlider:SetMinMaxValues(0, value - NBR_OF_SPELL_COLUMNS)
-        FieldGuideFrameHorizontalSliderScrollRightButton:Enable()
-    end
-end
-
--- Iterates all weapon skills for the current class and shows/hides any known ones.
-local function hideUnwantedWeapons()
-    local maxValue = 0
-    local index = 1
-    local class = string.upper(classes[index])
-    for i = 1, 3 do
-        FieldGuide.WEAPONS[7][i].hidden = true
-        print(FieldGuide.WEAPONS[7][i].name)
-    end
-    while index < 9 do
-        local nbrOfSpells = 0
-        for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[classIndeces[string.upper(class)]]) do
-            if class == select(2, UnitClass("player")) then
-                -- weaponInfo.hidden = false
-                -- if not FieldGuideOptions.showKnownSpells and IsSpellKnown(weaponInfo.id) then
-                    -- weaponInfo.hidden = true
-                -- end
-            end
-            nbrOfSpells = not weaponInfo.hidden and nbrOfSpells + 1 or nbrOfSpells
-        end
-        maxValue = nbrOfSpells > maxValue and nbrOfSpells or maxValue
-        index = index + 1
-        class = string.upper(classes[index])
-    end
-    setHorizontalSliderMaxValue(maxValue)
-end
-
--- Updates all the buttons in the frame if weapons are selected.
-local function updateWeapons()
-    local frameCounter = 1
-    for row = 1, NBR_OF_SPELL_ROWS do
-        local hiddenCounter = 0
-        local shownCounter = 0
-        levelStrings[row]:SetText(classColors[classes[row + verticalOffset]:upper()] .. classes[row + verticalOffset])
-        for col = 1, #FieldGuide.WEAPONS[row + verticalOffset] do
-            if not FieldGuide.WEAPONS[row + verticalOffset][col].hidden then
-                if col - hiddenCounter >= horizontalOffset + 1 and col - hiddenCounter <= NBR_OF_SPELL_COLUMNS + horizontalOffset then
-                    updateFrame(spellTextures[frameCounter], spellButtons[frameCounter], FieldGuide.WEAPONS[row + verticalOffset][col])
-                    frameCounter = frameCounter + 1
-                    shownCounter = shownCounter + 1
-                end
-            else
-                hiddenCounter = hiddenCounter + 1
-            end
-        end
-        frameCounter = hideExtraFrames(frameCounter, shownCounter)
-    end
-end
-
--- Updates all the buttons in the frame.
-local function updateButtons()
-    local frameCounter = 1
-    local currentLevel = currentMinLevel
-    for row = 1, NBR_OF_SPELL_ROWS do
-        local hiddenCounter = 0
-        local shownCounter = 0
-        while emptyLevels[currentLevel] do
-            currentLevel = currentLevel + 2
-        end
-        levelStrings[row]:SetText(currentLevel ~= 2 and "Level " .. currentLevel or "Level 1")
-        for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
-            if not spellInfo.hidden then
-                if spellIndex - hiddenCounter >= horizontalOffset + 1 and spellIndex - hiddenCounter <= NBR_OF_SPELL_COLUMNS + horizontalOffset then
-                    updateFrame(spellTextures[frameCounter], spellButtons[frameCounter], spellInfo)
-                    shownCounter = shownCounter + 1
-                    frameCounter = frameCounter + 1
-                end
-            else
-                hiddenCounter = hiddenCounter + 1
-            end
-        end
-        frameCounter = hideExtraFrames(frameCounter, shownCounter)
-        currentLevel = currentLevel + 2
-    end
-end
-
--- Sets the background to the given class. Class must be a capitalized string.
-local function setBackground(class)
-    FieldGuideFrameBackgroundTextureClass:SetTexture("Interface/TALENTFRAME/" .. classBackgrounds[class] .. "-TopLeft")
-    FieldGuideFrameBackgroundTextureClass:SetAlpha(0.4)
-end
-
--- Initializes all frames, level strings, and textures for reuse.
-local function initFrames()
-    NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100)
-    Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.185
-    FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
-    local nbrOfSpellBtns = math.floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
-    NBR_OF_SPELL_COLUMNS = nbrOfSpellBtns / NBR_OF_SPELL_ROWS -- The number of buttons in x.
-    -- Create spell buttons.
-    for frameIndex = 1, nbrOfSpellBtns do
-        local spellBtnX = BUTTON_X_START + BUTTON_X_SPACING * ((frameIndex - 1) % NBR_OF_SPELL_COLUMNS)
-        local spellBtnY = -Y_SPACING * math.ceil(frameIndex / NBR_OF_SPELL_COLUMNS) - BUTTON_Y_START
-        spellButtons[frameIndex] = CreateFrame("BUTTON", nil, FieldGuideFrame, "FieldGuideSpellButtonTemplate")
-        spellButtons[frameIndex]:SetPoint("TOPLEFT", spellBtnX, spellBtnY)
-        spellTextures[frameIndex] = spellButtons[frameIndex]:CreateTexture(nil, "BORDER")
-    end
-    -- Create level strings.
-    for stringIndex = 1, NBR_OF_SPELL_ROWS do
-        levelStrings[stringIndex] = FieldGuideFrame:CreateFontString(nil, "ARTWORK", "FieldGuideLevelStringTemplate")
-        levelStrings[stringIndex]:SetPoint("TOPLEFT", LEVEL_STRING_X_START, -LEVEL_STRING_Y_START - Y_SPACING * stringIndex)
-    end
-end
-
--- Hides all unwanted spells (known spells/talents/opposite faction spells). Also adjusts the horizontal slider appropriately.
-local function hideUnwantedSpells()
-    local maxSpellIndex = 0
-    local currentSpellIndex = 0
-    local nbrOfHiddenRows = 0
-    lowestLevel = 52
-    for level = 2, 60, 2 do
-        local hiddenCounter = 0
-        for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
-            spellInfo.hidden = false
-            if not FieldGuideOptions.showTalents and spellInfo.talent then
-                spellInfo.hidden = true
-            elseif not FieldGuideOptions.showEnemySpells and (isAlliance() and spellInfo.faction == 2 or (not isAlliance() and spellInfo.faction == 1)) then
-                spellInfo.hidden = true
-            elseif not FieldGuideOptions.showKnownSpells and IsSpellKnown(spellInfo.id) then
-                spellInfo.hidden = true
-            end
-            if spellInfo.hidden then
-                hiddenCounter = hiddenCounter + 1
-            elseif spellIndex - hiddenCounter > maxSpellIndex then
-                maxSpellIndex = spellIndex - hiddenCounter
-            end
-            currentSpellIndex = spellIndex
-        end
-        if currentSpellIndex - hiddenCounter == 0 then -- This means all buttons on the row are hidden, so we should hide the entire row.
-            emptyLevels[level] = true -- Hide current level if all buttons are empty.
-            nbrOfHiddenRows = nbrOfHiddenRows + 1
-        else
-            if level < lowestLevel then
-                lowestLevel = level
-            end
-            emptyLevels[level] = false
-        end
-    end
-    setHorizontalSliderMaxValue(maxSpellIndex)
-    FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS - nbrOfHiddenRows)
-end
-
--- Changes the class to the given class.
-local function setClass(dropdownButton, class)
-    UIDropDownMenu_SetSelectedID(FieldGuideDropdownFrame, dropdownButton:GetID())
-    selectedClass = class
-    setBackground(selectedClass)
-    if class ~= "WEAPONS" then
-        if class == "MAGE" or class == "PRIEST" then
-            FieldGuideFrameEnemySpellsCheckBox:Show()
-        else
-            FieldGuideFrameEnemySpellsCheckBox:Hide()
-        end
-        FieldGuideFrameTalentsCheckBox:Show()
-        hideUnwantedSpells()
-        currentMinLevel = lowestLevel
-        updateButtons()
-    else
-        FieldGuideFrameTalentsCheckBox:Hide()
-        FieldGuideFrameEnemySpellsCheckBox:Hide()
-        FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 9 - NBR_OF_SPELL_ROWS)
-        hideUnwantedWeapons()
-        updateWeapons()
-    end
-    resetScroll()
-end
-
--- Returns true if the given class is currently selected in the dropdown list.
-local function isSelected(class)
-    return selectedClass == class
-end
-
--- Toggles the minimap button on or off.
-local function toggleMinimapButton()
-    FieldGuideOptions.minimapTable.hide = not FieldGuideOptions.minimapTable.hide
-    if FieldGuideOptions.minimapTable.hide then
-        FieldGuide.minimapIcon:Hide("FieldGuide")
-        print("Minimap button hidden. Type /fg minimap to show it again.")
-    else
-        FieldGuide.minimapIcon:Show("FieldGuide")
     end
 end
 
@@ -354,6 +142,17 @@ local function initSlash()
             return
         end
         toggleFrame()
+    end
+end
+
+-- Toggles the minimap button on or off.
+local function toggleMinimapButton()
+    FieldGuideOptions.minimapTable.hide = not FieldGuideOptions.minimapTable.hide
+    if FieldGuideOptions.minimapTable.hide then
+        FieldGuide.minimapIcon:Hide("FieldGuide")
+        print("Minimap button hidden. Type /fg minimap to show it again.")
+    else
+        FieldGuide.minimapIcon:Show("FieldGuide")
     end
 end
 
@@ -408,6 +207,191 @@ local function initCheckboxes()
     FieldGuideFrameKnownSpellsCheckBox:SetChecked(FieldGuideOptions.showKnownSpells)
 end
 
+-- Updates the given frame with the given texture and info.
+local function updateFrame(texture, frame, info)
+    texture:SetTexture(info.texture)
+    texture:SetAllPoints()
+    frame:Hide() -- So that tooltip updates when scrolling.
+    frame.talent = info.talent
+    frame.spellId = info.id
+    frame.spellCost = info.cost
+    frame:Show()
+end
+
+-- Hides all empty buttons between the given frameCounter and shownCounter.
+local function hideExtraFrames(frameCounter, shownCounter)
+    for i = frameCounter, frameCounter + NBR_OF_SPELL_COLUMNS - shownCounter - 1 do -- Hide all unnecessary buttons.
+        spellButtons[i]:Hide()
+        frameCounter = frameCounter + 1
+    end
+    return frameCounter
+end
+
+-- Updates all the buttons in the frame if weapons are selected.
+local function updateWeapons()
+    local frameCounter = 1
+    for row = 1, NBR_OF_SPELL_ROWS do
+        local hiddenCounter = 0
+        local shownCounter = 0
+        levelStrings[row]:SetText(CLASS_COLORS[CLASSES[row + verticalOffset]:upper()] .. CLASSES[row + verticalOffset])
+        for col = 1, #FieldGuide.WEAPONS[row + verticalOffset] do
+            if not FieldGuide.WEAPONS[row + verticalOffset][col].hidden then
+                if col - hiddenCounter >= horizontalOffset + 1 and col - hiddenCounter <= NBR_OF_SPELL_COLUMNS + horizontalOffset then
+                    updateFrame(spellTextures[frameCounter], spellButtons[frameCounter], FieldGuide.WEAPONS[row + verticalOffset][col])
+                    frameCounter = frameCounter + 1
+                    shownCounter = shownCounter + 1
+                end
+            else
+                hiddenCounter = hiddenCounter + 1
+            end
+        end
+        frameCounter = hideExtraFrames(frameCounter, shownCounter)
+    end
+end
+
+-- Sets the horizontal slider's max value to the given value.
+local function setHorizontalSliderMaxValue(value)
+    if value - NBR_OF_SPELL_COLUMNS <= 0 then
+        FieldGuideFrameHorizontalSlider:SetMinMaxValues(0, 0)
+        FieldGuideFrameHorizontalSliderScrollRightButton:Disable()
+    else
+        FieldGuideFrameHorizontalSlider:SetMinMaxValues(0, value - NBR_OF_SPELL_COLUMNS)
+        FieldGuideFrameHorizontalSliderScrollRightButton:Enable()
+    end
+end
+
+-- Iterates all weapon skills for the current class and shows/hides any known ones.
+local function hideUnwantedWeapons()
+    local maxValue = 0
+    local index = 1
+    local class = string.upper(CLASSES[index])
+    while index < 9 do
+        local nbrOfSpells = 0
+        for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[CLASS_INDECES[string.upper(class)]]) do
+            if class == select(2, UnitClass("player")) then
+                weaponInfo.hidden = false
+                if not FieldGuideOptions.showKnownSpells and IsSpellKnown(weaponInfo.id) then
+                    weaponInfo.hidden = true
+                end
+            end
+            nbrOfSpells = not weaponInfo.hidden and nbrOfSpells + 1 or nbrOfSpells
+        end
+        maxValue = nbrOfSpells > maxValue and nbrOfSpells or maxValue
+        index = index + 1
+        class = string.upper(CLASSES[index])
+    end
+    setHorizontalSliderMaxValue(maxValue)
+end
+
+-- Updates all the buttons in the frame.
+local function updateButtons()
+    local frameCounter = 1
+    local currentLevel = currentMinLevel
+    for row = 1, NBR_OF_SPELL_ROWS do
+        local hiddenCounter = 0
+        local shownCounter = 0
+        while emptyLevels[currentLevel] do
+            currentLevel = currentLevel + 2
+        end
+        levelStrings[row]:SetText(currentLevel ~= 2 and "Level " .. currentLevel or "Level 1")
+        for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
+            if not spellInfo.hidden then
+                if spellIndex - hiddenCounter >= horizontalOffset + 1 and spellIndex - hiddenCounter <= NBR_OF_SPELL_COLUMNS + horizontalOffset then
+                    updateFrame(spellTextures[frameCounter], spellButtons[frameCounter], spellInfo)
+                    shownCounter = shownCounter + 1
+                    frameCounter = frameCounter + 1
+                end
+            else
+                hiddenCounter = hiddenCounter + 1
+            end
+        end
+        frameCounter = hideExtraFrames(frameCounter, shownCounter)
+        currentLevel = currentLevel + 2
+    end
+end
+
+-- Hides all unwanted spells (known spells/talents/opposite faction spells). Also adjusts the horizontal slider appropriately.
+local function hideUnwantedSpells()
+    local maxSpellIndex = 0
+    local currentSpellIndex = 0
+    local nbrOfHiddenRows = 0
+    lowestLevel = 52
+    for level = 2, 60, 2 do
+        local hiddenCounter = 0
+        for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
+            spellInfo.hidden = false
+            if not FieldGuideOptions.showTalents and spellInfo.talent then
+                spellInfo.hidden = true
+            elseif not FieldGuideOptions.showEnemySpells and (isAlliance() and spellInfo.faction == 2 or (not isAlliance() and spellInfo.faction == 1)) then
+                spellInfo.hidden = true
+            elseif not FieldGuideOptions.showKnownSpells and IsSpellKnown(spellInfo.id) then
+                spellInfo.hidden = true
+            end
+            if spellInfo.hidden then
+                hiddenCounter = hiddenCounter + 1
+            elseif spellIndex - hiddenCounter > maxSpellIndex then
+                maxSpellIndex = spellIndex - hiddenCounter
+            end
+            currentSpellIndex = spellIndex
+        end
+        if currentSpellIndex - hiddenCounter == 0 then -- This means all buttons on the row are hidden, so we should hide the entire row.
+            emptyLevels[level] = true -- Hide current level if all buttons are empty.
+            nbrOfHiddenRows = nbrOfHiddenRows + 1
+        else
+            if level < lowestLevel then
+                lowestLevel = level
+            end
+            emptyLevels[level] = false
+        end
+    end
+    setHorizontalSliderMaxValue(maxSpellIndex)
+    FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS - nbrOfHiddenRows)
+end
+
+-- Sets the background to the given class. Class must be a capitalized string.
+local function setBackground(class)
+    FieldGuideFrameBackgroundTextureClass:SetTexture("Interface/TALENTFRAME/" .. CLASS_BACKGROUNDS[class] .. "-TopLeft")
+    FieldGuideFrameBackgroundTextureClass:SetAlpha(0.4)
+end
+
+-- Resets the scroll bar to top left position.
+local function resetScroll()
+    FieldGuideFrameVerticalSlider:SetValue(0)
+    FieldGuideFrameVerticalSliderScrollUpButton:Disable()
+    FieldGuideFrameHorizontalSlider:SetValue(0)
+    FieldGuideFrameHorizontalSliderScrollLeftButton:Disable()
+end
+
+-- Changes the class to the given class.
+local function setClass(dropdownButton, class)
+    UIDropDownMenu_SetSelectedID(FieldGuideDropdownFrame, dropdownButton:GetID())
+    selectedClass = class
+    setBackground(selectedClass)
+    if class ~= "WEAPONS" then
+        if class == "MAGE" or class == "PRIEST" then
+            FieldGuideFrameEnemySpellsCheckBox:Show()
+        else
+            FieldGuideFrameEnemySpellsCheckBox:Hide()
+        end
+        FieldGuideFrameTalentsCheckBox:Show()
+        hideUnwantedSpells()
+        currentMinLevel = lowestLevel
+        updateButtons()
+    else
+        FieldGuideFrameTalentsCheckBox:Hide()
+        FieldGuideFrameEnemySpellsCheckBox:Hide()
+        FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 9 - NBR_OF_SPELL_ROWS)
+        hideUnwantedWeapons()
+        updateWeapons()
+    end
+    resetScroll()
+end
+
+-- Returns true if the given class is currently selected in the dropdown list.
+local function isSelected(class)
+    return selectedClass == class
+end
+
 -- Initializes the dropdown menu.
 local function initDropdown()
     local dropdown = FieldGuideDropdownFrame
@@ -415,56 +399,56 @@ local function initDropdown()
         local info = UIDropDownMenu_CreateInfo()
         -- Warrior.
         info.text = "Warrior"
-        info.colorCode = classColors.WARRIOR
+        info.colorCode = CLASS_COLORS.WARRIOR
         info.arg1 = "WARRIOR"
         info.checked = isSelected("WARRIOR")
         info.func = setClass
         UIDropDownMenu_AddButton(info)
         -- Paladin.
         info.text = "Paladin"
-        info.colorCode = classColors.PALADIN
+        info.colorCode = CLASS_COLORS.PALADIN
         info.arg1 = "PALADIN"
         info.checked = isSelected("PALADIN")
         UIDropDownMenu_AddButton(info)
         -- Hunter.
         info.text = "Hunter"
-        info.colorCode = classColors.HUNTER
+        info.colorCode = CLASS_COLORS.HUNTER
         info.arg1 = "HUNTER"
         info.checked = isSelected("HUNTER")
         UIDropDownMenu_AddButton(info)
         -- Rogue.
         info.text = "Rogue"
-        info.colorCode = classColors.ROGUE
+        info.colorCode = CLASS_COLORS.ROGUE
         info.arg1 = "ROGUE"
         info.checked = isSelected("ROGUE")
         UIDropDownMenu_AddButton(info)
         -- Priest.
         info.text = "Priest"
-        info.colorCode = classColors.PRIEST
+        info.colorCode = CLASS_COLORS.PRIEST
         info.arg1 = "PRIEST"
         info.checked = isSelected("PRIEST")
         UIDropDownMenu_AddButton(info)
         -- Shaman.
         info.text = "Shaman"
-        info.colorCode = classColors.SHAMAN
+        info.colorCode = CLASS_COLORS.SHAMAN
         info.arg1 = "SHAMAN"
         info.checked = isSelected("SHAMAN")
         UIDropDownMenu_AddButton(info)
         -- Mage.
         info.text = "Mage"
-        info.colorCode = classColors.MAGE
+        info.colorCode = CLASS_COLORS.MAGE
         info.checked = isSelected("MAGE")
         info.arg1 = "MAGE"
         UIDropDownMenu_AddButton(info)
         -- Warlock.
         info.text = "Warlock"
-        info.colorCode = classColors.WARLOCK
+        info.colorCode = CLASS_COLORS.WARLOCK
         info.arg1 = "WARLOCK"
         info.checked = isSelected("WARLOCK")
         UIDropDownMenu_AddButton(info)
         -- Druid.
         info.text = "Druid"
-        info.colorCode = classColors.DRUID
+        info.colorCode = CLASS_COLORS.DRUID
         info.arg1 = "DRUID"
         info.checked = isSelected("DRUID")
         UIDropDownMenu_AddButton(info)
@@ -481,6 +465,28 @@ local function initDropdown()
     UIDropDownMenu_SetText(dropdown, "|c" .. RAID_CLASS_COLORS[selectedClass].colorStr .. selectedClass:sub(1, 1) .. string.lower(selectedClass:sub(2)))
 end
 
+-- Initializes all frames, level strings, and textures for reuse.
+local function initFrames()
+    NBR_OF_SPELL_ROWS = math.floor(FieldGuideFrame:GetHeight() / 100)
+    Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.185
+    FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
+    local nbrOfSpellBtns = math.floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
+    NBR_OF_SPELL_COLUMNS = nbrOfSpellBtns / NBR_OF_SPELL_ROWS -- The number of buttons in x.
+    -- Create spell buttons.
+    for frameIndex = 1, nbrOfSpellBtns do
+        local spellBtnX = BUTTON_X_START + BUTTON_X_SPACING * ((frameIndex - 1) % NBR_OF_SPELL_COLUMNS)
+        local spellBtnY = -Y_SPACING * math.ceil(frameIndex / NBR_OF_SPELL_COLUMNS) - BUTTON_Y_START
+        spellButtons[frameIndex] = CreateFrame("BUTTON", nil, FieldGuideFrame, "FieldGuideSpellButtonTemplate")
+        spellButtons[frameIndex]:SetPoint("TOPLEFT", spellBtnX, spellBtnY)
+        spellTextures[frameIndex] = spellButtons[frameIndex]:CreateTexture(nil, "BORDER")
+    end
+    -- Create level strings.
+    for stringIndex = 1, NBR_OF_SPELL_ROWS do
+        levelStrings[stringIndex] = FieldGuideFrame:CreateFontString(nil, "ARTWORK", "FieldGuideLevelStringTemplate")
+        levelStrings[stringIndex]:SetPoint("TOPLEFT", LEVEL_STRING_X_START, -LEVEL_STRING_Y_START - Y_SPACING * stringIndex)
+    end
+end
+
 -- Initializes everything.
 local function init()
     tinsert(UISpecialFrames, FieldGuideFrame:GetName()) -- Allows us to close the window with escape.
@@ -493,18 +499,6 @@ local function init()
     initCheckboxes()
     initMinimapButton()
     initSlash()
-end
-
--- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
-local function getCostModifier()
-    local honored = false
-    -- local rankThree = UnitPVPRank("player") -- Classic exclusive code.
-    if not isAlliance() then
-        honored = select(3, GetFactionInfoByID(530)) > 5 or select(3, GetFactionInfoByID(76)) > 5 or select(3, GetFactionInfoByID(81)) > 5 or select(3, GetFactionInfoByID(68)) > 5
-    else
-        honored = select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(54)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(72)) > 5
-    end
-    return rankThree and honored and 0.8 or honored and 0.9 or rankThree and 0.9 or 1
 end
 
 -- Called whenever player mouses over an icon.
@@ -631,7 +625,7 @@ function FieldGuide_OnEvent(self, event, ...)
                     showTalents = true,
                     showEnemySpells = false,
                     showKnownSpells = true,
-                    minimapTable = {} -- Used by LibDBIcon-1.0.
+                    minimapTable = {}
                 }
             end
             init()
