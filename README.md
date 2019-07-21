@@ -26,7 +26,6 @@ An addon for World of Warcraft: Classic.
 - Allow player to drag any (known) spells onto his/her action bars from the addon.
 - Allow customizing width and height of the frame.
 - Racials.
-- 
 
 ## Bugs
 - Scroll bar texture sometimes is completely black, possibly due to the black texture loading late.
