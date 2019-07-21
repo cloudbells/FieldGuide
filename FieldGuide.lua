@@ -165,18 +165,18 @@ local function hideUnwantedWeapons()
     local maxValue = 0
     local index = 1
     local class = string.upper(classes[index])
+    for i = 1, 3 do
+        FieldGuide.WEAPONS[7][i].hidden = true
+        print(FieldGuide.WEAPONS[7][i].name)
+    end
     while index < 9 do
         local nbrOfSpells = 0
         for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[classIndeces[string.upper(class)]]) do
-        --[[
-            THE BUG HERE IS THAT IT WILL FIRST COUNT NBROFSPELLS FOR WARRIOR, THEN PALADIN ETC AND WHEN IT REACHES MAGE IT HAS THE WRONG VALUES (11 INSTEAD OF 14)
-            THIS IS FIXED BY HAVING SEPARATE WEAPON SKILLS FOR EACH CLASS - OR SOME OTHER SOLUTION
-        --]]
             if class == select(2, UnitClass("player")) then
-                weaponInfo.hidden = false
-                if not FieldGuideOptions.showKnownSpells and IsSpellKnown(weaponInfo.id) then
-                    weaponInfo.hidden = true
-                end
+                -- weaponInfo.hidden = false
+                -- if not FieldGuideOptions.showKnownSpells and IsSpellKnown(weaponInfo.id) then
+                    -- weaponInfo.hidden = true
+                -- end
             end
             nbrOfSpells = not weaponInfo.hidden and nbrOfSpells + 1 or nbrOfSpells
         end

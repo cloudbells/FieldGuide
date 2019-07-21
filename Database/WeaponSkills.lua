@@ -1,5 +1,18 @@
 local _, FieldGuide = ...
 
+-- Copies the given table and returns the copy. If no table is given, this returns nil.
+FieldGuide.shallowTableCopy = function(original)
+    local copy = {}
+    if type(original) == "table" then
+        for k, v in pairs(original) do
+            copy[k] = v
+        end
+    else
+        return nil
+    end
+    return copy
+end
+
 local weapons = {
     ["bows"] = {
         ["name"] = "Bows",
@@ -110,83 +123,83 @@ local weapons = {
 
 FieldGuide.WEAPONS = {
     { -- Warrior.
-        weapons.bows,
-        weapons.crossbows,
-        weapons.daggers,
-        weapons.fistWeapons,
-        weapons.guns,
-        weapons.oneHandedAxes,
-        weapons.oneHandedMaces,
-        weapons.oneHandedSwords,
-        weapons.polearms,
-        weapons.staves,
-        weapons.thrown,
-        weapons.twoHandedAxes,
-        weapons.twoHandedMaces,
-        weapons.twoHandedSwords
+        FieldGuide.shallowTableCopy(weapons.bows),
+        FieldGuide.shallowTableCopy(weapons.crossbows),
+        FieldGuide.shallowTableCopy(weapons.daggers),
+        FieldGuide.shallowTableCopy(weapons.fistWeapons),
+        FieldGuide.shallowTableCopy(weapons.guns),
+        FieldGuide.shallowTableCopy(weapons.oneHandedAxes),
+        FieldGuide.shallowTableCopy(weapons.oneHandedMaces),
+        FieldGuide.shallowTableCopy(weapons.oneHandedSwords),
+        FieldGuide.shallowTableCopy(weapons.polearms),
+        FieldGuide.shallowTableCopy(weapons.staves),
+        FieldGuide.shallowTableCopy(weapons.thrown),
+        FieldGuide.shallowTableCopy(weapons.twoHandedAxes),
+        FieldGuide.shallowTableCopy(weapons.twoHandedMaces),
+        FieldGuide.shallowTableCopy(weapons.twoHandedSwords)
     },
     { -- Paladin.
-        weapons.oneHandedAxes,
-        weapons.oneHandedMaces,
-        weapons.oneHandedSwords,
-        weapons.polearms,
-        weapons.twoHandedAxes,
-        weapons.twoHandedMaces,
-        weapons.twoHandedSwords
+        FieldGuide.shallowTableCopy(weapons.oneHandedAxes),
+        FieldGuide.shallowTableCopy(weapons.oneHandedMaces),
+        FieldGuide.shallowTableCopy(weapons.oneHandedSwords),
+        FieldGuide.shallowTableCopy(weapons.polearms),
+        FieldGuide.shallowTableCopy(weapons.twoHandedAxes),
+        FieldGuide.shallowTableCopy(weapons.twoHandedMaces),
+        FieldGuide.shallowTableCopy(weapons.twoHandedSwords)
     },
     { -- Hunter.
-        weapons.bows,
-        weapons.crossbows,
-        weapons.daggers,
-        weapons.fistWeapons,
-        weapons.guns,
-        weapons.oneHandedAxes,
-        weapons.oneHandedSwords,
-        weapons.polearms,
-        weapons.staves,
-        weapons.thrown,
-        weapons.twoHandedAxes,
-        weapons.twoHandedSwords
+        FieldGuide.shallowTableCopy(weapons.bows),
+        FieldGuide.shallowTableCopy(weapons.crossbows),
+        FieldGuide.shallowTableCopy(weapons.daggers),
+        FieldGuide.shallowTableCopy(weapons.fistWeapons),
+        FieldGuide.shallowTableCopy(weapons.guns),
+        FieldGuide.shallowTableCopy(weapons.oneHandedAxes),
+        FieldGuide.shallowTableCopy(weapons.oneHandedSwords),
+        FieldGuide.shallowTableCopy(weapons.polearms),
+        FieldGuide.shallowTableCopy(weapons.staves),
+        FieldGuide.shallowTableCopy(weapons.thrown),
+        FieldGuide.shallowTableCopy(weapons.twoHandedAxes),
+        FieldGuide.shallowTableCopy(weapons.twoHandedSwords)
     },
     { -- Rogue.
-        weapons.bows,
-        weapons.crossbows,
-        weapons.daggers,
-        weapons.fistWeapons,
-        weapons.guns,
-        weapons.oneHandedMaces,
-        weapons.oneHandedSwords,
-        weapons.thrown
+        FieldGuide.shallowTableCopy(weapons.bows),
+        FieldGuide.shallowTableCopy(weapons.crossbows),
+        FieldGuide.shallowTableCopy(weapons.daggers),
+        FieldGuide.shallowTableCopy(weapons.fistWeapons),
+        FieldGuide.shallowTableCopy(weapons.guns),
+        FieldGuide.shallowTableCopy(weapons.oneHandedMaces),
+        FieldGuide.shallowTableCopy(weapons.oneHandedSwords),
+        FieldGuide.shallowTableCopy(weapons.thrown)
     },
     { -- Priest.
-        weapons.daggers,
-        weapons.oneHandedMaces,
-        weapons.staves,
-        weapons.wands
+        FieldGuide.shallowTableCopy(weapons.daggers),
+        FieldGuide.shallowTableCopy(weapons.oneHandedMaces),
+        FieldGuide.shallowTableCopy(weapons.staves),
+        FieldGuide.shallowTableCopy(weapons.wands)
     },
     { -- Shaman.
-        weapons.oneHandedAxes,
-        weapons.oneHandedMaces,
-        weapons.staves,
-        weapons.twoHandedAxes,
-        weapons.twoHandedMaces
+        FieldGuide.shallowTableCopy(weapons.oneHandedAxes),
+        FieldGuide.shallowTableCopy(weapons.oneHandedMaces),
+        FieldGuide.shallowTableCopy(weapons.staves),
+        FieldGuide.shallowTableCopy(weapons.twoHandedAxes),
+        FieldGuide.shallowTableCopy(weapons.twoHandedMaces)
     },
     { -- Mage.
-        weapons.daggers,
-        weapons.oneHandedSwords,
-        weapons.staves,
-        weapons.wands
+        FieldGuide.shallowTableCopy(weapons.daggers),
+        FieldGuide.shallowTableCopy(weapons.oneHandedSwords),
+        FieldGuide.shallowTableCopy(weapons.staves),
+        FieldGuide.shallowTableCopy(weapons.wands)
     },
     { -- Warlock.
-        weapons.daggers,
-        weapons.oneHandedSwords,
-        weapons.staves,
-        weapons.wands
+        FieldGuide.shallowTableCopy(weapons.daggers),
+        FieldGuide.shallowTableCopy(weapons.oneHandedSwords),
+        FieldGuide.shallowTableCopy(weapons.staves),
+        FieldGuide.shallowTableCopy(weapons.wands)
     },
     { -- Druid.
-        weapons.daggers,
-        weapons.oneHandedMaces,
-        weapons.staves,
-        weapons.wands
+        FieldGuide.shallowTableCopy(weapons.daggers),
+        FieldGuide.shallowTableCopy(weapons.oneHandedMaces),
+        FieldGuide.shallowTableCopy(weapons.staves),
+        FieldGuide.shallowTableCopy(weapons.wands)
     },
 }
