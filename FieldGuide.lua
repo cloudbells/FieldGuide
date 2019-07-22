@@ -118,13 +118,13 @@ end
 -- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
 local function getCostModifier()
     local honored = false
-    -- local rankThree = UnitPVPRank("player") -- Classic exclusive code.
-    if not isAlliance() then
-        honored = select(3, GetFactionInfoByID(530)) > 5 or select(3, GetFactionInfoByID(76)) > 5 or select(3, GetFactionInfoByID(81)) > 5 or select(3, GetFactionInfoByID(68)) > 5
+    -- local rankThree = UnitPVPRank("player") > 7 -- Classic exclusive code.
+    if isAlliance() then
+        honored = select(3, GetFactionInfoByID(72)) > 5 or select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(54)) > 5
     else
-        honored = select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(54)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(72)) > 5
+        honored = select(3, GetFactionInfoByID(68)) > 5 or select(3, GetFactionInfoByID(76)) > 5 or select(3, GetFactionInfoByID(81)) > 5 or select(3, GetFactionInfoByID(530)) > 5
     end
-    return rankThree and honored and 0.8 or honored and 0.9 or rankThree and 0.9 or 1
+    return rankThree and honored and 0.8 or (honored or rankThree) and 0.9 or 1
 end
 
 -- Shows/hides the frame.
@@ -141,7 +141,7 @@ local function initSlash()
     SLASH_FIELDGUIDE1 = "/fieldguide"
     SLASH_FIELDGUIDE2 = "/fg"
     SlashCmdList["FIELDGUIDE"] = function(msg)
-        msg = string.lower(msg)
+        msg = msg:lower()
         if msg == "minimap" then
             toggleMinimapButton()
             return
@@ -268,22 +268,19 @@ end
 -- Iterates all weapon skills for the current class and shows/hides any known ones.
 local function hideUnwantedWeapons()
     local maxValue = 0
-    local index = 1
-    local class = string.upper(CLASSES[index])
-    while index < 9 do
+    for index, class in ipairs(CLASSES) do
         local nbrOfSpells = 0
-        for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[CLASS_INDECES[string.upper(class)]]) do
+        for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[CLASS_INDECES[class:upper()]]) do
             if class == select(2, UnitClass("player")) then
-                weaponInfo.hidden = false
                 if not FieldGuideOptions.showKnownSpells and IsSpellKnown(weaponInfo.id) then
                     weaponInfo.hidden = true
+                else
+                    weaponInfo.hidden = false
                 end
             end
             nbrOfSpells = not weaponInfo.hidden and nbrOfSpells + 1 or nbrOfSpells
         end
         maxValue = nbrOfSpells > maxValue and nbrOfSpells or maxValue
-        index = index + 1
-        class = string.upper(CLASSES[index])
     end
     setHorizontalSliderMaxValue(maxValue)
 end
@@ -324,13 +321,14 @@ local function hideUnwantedSpells()
     for level = 2, 60, 2 do
         local hiddenCounter = 0
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
-            spellInfo.hidden = false
-            if not FieldGuideOptions.showTalents and spellInfo.talent then
+            if not FieldGuideOptions.showKnownSpells and IsSpellKnown(spellInfo.id) then
                 spellInfo.hidden = true
             elseif not FieldGuideOptions.showEnemySpells and (isAlliance() and spellInfo.faction == 2 or (not isAlliance() and spellInfo.faction == 1)) then
                 spellInfo.hidden = true
-            elseif not FieldGuideOptions.showKnownSpells and IsSpellKnown(spellInfo.id) then
+            elseif not FieldGuideOptions.showTalents and spellInfo.talent then
                 spellInfo.hidden = true
+            else
+                spellInfo.hidden = false
             end
             if spellInfo.hidden then
                 hiddenCounter = hiddenCounter + 1
@@ -467,7 +465,7 @@ local function initDropdown()
     UIDropDownMenu_SetWidth(dropdown, 100);
     UIDropDownMenu_SetButtonWidth(dropdown, 124)
     UIDropDownMenu_JustifyText(dropdown, "RIGHT")
-    UIDropDownMenu_SetText(dropdown, "|c" .. RAID_CLASS_COLORS[selectedClass].colorStr .. selectedClass:sub(1, 1) .. string.lower(selectedClass:sub(2)))
+    UIDropDownMenu_SetText(dropdown, "|c" .. RAID_CLASS_COLORS[selectedClass].colorStr .. selectedClass:sub(1, 1) .. selectedClass:sub(2):lower())
 end
 
 -- Initializes all frames, level strings, and textures for reuse.
@@ -596,12 +594,12 @@ end
 
 -- Shows or hides the talents (type == 1), enemy spells (type == 2), or known spells (type == 3).
 function FieldGuide_ToggleButtons(type)
-    if type == 1 then -- Talents.
-        FieldGuideOptions.showTalents = not FieldGuideOptions.showTalents
+    if type == 3 then -- Known spells.
+        FieldGuideOptions.showKnownSpells = not FieldGuideOptions.showKnownSpells
     elseif type == 2 then -- Enemy spells.
         FieldGuideOptions.showEnemySpells = not FieldGuideOptions.showEnemySpells
-    elseif type == 3 then -- Known spells.
-        FieldGuideOptions.showKnownSpells = not FieldGuideOptions.showKnownSpells
+    elseif type == 1 then -- Talents.
+        FieldGuideOptions.showTalents = not FieldGuideOptions.showTalents
     end
     if selectedClass ~= "WEAPONS" then
         hideUnwantedSpells()
