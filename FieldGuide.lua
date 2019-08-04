@@ -1,17 +1,16 @@
 --[[
     TODO:
     -------------------------------------
-    1. Fix manual scrolling bug.
-    2. Add race info in Priest race-specific spells on hover.
-    3. Make scroll bars look better – add small texture at bottom right to separate?
-    4. Add a weapon skills background.
-    5. Check if weapon skills are cheaper if you are Honored and/or rank 3.
-    6. (Reduce horizontal slider's height and make the knob vertical again.)
-    7. Certain spells are learned through quests (i.e. Desperate Prayer as Priest, Resurrection as Paladin).
-    8. Make sure all spells are correct.
-    9. change this calculation: NBR_OF_SPELL_ROWS = floor(FieldGuideFrame:GetHeight() / 100) in initFrames().
-   10. Make it so that when unchecking spells, don't reset to top.
-   11. Show where to buy weapon skill in tooltip.
+    1. Make scroll bars look better – add small texture at bottom right to separate?
+    2. Make it so that when unchecking spells, don't reset to top.
+    3. Add a weapon skills background.
+    4. Check if weapon skills are cheaper if you are Honored and/or rank 3.
+    5. (Reduce horizontal slider's height and make the knob vertical again.)
+    6. Certain spells are learned through quests (i.e. Desperate Prayer as Priest, Resurrection as Paladin).
+    7. Make sure all spells are correct.
+    8. change this calculation: NBR_OF_SPELL_ROWS = floor(FieldGuideFrame:GetHeight() / 100) in initFrames().
+    9. Show where to buy weapon skill in tooltip.
+   10. Test Priest hide other races spells functionality thoroughly.
     ---------------------------------------
     
     Features (in no particular order):
@@ -43,6 +42,8 @@ local GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString = GetFact
 
 -- Variables.
 local faction = UnitFactionGroup("player")
+local race = UnitRace("player")
+local actualClass = select(2, UnitClass("player"))
 local lowestLevel = 52 -- Used for figuring out which row is at the top when hiding entire rows.
 local currentMinLevel = 2 -- The current top row to show.
 local selectedClass -- The currently selected class.
@@ -136,6 +137,17 @@ local function toggleFrame()
     end
 end
 
+-- Toggles the minimap button on or off.
+local function toggleMinimapButton()
+    FieldGuideOptions.minimapTable.hide = not FieldGuideOptions.minimapTable.hide
+    if FieldGuideOptions.minimapTable.hide then
+        FieldGuide.minimapIcon:Hide("FieldGuide")
+        print("Minimap button hidden. Type /fg minimap to show it again.")
+    else
+        FieldGuide.minimapIcon:Show("FieldGuide")
+    end
+end
+
 -- Sets slash commands.
 local function initSlash()
     SLASH_FIELDGUIDE1 = "/fieldguide"
@@ -147,17 +159,6 @@ local function initSlash()
             return
         end
         toggleFrame()
-    end
-end
-
--- Toggles the minimap button on or off.
-local function toggleMinimapButton()
-    FieldGuideOptions.minimapTable.hide = not FieldGuideOptions.minimapTable.hide
-    if FieldGuideOptions.minimapTable.hide then
-        FieldGuide.minimapIcon:Hide("FieldGuide")
-        print("Minimap button hidden. Type /fg minimap to show it again.")
-    else
-        FieldGuide.minimapIcon:Show("FieldGuide")
     end
 end
 
@@ -204,7 +205,7 @@ local function initCheckboxes()
     -- Show known spells checkbox.
     FieldGuideFrameEnemySpellsCheckBoxText:SetFont("Fonts/FRIZQT__.TTF", 12, "OUTLINE")
     FieldGuideFrameEnemySpellsCheckBoxText:SetTextColor(1, 1, 1, 1)
-    FieldGuideFrameEnemySpellsCheckBoxText:SetText((isAlliance() and "Horde" or "Alliance") .. " spells")
+    FieldGuideFrameEnemySpellsCheckBoxText:SetText(actualClass ~= "PRIEST" and (isAlliance() and "Horde" or "Alliance") or ("Non-" .. race) .. " spells")
     FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth(), 0)
     -- Set checked or not checked.
     FieldGuideFrameTalentsCheckBox:SetChecked(FieldGuideOptions.showTalents)
@@ -271,7 +272,7 @@ local function hideUnwantedWeapons()
     for index, class in ipairs(CLASSES) do
         local nbrOfSpells = 0
         for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[CLASS_INDECES[class:upper()]]) do
-            if class == select(2, UnitClass("player")) then
+            if class == actualClass then
                 if not FieldGuideOptions.showKnownSpells and IsSpellKnown(weaponInfo.id) then
                     weaponInfo.hidden = true
                 else
@@ -325,6 +326,8 @@ local function hideUnwantedSpells()
                 spellInfo.hidden = true
             elseif not FieldGuideOptions.showEnemySpells and (isAlliance() and spellInfo.faction == 2 or (not isAlliance() and spellInfo.faction == 1)) then
                 spellInfo.hidden = true
+            elseif actualClass == "PRIEST" and selectedClass == "PRIEST" and spellInfo.race and not FieldGuideOptions.showEnemySpells and not string.find(spellInfo.race, race) then
+                spellInfo.hidden = true
             elseif not FieldGuideOptions.showTalents and spellInfo.talent then
                 spellInfo.hidden = true
             else
@@ -371,8 +374,14 @@ local function setClass(dropdownButton, class)
     selectedClass = class
     setBackground(selectedClass)
     if class ~= "WEAPONS" then
-        if class == "MAGE" or class == "PRIEST" then
+        if class == "PRIEST" and actualClass == "PRIEST" then
+            FieldGuideFrameEnemySpellsCheckBoxText:SetText("Non-" .. race .. " spells")
             FieldGuideFrameEnemySpellsCheckBox:Show()
+            FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth(), 0)
+        elseif class == "MAGE" or class == "PRIEST" then
+            FieldGuideFrameEnemySpellsCheckBoxText:SetText((isAlliance() and "Horde" or "Alliance") .. " spells")
+            FieldGuideFrameEnemySpellsCheckBox:Show()
+            FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth(), 0)
         else
             FieldGuideFrameEnemySpellsCheckBox:Hide()
         end
@@ -494,7 +503,7 @@ end
 local function init()
     tinsert(UISpecialFrames, FieldGuideFrame:GetName()) -- Allows us to close the window with escape.
     initFrames()
-    selectedClass = select(2, UnitClass("player"))
+    selectedClass = actualClass
     setBackground(selectedClass)
     FieldGuide_ToggleButtons() -- Need to call this, or spells won't be hidden regardless of saved variables.
     resetScroll()
@@ -530,7 +539,7 @@ function FieldGuide_OnVerticalValueChanged(self, value)
     end
     verticalOffset = value
     if value ~= 0 then
-        currentMinLevel = value - lastVerticalValue > 0 and currentMinLevel + 2 or currentMinLevel - 2
+        currentMinLevel = currentMinLevel + (value - lastVerticalValue) * 2
         while emptyLevels[currentMinLevel] do
             currentMinLevel = value - lastVerticalValue > 0 and currentMinLevel + 2 or currentMinLevel - 2
         end
