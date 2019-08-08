@@ -4,6 +4,8 @@ An addon for World of Warcraft: Classic.
 `/fg` and `/fieldguide` will open the window.
 `/fg minimap` and `/fieldguide minimap` will toggle the minimap button on or off.
 
+Use shift+scroll to scroll horizontally.
+
 *This is a work in progress*.
 
 ![Current progress](https://i.imgur.com/CIbDcin.png)
