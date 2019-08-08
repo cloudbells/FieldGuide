@@ -1,18 +1,4 @@
 --[[
-    TODO:
-    -------------------------------------
-    1. Make scroll bars look better – add small texture at bottom right to separate?
-    2. Make it so that when unchecking spells, don't reset to top.
-    3. Add a weapon skills background.
-    4. Check if weapon skills are cheaper if you are Honored and/or rank 3.
-    5. (Reduce horizontal slider's height and make the knob vertical again.)
-    6. Certain spells are learned through quests (i.e. Desperate Prayer as Priest, Resurrection as Paladin).
-    7. Make sure all spells are correct.
-    8. change this calculation: NBR_OF_SPELL_ROWS = floor(FieldGuideFrame:GetHeight() / 100) in initFrames().
-    9. Show where to buy weapon skill in tooltip.
-   10. Test Priest hide other races spells functionality thoroughly.
-    ---------------------------------------
-    
     Features (in no particular order):
     ---------------------------------------
     1. When clicking on weapon skill, show where the trainer is using TomTom.
@@ -119,7 +105,7 @@ end
 -- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
 local function getCostModifier()
     local honored = false
-    -- local rankThree = UnitPVPRank("player") > 7 -- Classic exclusive code.
+    local rankThree = UnitPVPRank("player") > 7
     if isAlliance() then
         honored = select(3, GetFactionInfoByID(72)) > 5 or select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(54)) > 5
     else
@@ -205,7 +191,7 @@ local function initCheckboxes()
     -- Show known spells checkbox.
     FieldGuideFrameEnemySpellsCheckBoxText:SetFont("Fonts/FRIZQT__.TTF", 12, "OUTLINE")
     FieldGuideFrameEnemySpellsCheckBoxText:SetTextColor(1, 1, 1, 1)
-    FieldGuideFrameEnemySpellsCheckBoxText:SetText(actualClass ~= "PRIEST" and (isAlliance() and "Horde" or "Alliance") or ("Non-" .. race) .. " spells")
+    FieldGuideFrameEnemySpellsCheckBoxText:SetText((actualClass ~= "PRIEST" and (isAlliance() and "Horde" or "Alliance") or ("Non-" .. race)) .. " spells")
     FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth(), 0)
     -- Set checked or not checked.
     FieldGuideFrameTalentsCheckBox:SetChecked(FieldGuideOptions.showTalents)
@@ -294,8 +280,8 @@ local function updateButtons()
         local hiddenCounter = 0
         local shownCounter = 0
         while emptyLevels[currentLevel] do
-            currentLevel = currentLevel + 2
-        end
+        currentLevel = currentLevel + 2
+    end
         levelStrings[row]:SetText(currentLevel ~= 2 and "Level " .. currentLevel or "Level 1")
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
             if not spellInfo.hidden then
@@ -372,8 +358,8 @@ end
 local function setClass(dropdownButton, class)
     UIDropDownMenu_SetSelectedID(FieldGuideDropdownFrame, dropdownButton:GetID())
     selectedClass = class
-    setBackground(selectedClass)
     if class ~= "WEAPONS" then
+        setBackground(selectedClass)
         if class == "PRIEST" and actualClass == "PRIEST" then
             FieldGuideFrameEnemySpellsCheckBoxText:SetText("Non-" .. race .. " spells")
             FieldGuideFrameEnemySpellsCheckBox:Show()
@@ -390,6 +376,7 @@ local function setClass(dropdownButton, class)
         currentMinLevel = lowestLevel
         updateButtons()
     else
+        setBackground(actualClass)
         FieldGuideFrameTalentsCheckBox:Hide()
         FieldGuideFrameEnemySpellsCheckBox:Hide()
         FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 9 - NBR_OF_SPELL_ROWS)
@@ -481,7 +468,6 @@ end
 local function initFrames()
     NBR_OF_SPELL_ROWS = floor(FieldGuideFrame:GetHeight() / 100)
     Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.185
-    FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
     local nbrOfSpellBtns = floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
     NBR_OF_SPELL_COLUMNS = nbrOfSpellBtns / NBR_OF_SPELL_ROWS -- The number of buttons in x.
     -- Create spell buttons.
@@ -511,6 +497,11 @@ local function init()
     initCheckboxes()
     initMinimapButton()
     initSlash()
+    FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
+    FieldGuideFrameVerticalSlider:SetValue(1)
+    FieldGuideFrameVerticalSlider:SetValue(0)
+    FieldGuideFrameVerticalSlider:SetEnabled(false)
+    FieldGuideFrameHorizontalSlider:SetEnabled(false)
 end
 
 -- Called whenever player mouses over an icon.
@@ -533,10 +524,6 @@ end
 
 -- Is called whenever the value of the vertical slider changes.
 function FieldGuide_OnVerticalValueChanged(self, value)
-    value = value + 0.5 - (value + 0.5) % 1
-    if not (value > lastVerticalValue or value < lastVerticalValue) then -- Throttle.
-        return
-    end
     verticalOffset = value
     if value ~= 0 then
         currentMinLevel = currentMinLevel + (value - lastVerticalValue) * 2
@@ -568,10 +555,6 @@ end
 
 -- Is called whenever the value of the horizontal slider changes.
 function FieldGuide_OnHorizontalValueChanged(self, value)
-    value = value + 0.5 - (value + 0.5) % 1
-    if not (value > lastHorizontalValue or value < lastHorizontalValue) then -- Throttle.
-        return
-    end
     lastHorizontalValue = value
     self:SetValue(value)
     horizontalOffset = value
