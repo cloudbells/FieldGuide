@@ -6,7 +6,7 @@ An addon for World of Warcraft: Classic.
 
 *This is a work in progress*.
 
-![Current progress](https://i.imgur.com/AiLWPcX.png)
+![Current progress](https://i.imgur.com/CIbDcin.png)
 
 ## Features
 - Shows you which spells each class learns every level to plan when you need to go back to town.
@@ -28,7 +28,5 @@ An addon for World of Warcraft: Classic.
 - Racials.
 
 ## Bugs
-- Scroll bar texture sometimes is completely black, possibly due to the black texture loading late.
-- Scroll up/down button highlight is too big (can cause difficulty when manually dragging knob).
 - Ranks do not show in spell tooltips.
 - Some spells and ranks might be wrong, as I've gone off private server and Classic Wowhead (please get an API) data, both of which currently aren't very accurate. For example, on a certain private server, Shadowburn rank 6 costs 2g 20s while it should cost 11s only (baseline).

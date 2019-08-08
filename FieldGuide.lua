@@ -105,7 +105,7 @@ end
 -- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
 local function getCostModifier()
     local honored = false
-    local rankThree = UnitPVPRank("player") > 7
+    -- local rankThree = UnitPVPRank("player") > 7
     if isAlliance() then
         honored = select(3, GetFactionInfoByID(72)) > 5 or select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(54)) > 5
     else
