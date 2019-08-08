@@ -1,8 +1,8 @@
-## Interface: 80200
+## Interface: 11302
 ## Title: Field Guide
 ## Notes: Shows when spells are trainable and how much each spell costs to train, and other stuff.
 ## Author: cloudbells
-## Version: 0.9.9
+## Version: @project-version@
 ## SavedVariablesPerCharacter: FieldGuideOptions
 
 # Load libraries.
@@ -29,5 +29,3 @@ Database\Warrior.lua
 # Load core files.
 FieldGuide.lua
 FieldGuide.xml
-
-# Classic Interface Version: 11302.
