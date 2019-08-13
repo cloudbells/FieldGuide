@@ -4,7 +4,9 @@ An addon for World of Warcraft: Classic.
 `/fg` and `/fieldguide` will open the window.
 `/fg minimap` and `/fieldguide minimap` will toggle the minimap button on or off.
 
-Use shift+scroll to scroll horizontally.
+Use shift + scroll to scroll horizontally.
+Right click to mark spells as unwanted
+Shift-right click a spell to mark all ranks of that spell as unwanted.
 
 *This is a work in progress*.
 
@@ -15,6 +17,8 @@ Use shift+scroll to scroll horizontally.
 - Shows you which classes can learn which weapon skills (staves, one-handed swords and so on).
 - Tells you how much each spell/weapon skill costs to train so you know if you can afford it or not (includes PvP rank and reputation modifiers).
 - You can filter out known spells and/or talents.
+- You can mark unwanted spells by right clicking on them. Shift-right clicking on a spell will mark all the ranks of that spell.
+- You can drag a spell from the addon onto an action bar.
 
 ## Planned Features (in no particular order)
 - Show ranks for each spell (there is currently no way of doing this with the API).
