@@ -25,13 +25,7 @@ Shift-right click a spell to mark all ranks of that spell as unwanted.
 - Show AQ tomes and spells that are gained through quests (such as the Mage's Conjure Water rank 7 from DM).
 - When clicking on a weapon skill, the addon should create a TomTom arrow, and mark the trainer on your map and minimap.
 - When clicking on any spell, it should also do the same as above – except it will choose the nearest trainer to where you are. (Perhaps an option to prioritize the nearest trainer with which the player is Honored for the 10% reduction in cost.)
-- Show Warlock pet skills (probably just together with the Warlock skills).
-
-## Possible Future Features
-- Allow player to mark spells that they do not wish to train, and distinguish these in the addon (as well as possibly at the trainer).
-- Allow player to drag any (known) spells onto his/her action bars from the addon.
-- Allow customizing width and height of the frame.
-- Racials.
+- Show Warlock/Hunter pet skills.
 
 ## Bugs
 - Ranks do not show in spell tooltips.
