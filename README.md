@@ -5,7 +5,9 @@ An addon for World of Warcraft: Classic.
 `/fg minimap` and `/fieldguide minimap` will toggle the minimap button on or off.
 
 Use shift + scroll to scroll horizontally.
-Right click to mark spells as unwanted
+
+Right click to mark spells as unwanted.
+
 Shift-right click a spell to mark all ranks of that spell as unwanted.
 
 *This is a work in progress*.
