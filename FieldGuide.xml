@@ -1,5 +1,5 @@
 <Ui>
-    <Button name="FieldGuideSpellButtonTemplate" virtual="true">
+    <Button name="FieldGuideSpellButtonTemplate" virtual="true" registerForClicks="RightButtonUp">
         <Size>
             <AbsDimension x="37" y="37" />
         </Size>
@@ -20,12 +20,21 @@
             </Layer>
         </Layers>
         <Scripts>
+            <OnLoad>
+				FieldGuideSpellButton_OnLoad(self)
+			</OnLoad>
             <OnEnter>
-                FieldGuideSpellButton_OnEnter(self)
+                FieldGuideSpellButton_OnEnter(self, button)
             </OnEnter>
             <OnLeave>
                 GameTooltip:Hide()
             </OnLeave>
+            <OnClick>
+                FieldGuideSpellButton_OnClick(self, button)
+            </OnClick>
+            <OnDragStart>
+                FieldGuideSpellButton_OnDragStart(self, button)
+            </OnDragStart>
         </Scripts>
         <HighlightTexture name="$parentHighlight" file="Interface/Addons/FieldGuide/Media/Buttons/SpellHighlight" alphaMode="ADD" />
     </Button>
@@ -86,7 +95,7 @@
             <Slider name="$parentVerticalSlider" orientation="VERTICAL" minValue="0" maxValue="0" defaultValue="0" valueStep="1">
                 <Size x="25" y="1" />
                 <Anchors>
-                    <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-11" y="-23" />
+                    <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-11" y="-24" />
                     <Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" y="49" />
                 </Anchors>
                 <Scripts>
@@ -101,7 +110,7 @@
                     <Button name="$parentScrollUpButton">
                         <Size x="32" y="32" />
                         <Anchors>
-                            <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-7" y="-4" />
+                            <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-7" y="-5" />
                         </Anchors>
                         <Scripts>
                             <OnClick>
@@ -116,7 +125,7 @@
                     <Button name="$parentScrollDownButton">
                         <Size x="32" y="32" />
                         <Anchors>
-                            <Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-7" y="30" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-7" y="31" />
                         </Anchors>
                         <Scripts>
                             <OnClick>
@@ -203,7 +212,7 @@
                     <Button name="$parentScrollRightButton">
                         <Size x="32" y="32" />
                         <Anchors>
-                            <Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-32" y="6" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-33" y="6" />
                         </Anchors>
                         <Scripts>
                             <OnClick>

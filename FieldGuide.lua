@@ -1,24 +1,24 @@
 --[[
+    TODO:
+    ---------------------------------------
+    1. Add Warlock/Hunter pet skills.
+    2. Add tomes/spells learned through quests.
+    3. (Allow player to scroll manually.)
+    4. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
+    ---------------------------------------
+    
     Features (in no particular order):
     ---------------------------------------
     1. When clicking on weapon skill, show where the trainer is using TomTom.
     2. When clicking on any spell, show where the nearest trainer is using TomTom (maybe give player option to show nearest cheapest trainer or just nearest).
-    3. Add icons for tomes/quests at level 60. AQ ones, but also Mage drink quest in DM/Arcane Brilliance and Warlock Shadow Ward rank 4 etc.
-    4. (Mark spells that the player does not wish to train and save between sessions. Perhaps make them grey?) - Allow player to import/export these?
-    5. (Add Warlock pet skills.)
-    6. Fix PvP rank spell cost modification function for Classic release.
-    7. (Possibly allow player to drag spells onto bars from the addon.)
-    8. (Add racials?)
-    9. Add option to change width and height – Ace.
+    3. (Add racials?)
     ---------------------------------------
 
     Bugs:
     ---------------------------------------
-    1. Manually scrolling seems to not keep up.
-    2. Scroll bar texture sometimes does not load – maybe FieldGuideFrameVerticalSlider does not load sometimes, or the black background loads after.
-    3. Highlighting over scroll up and down buttons is too big.
-    4. Ranks do not show in the tooltip (even in Classic) – add manually?
-    5. (Cure Disease/Cure Poison for Shamans might be wrong)
+    1. Scroll bar texture sometimes does not load – maybe FieldGuideFrameVerticalSlider does not load sometimes, or the black background loads after.
+    2. Highlighting over scroll up and down buttons is too big.
+    3. Ranks do not show in the tooltip (even in Classic) – add manually?
     ---------------------------------------
 ]]
 
@@ -88,10 +88,10 @@ local lastVerticalValue = 0 -- For the vertical slider to not update a million t
 local lastHorizontalValue = 0 -- For the horizontal slider to not update a million times a second.
 local verticalOffset = 0 -- Used exclusively for weapon skills.
 local horizontalOffset = 0 -- Used for scrolling horizontally.
-local BUTTON_X_START = 38 -- How far to the right the buttons start.
+local BUTTON_X_START = 33 -- How far to the right the buttons start.
 local BUTTON_Y_START = -25 -- How far down the first button is placed.
 local BUTTON_X_SPACING = 45 -- The spacing between all buttons in x.
-local LEVEL_STRING_X_START = 35 -- How far to the right the level strings are placed.
+local LEVEL_STRING_X_START = 30 -- How far to the right the level strings are placed.
 local LEVEL_STRING_Y_START = -53 -- How far down the first level string is placed.
 local Y_SPACING = 0 -- The spacing between all elements in y.
 local NBR_OF_SPELL_ROWS = 0
@@ -105,7 +105,7 @@ end
 -- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
 local function getCostModifier()
     local honored = false
-    -- local rankThree = UnitPVPRank("player") > 7
+    local rankThree = UnitPVPRank("player") > 7
     if isAlliance() then
         honored = select(3, GetFactionInfoByID(72)) > 5 or select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(54)) > 5
     else
@@ -182,17 +182,17 @@ local function initCheckboxes()
     FieldGuideFrameKnownSpellsCheckBoxText:SetFont("Fonts/FRIZQT__.TTF", 12, "OUTLINE")
     FieldGuideFrameKnownSpellsCheckBoxText:SetTextColor(1, 1, 1, 1)
     FieldGuideFrameKnownSpellsCheckBoxText:SetText("Known spells")
-    FieldGuideFrameKnownSpellsCheckBox:SetPoint("RIGHT", FieldGuideDropdownFrame, "LEFT", 10 - FieldGuideFrameKnownSpellsCheckBoxText:GetWidth(), 2)
+    FieldGuideFrameKnownSpellsCheckBox:SetPoint("RIGHT", FieldGuideDropdownFrame, "LEFT", 10 - FieldGuideFrameKnownSpellsCheckBoxText:GetWidth() - 5, 2)
     -- Show enemy faction spells checkbox.
     FieldGuideFrameTalentsCheckBoxText:SetFont("Fonts/FRIZQT__.TTF", 12, "OUTLINE")
     FieldGuideFrameTalentsCheckBoxText:SetTextColor(1, 1, 1, 1)
     FieldGuideFrameTalentsCheckBoxText:SetText("Talents")
-    FieldGuideFrameTalentsCheckBox:SetPoint("RIGHT", FieldGuideFrameKnownSpellsCheckBox, "LEFT", -FieldGuideFrameTalentsCheckBoxText:GetWidth(), 0)
+    FieldGuideFrameTalentsCheckBox:SetPoint("RIGHT", FieldGuideFrameKnownSpellsCheckBox, "LEFT", -FieldGuideFrameTalentsCheckBoxText:GetWidth() - 5, 0)
     -- Show known spells checkbox.
     FieldGuideFrameEnemySpellsCheckBoxText:SetFont("Fonts/FRIZQT__.TTF", 12, "OUTLINE")
     FieldGuideFrameEnemySpellsCheckBoxText:SetTextColor(1, 1, 1, 1)
     FieldGuideFrameEnemySpellsCheckBoxText:SetText((actualClass ~= "PRIEST" and (isAlliance() and "Horde" or "Alliance") or ("Non-" .. race)) .. " spells")
-    FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth(), 0)
+    FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth() - 5, 0)
     -- Set checked or not checked.
     FieldGuideFrameTalentsCheckBox:SetChecked(FieldGuideOptions.showTalents)
     FieldGuideFrameEnemySpellsCheckBox:SetChecked(FieldGuideOptions.showEnemySpells)
@@ -203,6 +203,11 @@ end
 local function updateFrame(texture, frame, info)
     texture:SetTexture(info.texture)
     texture:SetAllPoints()
+    if FieldGuideOptions.unwantedSpells[info.id] then
+        texture:SetVertexColor(1, 0, 0, 1)
+    else
+        texture:SetVertexColor(1, 1, 1)
+    end
     frame:Hide() -- So that tooltip updates when scrolling.
     frame.talent = info.talent
     frame.spellId = info.id
@@ -363,11 +368,11 @@ local function setClass(dropdownButton, class)
         if class == "PRIEST" and actualClass == "PRIEST" then
             FieldGuideFrameEnemySpellsCheckBoxText:SetText("Non-" .. race .. " spells")
             FieldGuideFrameEnemySpellsCheckBox:Show()
-            FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth(), 0)
+            FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth() - 5, 0)
         elseif class == "MAGE" or class == "PRIEST" then
             FieldGuideFrameEnemySpellsCheckBoxText:SetText((isAlliance() and "Horde" or "Alliance") .. " spells")
             FieldGuideFrameEnemySpellsCheckBox:Show()
-            FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth(), 0)
+            FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth() - 5, 0)
         else
             FieldGuideFrameEnemySpellsCheckBox:Hide()
         end
@@ -467,7 +472,7 @@ end
 -- Initializes all frames, level strings, and textures for reuse.
 local function initFrames()
     NBR_OF_SPELL_ROWS = floor(FieldGuideFrame:GetHeight() / 100)
-    Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.185
+    Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.175
     local nbrOfSpellBtns = floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
     NBR_OF_SPELL_COLUMNS = nbrOfSpellBtns / NBR_OF_SPELL_ROWS -- The number of buttons in x.
     -- Create spell buttons.
@@ -476,7 +481,9 @@ local function initFrames()
         local spellBtnY = -Y_SPACING * math.ceil(frameIndex / NBR_OF_SPELL_COLUMNS) - BUTTON_Y_START
         spellButtons[frameIndex] = CreateFrame("BUTTON", nil, FieldGuideFrame, "FieldGuideSpellButtonTemplate")
         spellButtons[frameIndex]:SetPoint("TOPLEFT", spellBtnX, spellBtnY)
+        spellButtons[frameIndex].index = frameIndex
         spellTextures[frameIndex] = spellButtons[frameIndex]:CreateTexture(nil, "BORDER")
+        spellTextures[frameIndex].index = frameIndex
     end
     -- Create level strings.
     for stringIndex = 1, NBR_OF_SPELL_ROWS do
@@ -520,6 +527,29 @@ function FieldGuideSpellButton_OnEnter(self)
         GameTooltip:AddLine("Price: " .. canAfford .. priceString)
         GameTooltip:Show()
     end)
+end
+
+function FieldGuideSpellButton_OnClick(self)
+    local spellName = GetSpellInfo(self.spellId)
+    FieldGuideOptions.unwantedSpells[self.spellId] = not FieldGuideOptions.unwantedSpells[self.spellId]
+    if IsShiftKeyDown() then
+        for level, spellIndex in pairs(FieldGuide[selectedClass]) do
+            for spellIndex, spellInfo in ipairs(spellIndex) do
+                if spellInfo.name == spellName then
+                    FieldGuideOptions.unwantedSpells[spellInfo.id] = FieldGuideOptions.unwantedSpells[self.spellId]
+                end
+            end
+        end
+    end
+    updateButtons()
+end
+
+function FieldGuideSpellButton_OnDragStart(self, button)
+    PickupSpell(self.spellId)
+end
+
+function FieldGuideSpellButton_OnLoad(self)
+    self:RegisterForDrag("LeftButton")
 end
 
 -- Is called whenever the value of the vertical slider changes.
@@ -615,14 +645,12 @@ end
 function FieldGuide_OnEvent(self, event, ...)
     if event == "ADDON_LOADED" then
         if ... == "FieldGuide" then
-            if FieldGuideOptions == nil then -- Defaults.
-                FieldGuideOptions = {
-                    showTalents = true,
-                    showEnemySpells = false,
-                    showKnownSpells = true,
-                    minimapTable = {}
-                }
-            end
+            FieldGuideOptions = FieldGuideOptions or {}
+            FieldGuideOptions.showTalents = FieldGuideOptions.showTalents
+            FieldGuideOptions.showEnemySpells = FieldGuideOptions.showEnemySpells
+            FieldGuideOptions.showKnownSpells = FieldGuideOptions.showKnownSpells
+            FieldGuideOptions.unwantedSpells = FieldGuideOptions.unwantedSpells or {}
+            FieldGuideOptions.minimapTable = FieldGuideOptions.minimapTable or {}
             init()
             self:UnregisterEvent("ADDON_LOADED")
         end
