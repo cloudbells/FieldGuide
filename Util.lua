@@ -1,5 +1,21 @@
 local _, FieldGuide = ...
 
+FieldGuide.pinPool = {}
+
+function FieldGuide:getPin()
+    for _, pin in pairs(FieldGuide.pinPool) do
+        if not pin.used then
+            pin.used = true
+            return pin
+        end
+    end
+    FieldGuide.pinPool[#FieldGuide.pinPool + 1] = CreateFrame("Button", nil, nil, "FieldGuidePinTemplate")
+    local pin = FieldGuide.pinPool[#FieldGuide.pinPool]
+    pin.used = true
+    pin.id = #FieldGuide.pinPool
+    return pin
+end
+
 -- Copies the given table and returns the copy. If no table is given, this returns nil.
 function FieldGuide.copy(original)
     local copy = {}
@@ -12,3 +28,4 @@ function FieldGuide.copy(original)
     end
     return copy
 end
+

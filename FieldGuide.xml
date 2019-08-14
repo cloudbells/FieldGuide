@@ -1,5 +1,5 @@
 <Ui>
-    <Button name="FieldGuideSpellButtonTemplate" virtual="true" registerForClicks="RightButtonUp">
+    <Button name="FieldGuideSpellButtonTemplate" virtual="true" registerForClicks="LeftButtonUp, RightButtonUp">
         <Size>
             <AbsDimension x="37" y="37" />
         </Size>
@@ -38,6 +38,27 @@
         </Scripts>
         <HighlightTexture name="$parentHighlight" file="Interface/Addons/FieldGuide/Media/Buttons/SpellHighlight" alphaMode="ADD" />
     </Button>
+    <Button name="FieldGuidePinTemplate" virtual="true" registerForClicks="RightButtonUp">
+        <Size>
+            <AbsDimension x="16" y="16" />
+        </Size>
+        <Layers>
+            <Layer level="OVERLAY" setAllPoints="true">
+                <Texture name="$parentTexture" file="Interface/Addons/FieldGuide/Media/Map/GoldGreenDot" />
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter>
+                FieldGuidePin_OnEnter(self)
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide()
+            </OnLeave>
+            <OnClick>
+                FieldGuidePin_OnClick(self, button)
+            </OnClick>
+        </Scripts>
+    </Button>
     <FontString name="FieldGuideLevelStringTemplate" font="Fonts/FRIZQT__.ttf" outline="NORMAL" justifyH="LEFT" virtual="true">
         <Shadow>
           <Color a="1" r="0" g="0" b="0" />
@@ -61,7 +82,7 @@
         <Anchors>
             <Anchor point="CENTER" />
         </Anchors>
-        <Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border">
+        <Backdrop edgeFile="Interface/DialogFrame/UI-DialogBox-Border">
 			<EdgeSize val="32"/>
 		</Backdrop>
         <Layers>

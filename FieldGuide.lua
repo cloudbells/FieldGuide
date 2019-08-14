@@ -1,17 +1,20 @@
 --[[
     TODO:
     ---------------------------------------
-    1. Add Warlock/Hunter pet skills.
-    2. Add tomes/spells learned through quests.
-    3. (Allow player to scroll manually.)
-    4. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
-    ---------------------------------------
-    
-    Features (in no particular order):
-    ---------------------------------------
-    1. When clicking on weapon skill, show where the trainer is using TomTom.
-    2. When clicking on any spell, show where the nearest trainer is using TomTom (maybe give player option to show nearest cheapest trainer or just nearest).
-    3. (Add racials?)
+    1. Add minimap icon as well.
+    2. Save coordinates between sessions.
+    3. When player suddenly downloads TomTom, remove all pins
+    4. Add option to remove all pins somehow
+    5. Add Warlock/Hunter pet skills.
+    6. Add tomes/spells learned through quests.
+    7. Fix TomTom for weapons.
+    8. Fix TomTom for spells.
+    9. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
+   10. (Allow player to scroll manually.)
+   11. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
+   12. (Add racials?)
+   13. (Show where all the trainers are maybe somehow?)'
+   14. Get rid of texture table, put reference in each frame: spellButton[i].texture = texture
     ---------------------------------------
 
     Bugs:
@@ -25,6 +28,9 @@
 local _, FieldGuide = ...
 local pairs, ipairs, select, floor = pairs, ipairs, select, math.floor
 local GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString = GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString
+local hbd = LibStub("HereBeDragons-2.0")
+local pins = LibStub("HereBeDragons-Pins-2.0")
+local minimapIcon = LibStub("LibDBIcon-1.0")
 
 -- Variables.
 local faction = UnitFactionGroup("player")
@@ -33,6 +39,8 @@ local actualClass = select(2, UnitClass("player"))
 local lowestLevel = 52 -- Used for figuring out which row is at the top when hiding entire rows.
 local currentMinLevel = 2 -- The current top row to show.
 local selectedClass -- The currently selected class.
+local updateThrottle = 0.5
+local elapsed = 0
 local emptyLevels = {} -- Holds info on if a row is empty or not.
 local CLASS_BACKGROUNDS = {
     WARRIOR = "WarriorArms",
@@ -97,6 +105,30 @@ local Y_SPACING = 0 -- The spacing between all elements in y.
 local NBR_OF_SPELL_ROWS = 0
 local NBR_OF_SPELL_COLUMNS = 0
 
+-- Adds a pin to the world map with the given mapId, x, y, and description.
+local function addMapPin(map, x, y, desc)
+    local mapName = hbd:GetLocalizedMap(map)
+    local coordString = string.format("%.2f, %.2f", x * 100, y * 100)
+    if IsAddOnLoaded("TomTom") then
+        _G["TomTom"]:AddWaypoint(map, x, y, {title = desc})
+    else
+        local pin = FieldGuide:getPin()
+        pin.map = map
+        pin.x, pin.y = y, x
+        pin.desc = desc
+        pin.mapName = mapName
+        pin.coordString = coordString
+        pins:AddWorldMapIconMap("FieldGuideFrame", pin, map, x, y, 3)
+    end
+    print("Your closest trainer is " .. desc .. " in " .. mapName .. " at " .. coordString .. ".")
+end
+
+-- Removes the given pin from the world map.
+local function removeMapPin(pin)
+    pins:RemoveWorldMapIcon("FieldGuideFrame", pin)
+    pin.used = false
+end
+
 -- Returns true if the player is Alliance, false otherwise.
 local function isAlliance()
     return faction == "Alliance"
@@ -127,10 +159,10 @@ end
 local function toggleMinimapButton()
     FieldGuideOptions.minimapTable.hide = not FieldGuideOptions.minimapTable.hide
     if FieldGuideOptions.minimapTable.hide then
-        FieldGuide.minimapIcon:Hide("FieldGuide")
+        minimapIcon:Hide("FieldGuide")
         print("Minimap button hidden. Type /fg minimap to show it again.")
     else
-        FieldGuide.minimapIcon:Show("FieldGuide")
+        minimapIcon:Show("FieldGuide")
     end
 end
 
@@ -150,7 +182,6 @@ end
 
 -- Initializes the minimap button.
 local function initMinimapButton()
-    FieldGuide.minimapIcon = LibStub("LibDBIcon-1.0")
     local obj = LibStub:GetLibrary("LibDataBroker-1.1"):NewDataObject("FieldGuide", {
         type = "launcher",
         text = "Field Guide",
@@ -173,7 +204,7 @@ local function initMinimapButton()
             GameTooltip:Hide()
         end
     })
-    FieldGuide.minimapIcon:Register("FieldGuide", obj, FieldGuideOptions.minimapTable)
+    minimapIcon:Register("FieldGuide", obj, FieldGuideOptions.minimapTable)
 end
 
 -- Initializes all checkboxes.
@@ -209,6 +240,8 @@ local function updateFrame(texture, frame, info)
         texture:SetVertexColor(1, 1, 1)
     end
     frame:Hide() -- So that tooltip updates when scrolling.
+    frame.name = info.name
+    frame.rank = info.rank
     frame.talent = info.talent
     frame.spellId = info.id
     frame.spellCost = info.cost
@@ -511,6 +544,23 @@ local function init()
     FieldGuideFrameHorizontalSlider:SetEnabled(false)
 end
 
+-- Called whenever player clicks a pin.
+function FieldGuidePin_OnClick(self, button)
+    removeMapPin(self)
+end
+
+-- Called whenever player mouses over a pin.
+function FieldGuidePin_OnEnter(self)
+    local playerX, playerY, instance = hbd:GetPlayerWorldPosition()
+    local destX, destY = hbd:GetWorldCoordinatesFromZone(self.x, self.y, self.map)
+    local distance = hbd:GetWorldDistance(instance, playerX, playerY, destX, destY)
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
+    GameTooltip:AddLine(self.desc)
+    GameTooltip:AddLine(string.format("%s yards away", math.floor(distance)), 1, 1, 1)
+    GameTooltip:AddLine(self.mapName .. " (" .. self.coordString .. ")", 0.7, 0.7, 0.7)
+    GameTooltip:Show()
+end
+
 -- Called whenever player mouses over an icon.
 function FieldGuideSpellButton_OnEnter(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -529,25 +579,32 @@ function FieldGuideSpellButton_OnEnter(self)
     end)
 end
 
-function FieldGuideSpellButton_OnClick(self)
-    local spellName = GetSpellInfo(self.spellId)
-    FieldGuideOptions.unwantedSpells[self.spellId] = not FieldGuideOptions.unwantedSpells[self.spellId]
-    if IsShiftKeyDown() then
-        for level, spellIndex in pairs(FieldGuide[selectedClass]) do
-            for spellIndex, spellInfo in ipairs(spellIndex) do
-                if spellInfo.name == spellName then
-                    FieldGuideOptions.unwantedSpells[spellInfo.id] = FieldGuideOptions.unwantedSpells[self.spellId]
+-- Called whenever player clicks on a spell button.
+function FieldGuideSpellButton_OnClick(self, button)
+    if button == "RightButton" then
+        local spellName = GetSpellInfo(self.spellId)
+        FieldGuideOptions.unwantedSpells[self.spellId] = not FieldGuideOptions.unwantedSpells[self.spellId]
+        if IsShiftKeyDown() then
+            for level, spellIndex in pairs(FieldGuide[selectedClass]) do
+                for spellIndex, spellInfo in ipairs(spellIndex) do
+                    if spellInfo.name == spellName then
+                        FieldGuideOptions.unwantedSpells[spellInfo.id] = FieldGuideOptions.unwantedSpells[self.spellId]
+                    end
                 end
             end
         end
+        updateButtons()
+    elseif button == "LeftButton" then
+        addMapPin(94, 0.5, 0.562, "Whizz Fizzlebang")
     end
-    updateButtons()
 end
 
+-- Called whenever player drags a spell button.1
 function FieldGuideSpellButton_OnDragStart(self, button)
     PickupSpell(self.spellId)
 end
 
+-- Called when each spell button has loaded.
 function FieldGuideSpellButton_OnLoad(self)
     self:RegisterForDrag("LeftButton")
 end
