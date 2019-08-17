@@ -101,6 +101,25 @@ local Y_SPACING = 0 -- The spacing between all elements in y.
 local NBR_OF_SPELL_ROWS = 0
 local NBR_OF_SPELL_COLUMNS = 0
 
+-- Checks if the pin exists as a frame and as a saved variable.
+-- Returns true if it does exist, then the frames, and then the variables.
+local function doesPinExist(x, y, map)
+    local frames = {}
+    local variable = nil
+    for _, p in ipairs(FieldGuide.pinPool) do
+        if p.x == x and p.y == y and p.map == map and p.used then
+            frames[#frames + 1] = p
+        end
+    end
+    for k, p in ipairs(FieldGuideOptions.pins) do
+        if p.x == x and p.y == y and p.map == map then
+            variable = k
+        end
+    end
+    local doesExist = variable ~= nil
+    return doesExist, frames, variable
+end
+
 -- Adds a pin to the world map with the given mapId, x, y, and name.
 local function addMapPin(map, x, y, name)
     local mapName = hbd:GetLocalizedMap(map)
@@ -127,19 +146,13 @@ end
 
 -- Removes the given pin from the world map.
 local function removeMapPin(pin)
-    local x, y, map = pin.x, pin.y, pin.map
-    for _, p in ipairs(FieldGuide.pinPool) do
-        if p.x == x and p.y == y and p.map == map then
-            hbdp:RemoveMinimapIcon("FieldGuideFrame", p)
-            hbdp:RemoveWorldMapIcon("FieldGuideFrame", p)
-            p.used = false
-        end
+    local _, frames, variable = doesPinExist(pin.x, pin.y, pin.map)
+    local world, minimap = unpack(frames)
+    for _, f in ipairs(frames) do
+        hbdp:RemoveMinimapIcon("FieldGuideFrame", f)
+        hbdp:RemoveWorldMapIcon("FieldGuideFrame", f)
     end
-    for k, p in ipairs(FieldGuideOptions.pins) do
-        if p.x == x and p.y == y and p.map == map then
-            FieldGuideOptions.pins[k] = nil
-        end
-    end
+    FieldGuideOptions.pins[variable] = nil
 end
 
 -- Returns true if the player is Alliance, false otherwise.
@@ -616,16 +629,18 @@ function FieldGuideSpellButton_OnClick(self, button)
         local x = 0.70
         local y = 0.30
         local name = "Whizz Fizzlebang"
-        addMapPin(map, x, y, name)
-        if not tomtom then
-            FieldGuideOptions.pins[#FieldGuideOptions.pins + 1] = {
-                ["map"] = map,
-                ["x"] = x,
-                ["y"] = y,
-                ["name"] = name,
-            }
+        if not doesPinExist(x, y, map) then
+            addMapPin(map, x, y, name)
+            if not tomtom then
+                FieldGuideOptions.pins[#FieldGuideOptions.pins + 1] = {
+                    ["map"] = map,
+                    ["x"] = x,
+                    ["y"] = y,
+                    ["name"] = name,
+                }
+            end
+            print("Added a marker to your closest trainer!")
         end
-        print("Added a marker to your closest trainer!")
     end
 end
 
