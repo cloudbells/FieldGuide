@@ -12,7 +12,6 @@ function FieldGuide:getPin()
     FieldGuide.pinPool[#FieldGuide.pinPool + 1] = CreateFrame("Button", nil, nil, "FieldGuidePinTemplate")
     local pin = FieldGuide.pinPool[#FieldGuide.pinPool]
     pin.used = true
-    pin.id = #FieldGuide.pinPool
     return pin
 end
 

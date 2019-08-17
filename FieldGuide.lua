@@ -1,20 +1,18 @@
 --[[
     TODO:
     ---------------------------------------
-    1. Add minimap icon as well.
-    2. Save coordinates between sessions.
-    3. When player suddenly downloads TomTom, remove all pins
-    4. Add option to remove all pins somehow
-    5. Add Warlock/Hunter pet skills.
-    6. Add tomes/spells learned through quests.
-    7. Fix TomTom for weapons.
-    8. Fix TomTom for spells.
-    9. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
-   10. (Allow player to scroll manually.)
-   11. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
-   12. (Add racials?)
-   13. (Show where all the trainers are maybe somehow?)'
-   14. Get rid of texture table, put reference in each frame: spellButton[i].texture = texture
+    1. Add trainer data for spells.
+    2. Add trainer data for weapons.
+    3. When you learn a spell, update buttons.
+    4. Add Warlock/Hunter pet skills.
+    5. Add tomes/spells learned through quests.
+    6. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
+    7. (Allow player to scroll manually.)
+    8. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
+    9. (Add racials?)
+   10. (Show where all the trainers are maybe somehow?)'
+   11. Get rid of texture table, put reference in each frame: spellButton[i].texture = texture
+   12. First Aid etc?
     ---------------------------------------
 
     Bugs:
@@ -29,18 +27,17 @@ local _, FieldGuide = ...
 local pairs, ipairs, select, floor = pairs, ipairs, select, math.floor
 local GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString = GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString
 local hbd = LibStub("HereBeDragons-2.0")
-local pins = LibStub("HereBeDragons-Pins-2.0")
+local hbdp = LibStub("HereBeDragons-Pins-2.0")
 local minimapIcon = LibStub("LibDBIcon-1.0")
 
 -- Variables.
+local tomtom = nil
 local faction = UnitFactionGroup("player")
 local race = UnitRace("player")
 local actualClass = select(2, UnitClass("player"))
 local lowestLevel = 52 -- Used for figuring out which row is at the top when hiding entire rows.
 local currentMinLevel = 2 -- The current top row to show.
 local selectedClass -- The currently selected class.
-local updateThrottle = 0.5
-local elapsed = 0
 local emptyLevels = {} -- Holds info on if a row is empty or not.
 local CLASS_BACKGROUNDS = {
     WARRIOR = "WarriorArms",
@@ -91,7 +88,6 @@ local CLASSES = {
 -- UI variables.
 local levelStrings = {} -- All the level font strings.
 local spellButtons = {} -- All the spell frames.
-local spellTextures = {} -- All the frames' textures.
 local lastVerticalValue = 0 -- For the vertical slider to not update a million times a second.
 local lastHorizontalValue = 0 -- For the horizontal slider to not update a million times a second.
 local verticalOffset = 0 -- Used exclusively for weapon skills.
@@ -105,28 +101,45 @@ local Y_SPACING = 0 -- The spacing between all elements in y.
 local NBR_OF_SPELL_ROWS = 0
 local NBR_OF_SPELL_COLUMNS = 0
 
--- Adds a pin to the world map with the given mapId, x, y, and description.
-local function addMapPin(map, x, y, desc)
+-- Adds a pin to the world map with the given mapId, x, y, and name.
+local function addMapPin(map, x, y, name)
     local mapName = hbd:GetLocalizedMap(map)
     local coordString = string.format("%.2f, %.2f", x * 100, y * 100)
-    if IsAddOnLoaded("TomTom") then
-        _G["TomTom"]:AddWaypoint(map, x, y, {title = desc})
+    if tomtom then
+        tomtom:AddWaypoint(map, x, y, {title = name})
     else
-        local pin = FieldGuide:getPin()
-        pin.map = map
-        pin.x, pin.y = y, x
-        pin.desc = desc
-        pin.mapName = mapName
-        pin.coordString = coordString
-        pins:AddWorldMapIconMap("FieldGuideFrame", pin, map, x, y, 3)
+        local pins = {
+            FieldGuide:getPin(),
+            FieldGuide:getPin()
+        }
+        for _, pin in pairs(pins) do
+            pin.map = map
+            pin.x = x
+            pin.y = y
+            pin.name = name
+            pin.mapName = mapName
+            pin.coordString = coordString
+        end
+        hbdp:AddMinimapIconMap("FieldGuideFrame", pins[1], map, x, y, true)
+        hbdp:AddWorldMapIconMap("FieldGuideFrame", pins[2], map, x, y, 3)
     end
-    print("Your closest trainer is " .. desc .. " in " .. mapName .. " at " .. coordString .. ".")
 end
 
 -- Removes the given pin from the world map.
 local function removeMapPin(pin)
-    pins:RemoveWorldMapIcon("FieldGuideFrame", pin)
-    pin.used = false
+    local x, y, map = pin.x, pin.y, pin.map
+    for _, p in ipairs(FieldGuide.pinPool) do
+        if p.x == x and p.y == y and p.map == map then
+            hbdp:RemoveMinimapIcon("FieldGuideFrame", p)
+            hbdp:RemoveWorldMapIcon("FieldGuideFrame", p)
+            p.used = false
+        end
+    end
+    for k, p in ipairs(FieldGuideOptions.pins) do
+        if p.x == x and p.y == y and p.map == map then
+            FieldGuideOptions.pins[k] = nil
+        end
+    end
 end
 
 -- Returns true if the player is Alliance, false otherwise.
@@ -267,7 +280,7 @@ local function updateWeapons()
         for col = 1, #FieldGuide.WEAPONS[row + verticalOffset] do
             if not FieldGuide.WEAPONS[row + verticalOffset][col].hidden then
                 if col - hiddenCounter >= horizontalOffset + 1 and col - hiddenCounter <= NBR_OF_SPELL_COLUMNS + horizontalOffset then
-                    updateFrame(spellTextures[frameCounter], spellButtons[frameCounter], FieldGuide.WEAPONS[row + verticalOffset][col])
+                    updateFrame(spellButtons[frameCounter].texture, spellButtons[frameCounter], FieldGuide.WEAPONS[row + verticalOffset][col])
                     frameCounter = frameCounter + 1
                     shownCounter = shownCounter + 1
                 end
@@ -324,7 +337,7 @@ local function updateButtons()
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
             if not spellInfo.hidden then
                 if spellIndex - hiddenCounter >= horizontalOffset + 1 and spellIndex - hiddenCounter <= NBR_OF_SPELL_COLUMNS + horizontalOffset then
-                    updateFrame(spellTextures[frameCounter], spellButtons[frameCounter], spellInfo)
+                    updateFrame(spellButtons[frameCounter].texture, spellButtons[frameCounter], spellInfo)
                     shownCounter = shownCounter + 1
                     frameCounter = frameCounter + 1
                 end
@@ -515,8 +528,7 @@ local function initFrames()
         spellButtons[frameIndex] = CreateFrame("BUTTON", nil, FieldGuideFrame, "FieldGuideSpellButtonTemplate")
         spellButtons[frameIndex]:SetPoint("TOPLEFT", spellBtnX, spellBtnY)
         spellButtons[frameIndex].index = frameIndex
-        spellTextures[frameIndex] = spellButtons[frameIndex]:CreateTexture(nil, "BORDER")
-        spellTextures[frameIndex].index = frameIndex
+        spellButtons[frameIndex].texture = spellButtons[frameIndex]:CreateTexture(nil, "BORDER")
     end
     -- Create level strings.
     for stringIndex = 1, NBR_OF_SPELL_ROWS do
@@ -542,6 +554,11 @@ local function init()
     FieldGuideFrameVerticalSlider:SetValue(0)
     FieldGuideFrameVerticalSlider:SetEnabled(false)
     FieldGuideFrameHorizontalSlider:SetEnabled(false)
+    if not tomtom then
+        for _, pin in ipairs(FieldGuideOptions.pins) do
+            addMapPin(pin.map, pin.x, pin.y, pin.name)
+        end
+    end
 end
 
 -- Called whenever player clicks a pin.
@@ -555,7 +572,7 @@ function FieldGuidePin_OnEnter(self)
     local destX, destY = hbd:GetWorldCoordinatesFromZone(self.x, self.y, self.map)
     local distance = hbd:GetWorldDistance(instance, playerX, playerY, destX, destY)
     GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
-    GameTooltip:AddLine(self.desc)
+    GameTooltip:AddLine(self.name)
     GameTooltip:AddLine(string.format("%s yards away", math.floor(distance)), 1, 1, 1)
     GameTooltip:AddLine(self.mapName .. " (" .. self.coordString .. ")", 0.7, 0.7, 0.7)
     GameTooltip:Show()
@@ -585,7 +602,7 @@ function FieldGuideSpellButton_OnClick(self, button)
         local spellName = GetSpellInfo(self.spellId)
         FieldGuideOptions.unwantedSpells[self.spellId] = not FieldGuideOptions.unwantedSpells[self.spellId]
         if IsShiftKeyDown() then
-            for level, spellIndex in pairs(FieldGuide[selectedClass]) do
+            for _, spellIndex in pairs(FieldGuide[selectedClass]) do
                 for spellIndex, spellInfo in ipairs(spellIndex) do
                     if spellInfo.name == spellName then
                         FieldGuideOptions.unwantedSpells[spellInfo.id] = FieldGuideOptions.unwantedSpells[self.spellId]
@@ -595,7 +612,20 @@ function FieldGuideSpellButton_OnClick(self, button)
         end
         updateButtons()
     elseif button == "LeftButton" then
-        addMapPin(94, 0.5, 0.562, "Whizz Fizzlebang")
+        local map = 467
+        local x = 0.70
+        local y = 0.30
+        local name = "Whizz Fizzlebang"
+        addMapPin(map, x, y, name)
+        if not tomtom then
+            FieldGuideOptions.pins[#FieldGuideOptions.pins + 1] = {
+                ["map"] = map,
+                ["x"] = x,
+                ["y"] = y,
+                ["name"] = name,
+            }
+        end
+        print("Added a marker to your closest trainer!")
     end
 end
 
@@ -702,12 +732,15 @@ end
 function FieldGuide_OnEvent(self, event, ...)
     if event == "ADDON_LOADED" then
         if ... == "FieldGuide" then
+            tomtom = IsAddOnLoaded("TomTom") and _G["TomTom"]
+            print(not tomtom and "Field Guide loaded! By the way, it is highly recommended to use TomTom with Field Guide." or "Field Guide loaded!")
             FieldGuideOptions = FieldGuideOptions or {}
             FieldGuideOptions.showTalents = FieldGuideOptions.showTalents
             FieldGuideOptions.showEnemySpells = FieldGuideOptions.showEnemySpells
             FieldGuideOptions.showKnownSpells = FieldGuideOptions.showKnownSpells
             FieldGuideOptions.unwantedSpells = FieldGuideOptions.unwantedSpells or {}
             FieldGuideOptions.minimapTable = FieldGuideOptions.minimapTable or {}
+            FieldGuideOptions.pins = FieldGuideOptions.pins or {}
             init()
             self:UnregisterEvent("ADDON_LOADED")
         end

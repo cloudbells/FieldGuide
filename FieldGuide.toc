@@ -4,6 +4,7 @@
 ## Author: cloudbells
 ## Version: @project-version@
 ## SavedVariablesPerCharacter: FieldGuideOptions
+## OptionalDeps: TomTom
 
 # Load libraries.
 Libraries\LibStub\LibStub.lua
