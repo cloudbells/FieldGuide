@@ -22,7 +22,7 @@ local weapons = {
         ["texture"] = "Interface/ICONS/ability_steelmelee",
         ["id"] = 1180
     },
-    ["fistWeapons"] = {
+    ["fist_weapons"] = {
         ["name"] = "Fist Weapons",
         ["rank"] = 1,
         ["cost"] = 1000,
@@ -36,21 +36,21 @@ local weapons = {
         ["texture"] = "Interface/ICONS/inv_weapon_rifle_01",
         ["id"] = 266
     },
-    ["oneHandedAxes"] = {
+    ["one_handed_axes"] = {
         ["name"] = "One-Handed Axes",
         ["rank"] = 1,
         ["cost"] = 1000,
         ["texture"] = "Interface/ICONS/inv_axe_01",
         ["id"] = 196
     },
-    ["oneHandedMaces"] = {
+    ["one_handed_maces"] = {
         ["name"] = "One-Handed Maces",
         ["rank"] = 1,
         ["cost"] = 1000,
         ["texture"] = "Interface/ICONS/inv_mace_01",
         ["id"] = 198
     },
-    ["oneHandedSwords"] = {
+    ["one_handed_swords"] = {
         ["name"] = "One-Handed Swords",
         ["rank"] = 1,
         ["cost"] = 1000,
@@ -78,21 +78,21 @@ local weapons = {
         ["texture"] = "Interface/ICONS/inv_throwingknife_02",
         ["id"] = 2567
     },
-    ["twoHandedAxes"] = {
+    ["two_handed_axes"] = {
         ["name"] = "Two-Handed Axes",
         ["rank"] = 1,
         ["cost"] = 1000,
         ["texture"] = "Interface/ICONS/inv_axe_04",
         ["id"] = 197
     },
-    ["twoHandedMaces"] = {
+    ["two_handed_maces"] = {
         ["name"] = "Two-Handed Maces",
         ["rank"] = 1,
         ["cost"] = 1000,
         ["texture"] = "Interface/ICONS/inv_mace_04",
         ["id"] = 199
     },
-    ["twoHandedSwords"] = {
+    ["two_handed_swords"] = {
         ["name"] = "Two-Handed Swords",
         ["rank"] = 1,
         ["cost"] = 1000,
@@ -105,7 +105,7 @@ local weapons = {
         ["cost"] = 1000,
         ["texture"] = "Interface/ICONS/ability_shootwand",
         ["id"] = 5009
-    },
+    }
 }
 
 FieldGuide.WEAPONS = {
@@ -113,79 +113,79 @@ FieldGuide.WEAPONS = {
         FieldGuide.copy(weapons.bows),
         FieldGuide.copy(weapons.crossbows),
         FieldGuide.copy(weapons.daggers),
-        FieldGuide.copy(weapons.fistWeapons),
+        FieldGuide.copy(weapons.fist_weapons),
         FieldGuide.copy(weapons.guns),
-        FieldGuide.copy(weapons.oneHandedAxes),
-        FieldGuide.copy(weapons.oneHandedMaces),
-        FieldGuide.copy(weapons.oneHandedSwords),
+        FieldGuide.copy(weapons.one_handed_axes),
+        FieldGuide.copy(weapons.one_handed_maces),
+        FieldGuide.copy(weapons.one_handed_swords),
         FieldGuide.copy(weapons.polearms),
         FieldGuide.copy(weapons.staves),
         FieldGuide.copy(weapons.thrown),
-        FieldGuide.copy(weapons.twoHandedAxes),
-        FieldGuide.copy(weapons.twoHandedMaces),
-        FieldGuide.copy(weapons.twoHandedSwords)
+        FieldGuide.copy(weapons.two_handed_axes),
+        FieldGuide.copy(weapons.two_handed_maces),
+        FieldGuide.copy(weapons.two_handed_swords)
     },
     [2] = { -- Paladin.
-        FieldGuide.copy(weapons.oneHandedAxes),
-        FieldGuide.copy(weapons.oneHandedMaces),
-        FieldGuide.copy(weapons.oneHandedSwords),
+        FieldGuide.copy(weapons.one_handed_axes),
+        FieldGuide.copy(weapons.one_handed_maces),
+        FieldGuide.copy(weapons.one_handed_swords),
         FieldGuide.copy(weapons.polearms),
-        FieldGuide.copy(weapons.twoHandedAxes),
-        FieldGuide.copy(weapons.twoHandedMaces),
-        FieldGuide.copy(weapons.twoHandedSwords)
+        FieldGuide.copy(weapons.two_handed_axes),
+        FieldGuide.copy(weapons.two_handed_maces),
+        FieldGuide.copy(weapons.two_handed_swords)
     },
     [3] = { -- Hunter.
         FieldGuide.copy(weapons.bows),
         FieldGuide.copy(weapons.crossbows),
         FieldGuide.copy(weapons.daggers),
-        FieldGuide.copy(weapons.fistWeapons),
+        FieldGuide.copy(weapons.fist_weapons),
         FieldGuide.copy(weapons.guns),
-        FieldGuide.copy(weapons.oneHandedAxes),
-        FieldGuide.copy(weapons.oneHandedSwords),
+        FieldGuide.copy(weapons.one_handed_axes),
+        FieldGuide.copy(weapons.one_handed_swords),
         FieldGuide.copy(weapons.polearms),
         FieldGuide.copy(weapons.staves),
         FieldGuide.copy(weapons.thrown),
-        FieldGuide.copy(weapons.twoHandedAxes),
-        FieldGuide.copy(weapons.twoHandedSwords)
+        FieldGuide.copy(weapons.two_handed_axes),
+        FieldGuide.copy(weapons.two_handed_swords)
     },
     [4] = { -- Rogue.
         FieldGuide.copy(weapons.bows),
         FieldGuide.copy(weapons.crossbows),
         FieldGuide.copy(weapons.daggers),
-        FieldGuide.copy(weapons.fistWeapons),
+        FieldGuide.copy(weapons.fist_weapons),
         FieldGuide.copy(weapons.guns),
-        FieldGuide.copy(weapons.oneHandedMaces),
-        FieldGuide.copy(weapons.oneHandedSwords),
+        FieldGuide.copy(weapons.one_handed_maces),
+        FieldGuide.copy(weapons.one_handed_swords),
         FieldGuide.copy(weapons.thrown)
     },
     [5] = { -- Priest.
         FieldGuide.copy(weapons.daggers),
-        FieldGuide.copy(weapons.oneHandedMaces),
+        FieldGuide.copy(weapons.one_handed_maces),
         FieldGuide.copy(weapons.staves),
         FieldGuide.copy(weapons.wands)
     },
     [6] = { -- Shaman.
-        FieldGuide.copy(weapons.oneHandedAxes),
-        FieldGuide.copy(weapons.oneHandedMaces),
+        FieldGuide.copy(weapons.one_handed_axes),
+        FieldGuide.copy(weapons.one_handed_maces),
         FieldGuide.copy(weapons.staves),
-        FieldGuide.copy(weapons.twoHandedAxes),
-        FieldGuide.copy(weapons.twoHandedMaces)
+        FieldGuide.copy(weapons.two_handed_axes),
+        FieldGuide.copy(weapons.two_handed_maces)
     },
     [7] = { -- Mage.
         FieldGuide.copy(weapons.daggers),
-        FieldGuide.copy(weapons.oneHandedSwords),
+        FieldGuide.copy(weapons.one_handed_swords),
         FieldGuide.copy(weapons.staves),
         FieldGuide.copy(weapons.wands)
     },
     [8] = { -- Warlock.
         FieldGuide.copy(weapons.daggers),
-        FieldGuide.copy(weapons.oneHandedSwords),
+        FieldGuide.copy(weapons.one_handed_swords),
         FieldGuide.copy(weapons.staves),
         FieldGuide.copy(weapons.wands)
     },
     [9] = { -- Druid.
         FieldGuide.copy(weapons.daggers),
-        FieldGuide.copy(weapons.oneHandedMaces),
+        FieldGuide.copy(weapons.one_handed_maces),
         FieldGuide.copy(weapons.staves),
         FieldGuide.copy(weapons.wands)
     },
