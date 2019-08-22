@@ -1,14 +1,16 @@
 --[[
     TODO:
     ---------------------------------------
-    1. Add Warlock/Hunter pet skills.
-    2. Add tomes/spells learned through quests.
-    3. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
-    4. (Add racials.)
-    5. (Add professions.)
-    6. (Allow player to scroll manually.)
-    7. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
-    8. Add travel logic.
+    1. Add Warlock/Hunter pet skills – 2nd level in dropdown.
+    2. Add Warlock/Hunter pet trainers.
+    3. Add tomes/spells learned through quests.
+    4. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
+    5. (Add racials.)
+    6. (Add professions.)
+    7. (Allow player to scroll manually.)
+    8. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
+    9. Add travel logic.
+   10. Add PvP rank and change uimapid's for launch.
     ---------------------------------------
 ]]
 
@@ -42,15 +44,16 @@ local CLASS_BACKGROUNDS = {
     WEAPONS = "MageFrost"
 }
 local CLASS_COLORS = {
-    WARRIOR = "|cFFC79C6E",
-    PALADIN = "|cFFF58CBA",
-    HUNTER = "|cFFABD473",
-    ROGUE = "|cFFFFF569",
-    PRIEST = "|cFFFFFFFF",
-    SHAMAN = "|cFF0070DE",
-    MAGE = "|cFF40C7EB",
-    WARLOCK = "|cFF8787ED",
-    DRUID = "|cFFFF7D0A",
+    ["WARRIOR"] = "|cFFC79C6E",
+    ["PALADIN"] = "|cFFF58CBA",
+    ["HUNTER"] = "|cFFABD473",
+    ["ROGUE"] = "|cFFFFF569",
+    ["PRIEST"] = "|cFFFFFFFF",
+    ["SHAMAN"] = "|cFF0070DE",
+    ["MAGE"] = "|cFF40C7EB",
+    ["WARLOCK"] = "|cFF8787ED",
+    ["DRUID"] = "|cFFFF7D0A",
+    ["WEAPONS"] = "|cFFDFDFDF"
 }
 local CLASS_INDECES = {
     ["WARRIOR"] = 1,
@@ -467,6 +470,7 @@ end
 
 -- Sets the background to the given class. Class must be a capitalized string.
 local function setBackground(class)
+    class = class == "WARLOCK_PETS" and "WARLOCK" or class == "HUNTER_PETS" and "HUNTER" or class
     FieldGuideFrameBackgroundTextureClass:SetTexture("Interface/TALENTFRAME/" .. CLASS_BACKGROUNDS[class] .. "-TopLeft")
     FieldGuideFrameBackgroundTextureClass:SetAlpha(0.4)
 end
@@ -481,9 +485,17 @@ end
 
 -- Changes the class to the given class.
 local function setClass(dropdownButton, class)
-    UIDropDownMenu_SetSelectedID(FieldGuideDropdownFrame, dropdownButton:GetID())
+    if class == "HUNTER_PETS" then
+        UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.HUNTER .. "Pet skills")
+    elseif class == "WARLOCK_PETS" then
+        UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.WARLOCK .. "Demon spells")
+    elseif class ~= "WEAPONS" then
+        UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[class] .. class:sub(1, 1) .. class:sub(2):lower())
+    else
+        UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[class] .. class:sub(1, 1) .. class:sub(2):lower())
+    end
     selectedClass = class
-    if class ~= "WEAPONS" then
+    if class ~= "WEAPONS" and class ~= "HUNTER_PETS" and class ~= "WARLOCK_PETS" then
         setBackground(selectedClass)
         if class == "PRIEST" and actualClass == "PRIEST" then
             FieldGuideFrameEnemySpellsCheckBoxText:SetText("Non-" .. race .. " spells")
@@ -500,13 +512,17 @@ local function setClass(dropdownButton, class)
         hideUnwantedSpells()
         currentMinLevel = lowestLevel
         updateButtons()
-    else
+    elseif class == "WEAPONS" then
         setBackground(actualClass)
         FieldGuideFrameTalentsCheckBox:Hide()
         FieldGuideFrameEnemySpellsCheckBox:Hide()
         FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 9 - NBR_OF_SPELL_ROWS)
         hideUnwantedWeapons()
         updateWeapons()
+    elseif class == "HUNTER_PETS" then
+        print("hi")
+    elseif class == "WARLOCK_PETS" then
+        print("hello")
     end
     resetScroll()
 end
@@ -516,77 +532,111 @@ local function isSelected(class)
     return selectedClass == class
 end
 
+
+
+
+
+-- ADD TITLES FOR DROPDOWN MENU (CLASS AND MISC FOR WEAPONS)
+
+
+
+
+
 -- Initializes the dropdown menu.
 local function initDropdown()
     local dropdown = FieldGuideDropdownFrame
-    UIDropDownMenu_Initialize(dropdown, function(self)
+    UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
         local info = UIDropDownMenu_CreateInfo()
-        -- Warrior.
-        info.text = "Warrior"
-        info.colorCode = CLASS_COLORS.WARRIOR
-        info.arg1 = "WARRIOR"
-        info.checked = isSelected("WARRIOR")
-        info.func = setClass
-        UIDropDownMenu_AddButton(info)
-        -- Paladin.
-        info.text = "Paladin"
-        info.colorCode = CLASS_COLORS.PALADIN
-        info.arg1 = "PALADIN"
-        info.checked = isSelected("PALADIN")
-        UIDropDownMenu_AddButton(info)
-        -- Hunter.
-        info.text = "Hunter"
-        info.colorCode = CLASS_COLORS.HUNTER
-        info.arg1 = "HUNTER"
-        info.checked = isSelected("HUNTER")
-        UIDropDownMenu_AddButton(info)
-        -- Rogue.
-        info.text = "Rogue"
-        info.colorCode = CLASS_COLORS.ROGUE
-        info.arg1 = "ROGUE"
-        info.checked = isSelected("ROGUE")
-        UIDropDownMenu_AddButton(info)
-        -- Priest.
-        info.text = "Priest"
-        info.colorCode = CLASS_COLORS.PRIEST
-        info.arg1 = "PRIEST"
-        info.checked = isSelected("PRIEST")
-        UIDropDownMenu_AddButton(info)
-        -- Shaman.
-        info.text = "Shaman"
-        info.colorCode = CLASS_COLORS.SHAMAN
-        info.arg1 = "SHAMAN"
-        info.checked = isSelected("SHAMAN")
-        UIDropDownMenu_AddButton(info)
-        -- Mage.
-        info.text = "Mage"
-        info.colorCode = CLASS_COLORS.MAGE
-        info.checked = isSelected("MAGE")
-        info.arg1 = "MAGE"
-        UIDropDownMenu_AddButton(info)
-        -- Warlock.
-        info.text = "Warlock"
-        info.colorCode = CLASS_COLORS.WARLOCK
-        info.arg1 = "WARLOCK"
-        info.checked = isSelected("WARLOCK")
-        UIDropDownMenu_AddButton(info)
-        -- Druid.
-        info.text = "Druid"
-        info.colorCode = CLASS_COLORS.DRUID
-        info.arg1 = "DRUID"
-        info.checked = isSelected("DRUID")
-        UIDropDownMenu_AddButton(info)
-        -- Weapon skills.
-        info.text = "Weapons"
-        info.colorCode = "|cFFDFDFDF"
-        info.arg1 = "WEAPONS"
-        info.checked = isSelected("WEAPONS")
-        UIDropDownMenu_AddButton(info)
+        if level == 1 then
+            -- Warrior.
+            info.text = "Warrior"
+            info.colorCode = CLASS_COLORS.WARRIOR
+            info.arg1 = "WARRIOR"
+            info.checked = isSelected("WARRIOR")
+            info.func = setClass
+            UIDropDownMenu_AddButton(info, level)
+            -- Paladin.
+            info.text = "Paladin"
+            info.colorCode = CLASS_COLORS.PALADIN
+            info.arg1 = "PALADIN"
+            info.checked = isSelected("PALADIN")
+            UIDropDownMenu_AddButton(info, level)
+            -- Hunter.
+            info.text = "Hunter"
+            info.colorCode = CLASS_COLORS.HUNTER
+            info.arg1 = "HUNTER"
+            info.checked = isSelected("HUNTER")
+            info.hasArrow = true
+            info.menuList = "HUNTER_PETS"
+            UIDropDownMenu_AddButton(info, level)
+            -- Rogue.
+            info.text = "Rogue"
+            info.colorCode = CLASS_COLORS.ROGUE
+            info.arg1 = "ROGUE"
+            info.checked = isSelected("ROGUE")
+            info.hasArrow = false
+            info.menuList = nil
+            UIDropDownMenu_AddButton(info, level)
+            -- Priest.
+            info.text = "Priest"
+            info.colorCode = CLASS_COLORS.PRIEST
+            info.arg1 = "PRIEST"
+            info.checked = isSelected("PRIEST")
+            UIDropDownMenu_AddButton(info, level)
+            -- Shaman.
+            info.text = "Shaman"
+            info.colorCode = CLASS_COLORS.SHAMAN
+            info.arg1 = "SHAMAN"
+            info.checked = isSelected("SHAMAN")
+            UIDropDownMenu_AddButton(info, level)
+            -- Mage.
+            info.text = "Mage"
+            info.colorCode = CLASS_COLORS.MAGE
+            info.checked = isSelected("MAGE")
+            info.arg1 = "MAGE"
+            UIDropDownMenu_AddButton(info, level)
+            -- Warlock.
+            info.text = "Warlock"
+            info.colorCode = CLASS_COLORS.WARLOCK
+            info.arg1 = "WARLOCK"
+            info.checked = isSelected("WARLOCK")
+            info.hasArrow = true
+            info.menuList = "WARLOCK_PETS"
+            UIDropDownMenu_AddButton(info, level)
+            -- Druid.
+            info.text = "Druid"
+            info.colorCode = CLASS_COLORS.DRUID
+            info.arg1 = "DRUID"
+            info.checked = isSelected("DRUID")
+            info.hasArrow = false
+            info.menuList = nil
+            UIDropDownMenu_AddButton(info, level)
+            -- Weapon skills.
+            info.text = "Weapons"
+            info.colorCode = "|cFFDFDFDF"
+            info.arg1 = "WEAPONS"
+            info.checked = isSelected("WEAPONS")
+            UIDropDownMenu_AddButton(info, level)
+        elseif menuList == "WARLOCK_PETS" then
+            info.text = "Demon spells"
+            info.colorCode = CLASS_COLORS.WARLOCK
+            info.arg1 = "WARLOCK_PETS"
+            info.checked = isSelected("WARLOCK_PETS")
+            info.func = setClass
+            UIDropDownMenu_AddButton(info, level)
+        elseif menuList == "HUNTER_PETS" then
+            info.text = "Pet skills"
+            info.colorCode = CLASS_COLORS.HUNTER
+            info.arg1 = "HUNTER_PETS"
+            info.checked = isSelected("HUNTER_PETS")
+            info.func = setClass
+            UIDropDownMenu_AddButton(info, level)
+        end
     end)
     UIDropDownMenu_SetWidth(dropdown, 100);
     UIDropDownMenu_SetButtonWidth(dropdown, 124)
     UIDropDownMenu_JustifyText(dropdown, "RIGHT")
-    UIDropDownMenu_SetText(dropdown, "|c" .. RAID_CLASS_COLORS[selectedClass].colorStr .. selectedClass:sub(1, 1) .. selectedClass:sub(2):lower())
+    UIDropDownMenu_SetText(dropdown, CLASS_COLORS[actualClass].. actualClass:sub(1, 1) .. actualClass:sub(2):lower())
 end
 
 -- Initializes all frames, level strings, and textures for reuse.
