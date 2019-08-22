@@ -1,29 +1,19 @@
 --[[
     TODO:
     ---------------------------------------
-    1. Add trainer data for spells.
-    2. Add trainer data for weapons.
-    3. When you learn a spell, update buttons.
-    4. Add Warlock/Hunter pet skills.
-    5. Add tomes/spells learned through quests.
-    6. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
-    7. (Allow player to scroll manually.)
-    8. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
-    9. (Add racials?)
-   10. (Show where all the trainers are maybe somehow?)'
-   11. Get rid of texture table, put reference in each frame: spellButton[i].texture = texture
-   12. First Aid etc?
-    ---------------------------------------
-
-    Bugs:
-    ---------------------------------------
-    1. Scroll bar texture sometimes does not load – maybe FieldGuideFrameVerticalSlider does not load sometimes, or the black background loads after.
-    2. Highlighting over scroll up and down buttons is too big.
-    3. Ranks do not show in the tooltip (even in Classic) – add manually?
+    1. Add Warlock/Hunter pet skills.
+    2. Add tomes/spells learned through quests.
+    3. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
+    4. (Add racials.)
+    5. (Add professions.)
+    6. (Allow player to scroll manually.)
+    7. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
+    8. Add travel logic.
     ---------------------------------------
 ]]
 
 local _, FieldGuide = ...
+
 local pairs, ipairs, select, floor = pairs, ipairs, select, math.floor
 local GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString = GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString
 local hbd = LibStub("HereBeDragons-2.0")
@@ -101,23 +91,90 @@ local Y_SPACING = 0 -- The spacing between all elements in y.
 local NBR_OF_SPELL_ROWS = 0
 local NBR_OF_SPELL_COLUMNS = 0
 
--- Checks if the pin exists as a frame and as a saved variable.
--- Returns true if it does exist, then the frames, and then the variables.
-local function doesPinExist(x, y, map)
-    local frames = {}
-    local variable = nil
-    for _, p in ipairs(FieldGuide.pinPool) do
-        if p.x == x and p.y == y and p.map == map and p.used then
-            frames[#frames + 1] = p
+-- Returns the distance to the given location from the player's location.
+local function getDistance(x, y, map)
+    local playerX, playerY, instance = hbd:GetPlayerWorldPosition()
+    local destX, destY = hbd:GetWorldCoordinatesFromZone(x, y, map)
+    return hbd:GetWorldDistance(instance, playerX, playerY, destX, destY)
+end
+
+-- Returns the portal trainer for the given portal (spell).
+local function findPortalTrainer(spell)
+    local trainer = FieldGuide.PORTAL_TRAINERS[spell.spellId]
+    trainer.x = trainer.x / 100
+    trainer.y = trainer.y / 100
+    return trainer
+end
+
+-- Returns the closest spell trainer to the player for the given spell.
+local function findClosestSpellTrainer(spell)
+    local tempFaction = faction == "Horde" and selectedClass == "PALADIN" and "ALLIANCE" or faction == "Alliance" and selectedClass == "SHAMAN" and "HORDE" or faction:upper()
+    local backupTrainer = nil -- For if there is no trainer on the same continent as the player.
+    local sameContinentTrainer = nil
+    local shortestDistance = 100000 -- For if there is no trainer on the same continent as the player.
+    local sameContinentDistance = 100000
+    local instance = select(3, hbd:GetPlayerWorldPosition())
+    for _, trainer in ipairs(FieldGuide.SPELL_TRAINERS[selectedClass][tempFaction]) do
+        if not (spell.level > 6 and trainer.noob) then
+            local distance = getDistance(trainer.x / 100, trainer.y / 100, trainer.map)
+            if FieldGuide.getContinent(trainer.map) == instance and distance < sameContinentDistance then
+                sameContinentDistance = distance
+                sameContinentTrainer = FieldGuide.copy(trainer)
+            elseif distance < shortestDistance then
+                shortestDistance = distance
+                backupTrainer = FieldGuide.copy(trainer)
+            end
         end
     end
-    for k, p in ipairs(FieldGuideOptions.pins) do
-        if p.x == x and p.y == y and p.map == map then
+    backupTrainer = sameContinentTrainer ~= nil and sameContinentTrainer or backupTrainer
+    backupTrainer.x = backupTrainer.x / 100
+    backupTrainer.y = backupTrainer.y / 100
+    return backupTrainer
+end
+
+-- Returns the closest weapon trainer to the player for the given weapon.
+local function findClosestWeaponTrainer(weapon)
+    local backupTrainer = nil -- For if there is no trainer on the same continent as the player.
+    local sameContinentTrainer = nil
+    local shortestDistance = 100000 -- For if there is no trainer on the same continent as the player.
+    local sameContinentDistance = 100000
+    local instance = select(3, hbd:GetPlayerWorldPosition())
+    for _, trainer in ipairs(FieldGuide.WEAPON_TRAINERS[faction:upper()]) do
+        if trainer[weapon.spellId] then
+            local distance = getDistance(trainer.x / 100, trainer.y / 100, trainer.map)
+            if FieldGuide.getContinent(trainer.map) == instance and distance < sameContinentDistance then
+                sameContinentDistance = distance
+                sameContinentTrainer = FieldGuide.copy(trainer)
+            elseif distance < shortestDistance then
+                shortestDistance = distance 
+                backupTrainer = FieldGuide.copy(trainer)
+            end
+        end
+    end
+    backupTrainer = sameContinentTrainer ~= nil and sameContinentTrainer or backupTrainer
+    backupTrainer.x = backupTrainer.x / 100
+    backupTrainer.y = backupTrainer.y / 100
+    return backupTrainer
+end
+
+-- Checks if the pin exists as a frame and as a saved variable.
+-- Returns true if it does exist, then the frames, and then the variables.
+local function doesPinExist(name)
+    local variable = nil
+    local world = nil
+    local minimap = nil
+    for _, pin in pairs(FieldGuide.pinPool) do
+        if pin.name == name then
+            world = pin.world and pin or world
+            minimap = pin.minimap and pin or minimap
+        end
+    end
+    for k, pin in pairs(FieldGuideOptions.pins) do
+        if pin.name == name then
             variable = k
         end
     end
-    local doesExist = variable ~= nil
-    return doesExist, frames, variable
+    return variable ~= nil, world, minimap, variable
 end
 
 -- Adds a pin to the world map with the given mapId, x, y, and name.
@@ -127,31 +184,34 @@ local function addMapPin(map, x, y, name)
     if tomtom then
         tomtom:AddWaypoint(map, x, y, {title = name})
     else
-        local pins = {
-            FieldGuide:getPin(),
-            FieldGuide:getPin()
-        }
-        for _, pin in pairs(pins) do
-            pin.map = map
-            pin.x = x
-            pin.y = y
-            pin.name = name
-            pin.mapName = mapName
-            pin.coordString = coordString
-        end
-        hbdp:AddMinimapIconMap("FieldGuideFrame", pins[1], map, x, y, true)
-        hbdp:AddWorldMapIconMap("FieldGuideFrame", pins[2], map, x, y, 3)
+        local world = FieldGuide:getPin()
+        local minimap = FieldGuide:getPin()
+        world.map = map
+        world.x = x
+        world.y = y
+        world.name = name
+        world.mapName = mapName
+        world.coordString = coordString
+        world.world = true
+        world.instance = FieldGuide.getContinent(map)
+        minimap.map = map
+        minimap.x = x
+        minimap.y = y
+        minimap.name = name
+        minimap.mapName = mapName
+        minimap.coordString = coordString
+        minimap.minimap = true
+        minimap.instance = FieldGuide.getContinent(map)
+        hbdp:AddMinimapIconMap("FieldGuideFrame", minimap, map, x, y, true)
+        hbdp:AddWorldMapIconMap("FieldGuideFrame", world, map, x, y, 3)
     end
 end
 
 -- Removes the given pin from the world map.
 local function removeMapPin(pin)
-    local _, frames, variable = doesPinExist(pin.x, pin.y, pin.map)
-    local world, minimap = unpack(frames)
-    for _, f in ipairs(frames) do
-        hbdp:RemoveMinimapIcon("FieldGuideFrame", f)
-        hbdp:RemoveWorldMapIcon("FieldGuideFrame", f)
-    end
+    local _, world, minimap, variable = doesPinExist(pin.name)
+    hbdp:RemoveMinimapIcon("FieldGuideFrame", minimap)
+    hbdp:RemoveWorldMapIcon("FieldGuideFrame", world)
     FieldGuideOptions.pins[variable] = nil
 end
 
@@ -163,7 +223,7 @@ end
 -- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
 local function getCostModifier()
     local honored = false
-    local rankThree = UnitPVPRank("player") > 7
+    -- local rankThree = UnitPVPRank("player") > 7
     if isAlliance() then
         honored = select(3, GetFactionInfoByID(72)) > 5 or select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(54)) > 5
     else
@@ -257,7 +317,7 @@ local function initCheckboxes()
 end
 
 -- Updates the given frame with the given texture and info.
-local function updateFrame(texture, frame, info)
+local function updateFrame(texture, frame, info, level)
     texture:SetTexture(info.texture)
     texture:SetAllPoints()
     if FieldGuideOptions.unwantedSpells[info.id] then
@@ -271,6 +331,7 @@ local function updateFrame(texture, frame, info)
     frame.talent = info.talent
     frame.spellId = info.id
     frame.spellCost = info.cost
+    frame.level = level
     frame:Show()
 end
 
@@ -350,7 +411,7 @@ local function updateButtons()
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
             if not spellInfo.hidden then
                 if spellIndex - hiddenCounter >= horizontalOffset + 1 and spellIndex - hiddenCounter <= NBR_OF_SPELL_COLUMNS + horizontalOffset then
-                    updateFrame(spellButtons[frameCounter].texture, spellButtons[frameCounter], spellInfo)
+                    updateFrame(spellButtons[frameCounter].texture, spellButtons[frameCounter], spellInfo, currentLevel)
                     shownCounter = shownCounter + 1
                     frameCounter = frameCounter + 1
                 end
@@ -568,7 +629,7 @@ local function init()
     FieldGuideFrameVerticalSlider:SetEnabled(false)
     FieldGuideFrameHorizontalSlider:SetEnabled(false)
     if not tomtom then
-        for _, pin in ipairs(FieldGuideOptions.pins) do
+        for _, pin in pairs(FieldGuideOptions.pins) do
             addMapPin(pin.map, pin.x, pin.y, pin.name)
         end
     end
@@ -581,12 +642,15 @@ end
 
 -- Called whenever player mouses over a pin.
 function FieldGuidePin_OnEnter(self)
-    local playerX, playerY, instance = hbd:GetPlayerWorldPosition()
-    local destX, destY = hbd:GetWorldCoordinatesFromZone(self.x, self.y, self.map)
-    local distance = hbd:GetWorldDistance(instance, playerX, playerY, destX, destY)
+    local distance = getDistance(self.x, self.y, self.map)
     GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
     GameTooltip:AddLine(self.name)
-    GameTooltip:AddLine(string.format("%s yards away", math.floor(distance)), 1, 1, 1)
+    local _, _, instance = hbd:GetPlayerWorldPosition()
+    if self.instance ~= instance then
+        GameTooltip:AddLine("Unknown distance", 1, 1, 1)
+    else
+        GameTooltip:AddLine(string.format("%s yards away", math.floor(distance)), 1, 1, 1)
+    end
     GameTooltip:AddLine(self.mapName .. " (" .. self.coordString .. ")", 0.7, 0.7, 0.7)
     GameTooltip:Show()
 end
@@ -600,18 +664,32 @@ function FieldGuideSpellButton_OnEnter(self)
         local canAfford = GetMoney() < self.spellCost and "|cFFFF0000" or "|cFFFFFFFF" -- Modifies string to be red if player can't afford, white otherwise.
         local priceString = GetCoinTextureString(self.spellCost * modifier)
         GameTooltip:SetHyperlink("spell:" .. self.spellId)
-        GameTooltip:AddLine(" ")
-        if self.talent then
-            GameTooltip:AddLine("Talent")
+        if selectedClass ~= "WEAPONS" then
+            GameTooltip:AddLine(" ")
+            if self.talent then
+                GameTooltip:AddLine("Talent")
+            end
+            GameTooltip:AddLine("Rank: " .. "|cFFFFFFFF" .. self.rank)
+        elseif self.spellId ~= 5009 then
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine("Trained by:")
+            for _, trainer in ipairs(FieldGuide.WEAPON_TRAINERS[faction:upper()]) do
+                if trainer[self.spellId] then
+                    GameTooltip:AddLine(trainer.name .. ", " .. hbd:GetLocalizedMap(trainer.map), 1, 1, 1)
+                end
+            end
         end
-        GameTooltip:AddLine("Price: " .. canAfford .. priceString)
+        if self.spellId ~= 5009 then
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine("Price: " .. canAfford .. priceString)
+        end
         GameTooltip:Show()
     end)
 end
 
 -- Called whenever player clicks on a spell button.
 function FieldGuideSpellButton_OnClick(self, button)
-    if button == "RightButton" then
+    if button == "RightButton" and selectedClass ~= "WEAPONS" then
         local spellName = GetSpellInfo(self.spellId)
         FieldGuideOptions.unwantedSpells[self.spellId] = not FieldGuideOptions.unwantedSpells[self.spellId]
         if IsShiftKeyDown() then
@@ -625,21 +703,25 @@ function FieldGuideSpellButton_OnClick(self, button)
         end
         updateButtons()
     elseif button == "LeftButton" then
-        local map = 467
-        local x = 0.70
-        local y = 0.30
-        local name = "Whizz Fizzlebang"
-        if not doesPinExist(x, y, map) then
-            addMapPin(map, x, y, name)
-            if not tomtom then
-                FieldGuideOptions.pins[#FieldGuideOptions.pins + 1] = {
-                    ["map"] = map,
-                    ["x"] = x,
-                    ["y"] = y,
-                    ["name"] = name,
-                }
+        if self.spellId ~= 5009 then
+            local trainer = nil
+            if self.name:find("Teleport") or self.name:find("Portal") then
+                trainer = findPortalTrainer(self)
+            else
+                trainer = selectedClass ~= "WEAPONS" and findClosestSpellTrainer(self) or findClosestWeaponTrainer(self)
             end
-            print("Added a marker to your closest trainer!")
+            if not doesPinExist(trainer.name) and self.spellCost ~= 0 then
+                addMapPin(trainer.map, trainer.x, trainer.y, trainer.name)
+                if not tomtom then
+                    FieldGuideOptions.pins[#FieldGuideOptions.pins + 1] = {
+                        ["map"] = trainer.map,
+                        ["x"] = trainer.x,
+                        ["y"] = trainer.y,
+                        ["name"] = trainer.name
+                    }
+                end
+                print("Added a marker to your closest trainer!")
+            end
         end
     end
 end
@@ -718,6 +800,7 @@ end
 
 -- Shows or hides the talents (type == 1), enemy spells (type == 2), or known spells (type == 3).
 function FieldGuide_ToggleButtons(type)
+    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
     if type == 3 then -- Known spells.
         FieldGuideOptions.showKnownSpells = not FieldGuideOptions.showKnownSpells
     elseif type == 2 then -- Enemy spells.
@@ -741,6 +824,7 @@ end
 function FieldGuide_OnLoad(self)
     self:RegisterForDrag("LeftButton")
     self:RegisterEvent("ADDON_LOADED")
+    self:RegisterEvent("PLAYER_LEVEL_UP")
 end
 
 -- Called on each event the frame receives.
@@ -758,6 +842,11 @@ function FieldGuide_OnEvent(self, event, ...)
             FieldGuideOptions.pins = FieldGuideOptions.pins or {}
             init()
             self:UnregisterEvent("ADDON_LOADED")
+        end
+    elseif event == "PLAYER_LEVEL_UP" then
+        updateButtons()
+        if UnitLevel("player") == 60 then
+            self:UnregisterEvent("PLAYER_LEVEL_UP")
         end
     end
 end

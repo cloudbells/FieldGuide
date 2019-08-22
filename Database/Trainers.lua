@@ -1,5 +1,169 @@
 local _, FieldGuide = ...
 
+local portalTrainers = {
+    ["milstaff_stormeye"] = {
+        ["name"] = "Milstaff Stormeye",
+        ["rep"] = FieldGuide.factions.ironforge,
+        ["map"] = FieldGuide.maps.ironforge,
+        ["x"] = 25.5,
+        ["y"] = 7.07
+    },
+    ["larimaine_purdue"] = {
+        ["name"] = "Larimaine Purdue",
+        ["rep"] = FieldGuide.factions.stormwind,
+        ["map"] = FieldGuide.maps.stormwind,
+        ["x"] = 39.84,
+        ["y"] = 79.45
+    },
+    ["elissa_dumas"] = {
+        ["name"] = "Elissa Dumas",
+        ["rep"] = FieldGuide.factions.darnassus,
+        ["map"] = FieldGuide.maps.darnassus,
+        ["x"] = 40.6,
+        ["y"] = 82.13
+    },
+    ["thuul"] = {
+        ["name"] = "Thuul",
+        ["rep"] = FieldGuide.factions.orgrimmar,
+        ["map"] = FieldGuide.maps.orgrimmar,
+        ["x"] = 38.68,
+        ["y"] = 85.41
+    },
+    ["lexington_mortaim"] = {
+        ["name"] = "Lexington Mortaim",
+        ["rep"] = FieldGuide.factions.undercity,
+        ["map"] = FieldGuide.maps.undercity,
+        ["x"] = 84.19,
+        ["y"] = 15.58
+    },
+    ["birgitte_cranston"] = {
+        ["name"] = "Birgitte Cranston",
+        ["rep"] = FieldGuide.factions.undercity,
+        ["map"] = FieldGuide.maps.thunder_bluff,
+        ["x"] = 22.5,
+        ["y"] = 16.91
+    },
+}
+
+FieldGuide.WEAPON_TRAINERS = {
+    ["ALLIANCE"] = {
+        [1] = {
+            ["name"] = "Ilyenia Moonfire",
+            ["rep"] = FieldGuide.factions.darnassus,
+            ["map"] = FieldGuide.maps.darnassus,
+            ["x"] = 57.8,
+            ["y"] = 46.8,
+            [264] = true,
+            [1180] = true,
+            [15590] = true,
+            [227] = true,
+            [2567] = true
+        },
+        [2] = {
+            ["name"] = "Bixi Wobblebonk",
+            ["rep"] = FieldGuide.factions.ironforge,
+            ["map"] = FieldGuide.maps.ironforge,
+            ["x"] = 62.0,
+            ["y"] = 89.8,
+            [5011] = true,
+            [1180] = true,
+            [2567] = true,
+        },
+        [3] = {
+            ["name"] = "Buliwyf Stonehand",
+            ["rep"] = FieldGuide.factions.ironforge,
+            ["map"] = FieldGuide.maps.ironforge,
+            ["x"] = 61.6,
+            ["y"] = 89.4,
+            [15590] = true,
+            [266] = true,
+            [196] = true,
+            [197] = true,
+            [198] = true,
+            [199] = true,
+        },
+        [4] = {
+            ["name"] = "Woo Ping",
+            ["rep"] = FieldGuide.factions.stormwind,
+            ["map"] = FieldGuide.maps.stormwind,
+            ["x"] = 57.0,
+            ["y"] = 57.6,
+            [5011] = true,
+            [1180] = true,
+            [201] = true,
+            [200] = true,
+            [227] = true,
+            [202] = true,
+        }
+    },
+    ["HORDE"] = {
+        [1] = {
+            ["name"] = "Hanashi",
+            ["rep"] = FieldGuide.factions.darkspear_trolls,
+            ["map"] = FieldGuide.maps.orgrimmar,
+            ["x"] = 81.6,
+            ["y"] = 19.4,
+            [264] = true,
+            [196] = true,
+            [227] = true,
+            [2567] = true,
+            [197] = true,
+        },
+        [2] = {
+            ["name"] = "Sayoc",
+            ["rep"] = FieldGuide.factions.orgrimmar,
+            ["map"] = FieldGuide.maps.orgrimmar,
+            ["x"] = 81.6,
+            ["y"] = 19.4,
+            [264] = true,
+            [1180] = true,
+            [15590] = true,
+            [196] = true,
+            [227] = true,
+            [2567] = true,
+            [197] = true
+        },
+        [3] = {
+            ["name"] = "Ansekhwa",
+            ["rep"] = FieldGuide.factions.thunder_bluff,
+            ["map"] = FieldGuide.maps.thunder_bluff,
+            ["x"] = 41.2,
+            ["y"] = 61.4,
+            [266] = true,
+            [198] = true,
+            [227] = true,
+            [199] = true
+        },
+        [4] = {
+            ["name"] = "Archibald",
+            ["rep"] = FieldGuide.factions.undercity,
+            ["map"] = FieldGuide.maps.undercity,
+            ["x"] = 57.8,
+            ["y"] = 31.6,
+            [5011] = true,
+            [1180] = true,
+            [201] = true,
+            [200] = true,
+            [202] = true
+        }
+    }
+}
+
+FieldGuide.PORTAL_TRAINERS = {
+    [3562] = portalTrainers.milstaff_stormeye,
+    [3561] = portalTrainers.larimaine_purdue,
+    [3565] = portalTrainers.elissa_dumas,
+    [3567] = portalTrainers.thuul,
+    [3563] = portalTrainers.lexington_mortaim,
+    [3566] = portalTrainers.birgitte_cranston,
+    [11416] = portalTrainers.milstaff_stormeye,
+    [10059] = portalTrainers.larimaine_purdue,
+    [11419] = portalTrainers.elissa_dumas,
+    [11417] = portalTrainers.thuul,
+    [11418] = portalTrainers.lexington_mortaim,
+    [11420] = portalTrainers.birgitte_cranston
+}
+
 FieldGuide.SPELL_TRAINERS = {
     ["WARRIOR"] = {
         ["ALLIANCE"] = {

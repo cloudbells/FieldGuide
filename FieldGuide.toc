@@ -28,6 +28,7 @@ Database\Rogue.lua
 Database\Shaman.lua
 Database\Warlock.lua
 Database\Warrior.lua
+Database\Trainers.lua
 
 # Load core files.
 FieldGuide.lua

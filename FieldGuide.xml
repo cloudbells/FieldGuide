@@ -78,7 +78,7 @@
         </FontHeight>
     </FontString>
     <Frame name="FieldGuideFrame" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true">
-        <Size x="680" y="500" /> <!-- 725 for 14 spells etc, 680 original (13) -->
+        <Size x="668" y="500" /> <!-- 725 for 14 spells etc, 680 original (13) -->
         <Anchors>
             <Anchor point="CENTER" />
         </Anchors>
