@@ -7,7 +7,8 @@ FieldGuide.MAGE = {
             ["rank"] = 1,
             ["cost"] = 10,
             ["texture"] = "Interface/ICONS/spell_holy_magicalsentry",
-            ["id"] = 1459
+            ["id"] = 1459,
+            ["talent"] = true
         },
     },
     [4] = {

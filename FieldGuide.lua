@@ -1,9 +1,13 @@
 --[[
     TODO:
     ---------------------------------------
+    
+    add price for the pinned vendor in the tooltip
+    
+    
     1. Add Warlock/Hunter pet skills – 2nd level in dropdown.
     2. Add Warlock/Hunter pet trainers.
-    3. Add tomes/spells learned through quests.
+    3. Add tomes.
     4. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
     5. (Add racials.)
     6. (Add professions.)
@@ -11,6 +15,9 @@
     8. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
     9. Add travel logic.
    10. Add PvP rank and change uimapid's for launch.
+   11. Update README's.
+   12. Take a new pic for curseforge/github.
+   13. Upload to wowinterface.
     ---------------------------------------
 ]]
 
@@ -436,11 +443,13 @@ local function hideUnwantedSpells()
     for level = 2, 60, 2 do
         local hiddenCounter = 0
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
-            if not FieldGuideOptions.showKnownSpells and IsSpellKnown(spellInfo.id) then
+            if spellInfo.empty then
+                spellInfo.hidden = true
+            elseif not FieldGuideOptions.showKnownSpells and IsSpellKnown(spellInfo.id) then
                 spellInfo.hidden = true
             elseif not FieldGuideOptions.showEnemySpells and (isAlliance() and spellInfo.faction == 2 or (not isAlliance() and spellInfo.faction == 1)) then
                 spellInfo.hidden = true
-            elseif actualClass == "PRIEST" and selectedClass == "PRIEST" and spellInfo.race and not FieldGuideOptions.showEnemySpells and not string.find(spellInfo.race, race) then
+            elseif actualClass == "PRIEST" and selectedClass == "PRIEST" and spellInfo.race and not FieldGuideOptions.showEnemySpells and not spellInfo.race:find(race) then
                 spellInfo.hidden = true
             elseif not FieldGuideOptions.showTalents and spellInfo.talent then
                 spellInfo.hidden = true
@@ -486,8 +495,10 @@ end
 -- Changes the class to the given class.
 local function setClass(dropdownButton, class)
     if class == "HUNTER_PETS" then
+        ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
         UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.HUNTER .. "Pet skills")
     elseif class == "WARLOCK_PETS" then
+        ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
         UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.WARLOCK .. "Demon spells")
     elseif class ~= "WEAPONS" then
         UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[class] .. class:sub(1, 1) .. class:sub(2):lower())
@@ -520,9 +531,16 @@ local function setClass(dropdownButton, class)
         hideUnwantedWeapons()
         updateWeapons()
     elseif class == "HUNTER_PETS" then
-        print("hi")
+        FieldGuideFrameEnemySpellsCheckBox:Hide()
+        FieldGuideFrameTalentsCheckBox:Hide()
+        hideUnwantedSpells()
+        updateButtons()
     elseif class == "WARLOCK_PETS" then
-        print("hello")
+        FieldGuideFrameEnemySpellsCheckBox:Hide()
+        FieldGuideFrameTalentsCheckBox:Hide()
+        hideUnwantedSpells()
+        updateButtons()
+        currentMinLevel = lowestLevel
     end
     resetScroll()
 end
@@ -532,28 +550,19 @@ local function isSelected(class)
     return selectedClass == class
 end
 
-
-
-
-
--- ADD TITLES FOR DROPDOWN MENU (CLASS AND MISC FOR WEAPONS)
-
-
-
-
-
 -- Initializes the dropdown menu.
 local function initDropdown()
     local dropdown = FieldGuideDropdownFrame
     UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
         local info = UIDropDownMenu_CreateInfo()
+        info.isNotRadio = true
+        info.func = setClass
         if level == 1 then
             -- Warrior.
             info.text = "Warrior"
             info.colorCode = CLASS_COLORS.WARRIOR
             info.arg1 = "WARRIOR"
             info.checked = isSelected("WARRIOR")
-            info.func = setClass
             UIDropDownMenu_AddButton(info, level)
             -- Paladin.
             info.text = "Paladin"
@@ -731,7 +740,7 @@ function FieldGuideSpellButton_OnEnter(self)
         end
         if self.spellId ~= 5009 then
             GameTooltip:AddLine(" ")
-            GameTooltip:AddLine("Price: " .. canAfford .. priceString)
+            GameTooltip:AddLine(self.spellCost ~= 0 and "Price: " .. canAfford .. priceString or "Learned via quest(s)")
         end
         GameTooltip:Show()
     end)

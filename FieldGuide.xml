@@ -1,14 +1,10 @@
 <Ui>
     <Button name="FieldGuideSpellButtonTemplate" virtual="true" registerForClicks="LeftButtonUp, RightButtonUp">
-        <Size>
-            <AbsDimension x="37" y="37" />
-        </Size>
+        <Size x="37" y="37" />
         <Layers>
             <Layer level="BACKGROUND">
                 <Texture name="$parentBackground" file="Interface/Addons/FieldGuide/Media/Buttons/SpellBackground">
-                    <Size>
-                        <AbsDimension x="64" y="64" />
-                    </Size>
+                    <Size x="64" y="64" />
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
@@ -39,9 +35,7 @@
         <HighlightTexture name="$parentHighlight" file="Interface/Addons/FieldGuide/Media/Buttons/SpellHighlight" alphaMode="ADD" />
     </Button>
     <Button name="FieldGuidePinTemplate" virtual="true" registerForClicks="RightButtonUp">
-        <Size>
-            <AbsDimension x="16" y="16" />
-        </Size>
+        <Size x="16" y="16" />
         <Layers>
             <Layer level="OVERLAY" setAllPoints="true">
                 <Texture name="$parentTexture" file="Interface/Addons/FieldGuide/Media/Map/GoldGreenDot" />
@@ -313,6 +307,11 @@
                     <Anchor point="TOPRIGHT" x="-40" y="-26"/>
                 </Anchors>
             </Frame>
+            <!-- <Button name="$parentCloseButton" inherits="UIPanelCloseButton"> -->
+                <!-- <Anchors> -->
+                    <!-- <Anchor point="TOPRIGHT" x="3" y="4" /> -->
+                <!-- </Anchors> -->
+            <!-- </Button> -->
         </Frames>
         <Scripts>
             <OnLoad>

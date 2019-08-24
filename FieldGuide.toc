@@ -21,12 +21,14 @@ Util.lua
 Database\WeaponSkills.lua
 Database\Druid.lua
 Database\Hunter.lua
+Database\HunterPets.lua
 Database\Mage.lua
 Database\Paladin.lua
 Database\Priest.lua
 Database\Rogue.lua
 Database\Shaman.lua
 Database\Warlock.lua
+Database\WarlockPets.lua
 Database\Warrior.lua
 Database\Trainers.lua
 
