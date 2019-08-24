@@ -1,23 +1,20 @@
 --[[
     TODO:
     ---------------------------------------
-    
-    add price for the pinned vendor in the tooltip
-    
-    
-    1. Add Warlock/Hunter pet skills – 2nd level in dropdown.
-    2. Add Warlock/Hunter pet trainers.
-    3. Add tomes.
-    4. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
-    5. (Add racials.)
-    6. (Add professions.)
-    7. (Allow player to scroll manually.)
-    8. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
-    9. Add travel logic.
-   10. Add PvP rank and change uimapid's for launch.
-   11. Update README's.
-   12. Take a new pic for curseforge/github.
-   13. Upload to wowinterface.
+    1. Add price for the pinned vendor in the tooltip.
+    2. Add Warlock trainers.
+    3. Add logic for finding closest Warlock/Hunter trainer – refactor so it isn't shit.
+    4. Add tomes.
+    5. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
+    6. (Add racials.)
+    7. (Add professions.)
+    8. (Allow player to scroll manually.)
+    9. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
+   10. (Add travel logic.)
+   11. Add PvP rank and change uimapid's for launch.
+   12. Update README's.
+   13. Take a new pic for curseforge/github.
+   14. Upload to wowinterface.
     ---------------------------------------
 ]]
 
@@ -521,7 +518,6 @@ local function setClass(dropdownButton, class)
         end
         FieldGuideFrameTalentsCheckBox:Show()
         hideUnwantedSpells()
-        currentMinLevel = lowestLevel
         updateButtons()
     elseif class == "WEAPONS" then
         setBackground(actualClass)
@@ -540,8 +536,8 @@ local function setClass(dropdownButton, class)
         FieldGuideFrameTalentsCheckBox:Hide()
         hideUnwantedSpells()
         updateButtons()
-        currentMinLevel = lowestLevel
     end
+    currentMinLevel = lowestLevel
     resetScroll()
 end
 
@@ -766,6 +762,10 @@ function FieldGuideSpellButton_OnClick(self, button)
             local trainer = nil
             if self.name:find("Teleport") or self.name:find("Portal") then
                 trainer = findPortalTrainer(self)
+            elseif selectedClass == "HUNTER_PETS" then
+                
+            elseif selectedClass == "WARLOCK_PETS" then
+                
             else
                 trainer = selectedClass ~= "WEAPONS" and findClosestSpellTrainer(self) or findClosestWeaponTrainer(self)
             end

@@ -164,6 +164,118 @@ FieldGuide.PORTAL_TRAINERS = {
     [11420] = portalTrainers.birgitte_cranston
 }
 
+FieldGuide.HUNTER_PET_TRAINERS = {
+    ["ALLIANCE"] = {
+        [1] = {
+            ["name"] = "Belia Thundergranite",
+            ["rep"] = FieldGuide.factions.ironforge,
+            ["map"] = FieldGuide.maps.ironforge,
+            ["x"] = 70.86,
+            ["y"] = 85.83
+        },
+        [2] = {
+            ["name"] = "Bolyun",
+            ["rep"] = FieldGuide.factions.darnassus,
+            ["map"] = FieldGuide.maps.ashenvale,
+            ["x"] = 18.0,
+            ["y"] = 60.0
+        },
+        [3] = {
+            ["name"] = "Caelyb",
+            ["rep"] = FieldGuide.factions.darnassus,
+            ["map"] = FieldGuide.maps.ashenvale,
+            ["x"] = 49.7,
+            ["y"] = 67.0
+        },
+        [4] = {
+            ["name"] = "Claude Erksine",
+            ["rep"] = FieldGuide.factions.ironforge,
+            ["map"] = FieldGuide.maps.loch_modan,
+            ["x"] = 82.22,
+            ["y"] = 62.84
+        },
+        [5] = {
+            ["name"] = "Karrina Mekenda",
+            ["rep"] = FieldGuide.factions.ironforge,
+            ["map"] = FieldGuide.maps.stormwind,
+            ["x"] = 61.58,
+            ["y"] = 15.97
+        },
+        [6] = {
+            ["name"] = "Keldas",
+            ["rep"] = FieldGuide.factions.darnassus,
+            ["map"] = FieldGuide.maps.teldrassil,
+            ["x"] = 56.79,
+            ["y"] = 59.78
+        },
+        [7] = {
+            ["name"] = "Nalesette Wildbringer",
+            ["rep"] = FieldGuide.factions.darnassus,
+            ["map"] = FieldGuide.maps.felwood,
+            ["x"] = 22.79,
+            ["y"] = 49.32
+        },
+        [8] = {
+            ["name"] = "Peria Lamenur",
+            ["rep"] = FieldGuide.factions.ironforge,
+            ["map"] = FieldGuide.maps.dun_morogh,
+            ["x"] = 46.68,
+            ["y"] = 54.0
+        },
+        [9] = {
+            ["name"] = "Silvaria",
+            ["rep"] = FieldGuide.factions.darnassus,
+            ["map"] = FieldGuide.maps.darnassus,
+            ["x"] = 42.47,
+            ["y"] = 9.17
+        },
+    },
+    ["HORDE"] = {
+        [1] = {
+            ["name"] = "Grokor",
+            ["rep"] = FieldGuide.factions.orgrimmar,
+            ["map"] = FieldGuide.maps.swamp_of_sorrows,
+            ["x"] = 47.4,
+            ["y"] = 52.9
+        },
+        [2] = {
+            ["name"] = "Harruk",
+            ["rep"] = FieldGuide.factions.orgrimmar,
+            ["map"] = FieldGuide.maps.durotar,
+            ["x"] = 52.0,
+            ["y"] = 43.5
+        },
+        [3] = {
+            ["name"] = "Hesuwa Thunderhorn",
+            ["rep"] = FieldGuide.factions.thunder_bluff,
+            ["map"] = FieldGuide.maps.thunder_bluff,
+            ["x"] = 54.09,
+            ["y"] = 83.99
+        },
+        [4] = {
+            ["name"] = "Reban Freerunner",
+            ["rep"] = FieldGuide.factions.thunder_bluff,
+            ["map"] = FieldGuide.maps.mulgore,
+            ["x"] = 47.71,
+            ["y"] = 55.73
+        },
+        [5] = {
+            ["name"] = "Xao'tsu",
+            ["rep"] = FieldGuide.factions.orgrimmar,
+            ["map"] = FieldGuide.maps.orgrimmar,
+            ["x"] = 66.32,
+            ["y"] = 14.81
+        },
+        [6] = {
+            ["name"] = "Zudd",
+            ["rep"] = FieldGuide.factions.orgrimmar,
+            ["map"] = FieldGuide.maps.stranglethorn_vale,
+            ["x"] = 31.11,
+            ["y"] = 28.94
+        },
+    }
+}
+
 FieldGuide.SPELL_TRAINERS = {
     ["WARRIOR"] = {
         ["ALLIANCE"] = {
@@ -487,7 +599,7 @@ FieldGuide.SPELL_TRAINERS = {
             [1] = {
                 ["name"] = "Alenndaar Lapidaar",
                 ["rep"] = FieldGuide.factions.darnassus,
-                ["map"] = FieldGuide.maps.stonetalon_mountains,
+                ["map"] = FieldGuide.maps.ashenvale,
                 ["x"] = 18.0,
                 ["y"] = 59.8
             },
