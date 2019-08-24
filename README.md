@@ -1,7 +1,10 @@
 # Field Guide
 An addon for World of Warcraft: Classic.
 
+Best used with [TomTom](https://www.curseforge.com/wow/addons/tomtom).
+
 `/fg` and `/fieldguide` will open the window.
+
 `/fg minimap` and `/fieldguide minimap` will toggle the minimap button on or off.
 
 - Use shift + scroll to scroll horizontally.
