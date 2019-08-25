@@ -3,6 +3,8 @@ An addon for World of Warcraft: Classic.
 
 Best used with [TomTom](https://www.curseforge.com/wow/addons/tomtom).
 
+**If you notice any inaccuracies or bugs please let me know!**
+
 `/fg` and `/fieldguide` will open the window.
 
 `/fg minimap` and `/fieldguide minimap` will toggle the minimap button on or off.
@@ -29,5 +31,3 @@ Best used with [TomTom](https://www.curseforge.com/wow/addons/tomtom).
 
 ## Bugs
 - Some spells and ranks might be wrong, as I've gone off private server and Classic Wowhead (please get an API) data, both of which currently aren't very accurate. For example, on a certain private server (rhymes with Blight's Rope), Shadowburn rank 6 cost 2g 20s while it should have cost 11s only (baseline).
-
-If you notice any inaccuracies or bugs please let me know!
