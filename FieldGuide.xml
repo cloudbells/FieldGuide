@@ -122,9 +122,9 @@
                 </Scripts>
             </Frame>
             <Slider name="$parentVerticalSlider" orientation="VERTICAL" minValue="0" maxValue="0" defaultValue="0" valueStep="1">
-                <Size x="25" y="1" />
+                <Size x="22" y="1" />
                 <Anchors>
-                    <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-12" y="-49" />
+                    <Anchor point="TOPRIGHT" relativeTo="FieldGuideFrame" x="-14" y="-49" />
                     <Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" y="45" />
                 </Anchors>
                 <Scripts>
@@ -171,8 +171,8 @@
                     <Layer level="ARTWORK">
                         <Texture name="$parentBackground">
                             <Anchors>
-                                <Anchor point="TOPLEFT" x="2" y="" />
-                                <Anchor point="BOTTOMRIGHT" x="-4" y="0" />
+                                <Anchor point="TOPLEFT" x="3" y="0" />
+                                <Anchor point="BOTTOMRIGHT" x="-3" y="0" />
                             </Anchors>
                             <Color a="0.5" r="0" g="0" b="0" />
                         </Texture>
@@ -180,9 +180,9 @@
                 </Layers>
             </Slider>
             <Slider name="$parentHorizontalSlider" orientation="HORIZONTAL" minValue="0" maxValue="0" defaultValue="0" valueStep="1">
-                <Size x="1" y="25" />
+                <Size x="1" y="26" />
                 <Anchors>
-                    <Anchor point="BOTTOMLEFT" relativeTo="FieldGuideFrame" x="27" y="10" />
+                    <Anchor point="BOTTOMLEFT" relativeTo="FieldGuideFrame" x="28" y="12" />
                     <Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-48" />
                 </Anchors>
                 <Scripts>
@@ -197,7 +197,7 @@
                     <Button name="$parentScrollLeftButton">
                         <Size x="32" y="32" />
                         <Anchors>
-                            <Anchor point="BOTTOMLEFT" relativeTo="FieldGuideFrame" x="7" y="7" />
+                            <Anchor point="BOTTOMLEFT" relativeTo="FieldGuideFrame" x="10" y="9" />
                         </Anchors>
                         <Scripts>
                             <OnClick>
@@ -212,7 +212,7 @@
                     <Button name="$parentScrollRightButton">
                         <Size x="32" y="32" />
                         <Anchors>
-                            <Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-28" y="7" />
+                            <Anchor point="BOTTOMRIGHT" relativeTo="FieldGuideFrame" x="-30" y="9" />
                         </Anchors>
                         <Scripts>
                             <OnClick>
@@ -229,8 +229,8 @@
                     <Layer level="ARTWORK">
                         <Texture name="$parentBackground">
                             <Anchors>
-                                <Anchor point="TOPLEFT" x="0" y="-2" />
-                                <Anchor point="BOTTOMRIGHT" x="0" y="4" />
+                                <Anchor point="TOPLEFT" x="0" y="-5" />
+                                <Anchor point="BOTTOMRIGHT" x="0" y="5" />
                             </Anchors>
                             <Color a="0.5" r="0" g="0" b="0" />
                         </Texture>
@@ -265,7 +265,7 @@
             </Button>
             <Frame name="FieldGuideDropdownFrame" inherits="UIDropDownMenuTemplate">
             <Anchors>
-                    <Anchor point="TOPRIGHT" x="-36" y="-27" />
+                    <Anchor point="TOPRIGHT" x="-36" y="-28" />
                 </Anchors>
             </Frame>
         </Frames>

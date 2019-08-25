@@ -10,10 +10,12 @@ Best used with [TomTom](https://www.curseforge.com/wow/addons/tomtom).
 `/fg minimap` and `/fieldguide minimap` will toggle the minimap button on or off.
 
 - Use shift + scroll to scroll horizontally.
+- Left click on a spell to pin the nearest trainer on the map and minimap.
 - Right click to mark spells as unwanted.
 - Shift-right click a spell to mark all ranks of that spell as unwanted.
+- Drag any spell (even ones not learned yet) from the addon onto an action bar.
 
-![Current progress](https://i.imgur.com/bhADKsT.png)
+![Current progress](https://i.imgur.com/ilOHSbp.png)
 
 ## Features
 - Shows you which spells each class learns every level to plan when you need to go back to town (includes Warlock demon spells and Hunter pet skills).

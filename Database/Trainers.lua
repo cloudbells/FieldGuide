@@ -587,7 +587,8 @@ FieldGuide.SPELL_TRAINERS = {
                 ["rep"] = FieldGuide.factions.ironforge,
                 ["map"] = FieldGuide.maps.dun_morogh,
                 ["x"] = 28.83,
-                ["y"] = 67.24
+                ["y"] = 67.24,
+                ["noob"] = true
             },
             [16] = {
                 ["name"] = "Wu Shen",
@@ -1103,7 +1104,8 @@ FieldGuide.SPELL_TRAINERS = {
                 ["rep"] = FieldGuide.factions.ironforge,
                 ["map"] = FieldGuide.maps.dun_morogh,
                 ["x"] = 28.37,
-                ["y"] = 67.51
+                ["y"] = 67.51,
+                ["noob"] = true
             },
             [14] = {
                 ["name"] = "Syurna",

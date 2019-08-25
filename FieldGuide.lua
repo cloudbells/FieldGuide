@@ -1,18 +1,3 @@
---[[
-    TODO:
-    ---------------------------------------
-    1. Add tomes.
-    2. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
-    3. (Add racials.)
-    4. (Add professions.)
-    5. (Allow player to scroll manually.)
-    6. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
-    7. Update README's.
-    8. Take a new pic for curseforge/github.
-    9. Upload to wowinterface.
-    ---------------------------------------
-]]
-
 local _, FieldGuide = ...
 
 local pairs, ipairs, select, floor = pairs, ipairs, select, math.floor
@@ -32,7 +17,7 @@ local selectedClass -- The currently selected class.
 local emptyLevels = {} -- Holds info on if a row is empty or not.
 local CLASS_BACKGROUNDS = {
     WARRIOR = "WarriorArms",
-    PALADIN = "PaladinHoly",
+    PALADIN = "PaladinCombat",
     HUNTER = "HunterBeastMastery",
     ROGUE = "RogueAssassination",
     PRIEST = "PriestHoly",
@@ -124,7 +109,7 @@ local function findClosestTrainer(skill)
             or FieldGuide.SPELL_TRAINERS[selectedClass][tempFaction]) do
         if selectedClass == "WARLOCK_PETS" and trainer[skill.name]
                 or selectedClass == "WEAPONS" and trainer[skill.spellId]
-                or selectedClass ~= "WARLOCK_PETS" and selectedClass ~= "HUNTER_PETS" and skill.level ~= nil and not (skill.level > 6 and trainer.noob) then
+                or selectedClass ~= "WARLOCK_PETS" and skill.level ~= nil and not (skill.level > 6 and trainer.noob) then
             local distance = getDistance(trainer.x / 100, trainer.y / 100, trainer.map)
             if FieldGuide.getContinent(trainer.map) == instance and distance < sameContinentDistance then
                 sameContinentDistance = distance
@@ -207,7 +192,7 @@ end
 -- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
 local function getCostModifier()
     local honored = false
-    local rankThree = UnitPVPRank("player") > 7
+    -- local rankThree = UnitPVPRank("player") > 7
     if isAlliance() then
         honored = select(3, GetFactionInfoByID(72)) > 5 or select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(54)) > 5
     else
@@ -230,7 +215,7 @@ local function toggleMinimapButton()
     FieldGuideOptions.minimapTable.hide = not FieldGuideOptions.minimapTable.hide
     if FieldGuideOptions.minimapTable.hide then
         minimapIcon:Hide("FieldGuide")
-        print("Minimap button hidden. Type /fg minimap to show it again.")
+        print("|cFFFFFF00Field Guide:|r Minimap button hidden. Type /fg minimap to show it again.")
     else
         minimapIcon:Show("FieldGuide")
     end
@@ -244,6 +229,15 @@ local function initSlash()
         msg = msg:lower()
         if msg == "minimap" then
             toggleMinimapButton()
+            return
+        elseif msg == "help" then
+            print("|cFFFFFF00Field Guide:|r\n"
+                    .. "/fg or /fieldguide both work to toggle the addon.\n"
+                    .. "/fg minimap toggles the minimap button.\n"
+                    .. "Scroll horizontally by holding Shift and scrolling.\n"
+                    .. "Right click a spell to mark it as unwanted.\n"
+                    .. "Shift-right click a spell to mark all ranks of that spell as unwanted.\n"
+                    .. "You can drag any spell onto an action bar from the addon.")
             return
         end
         toggleFrame()
@@ -419,7 +413,7 @@ local function hideUnwantedSpells()
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
             if spellInfo.empty then
                 spellInfo.hidden = true
-            elseif not FieldGuideOptions.showKnownSpells and IsSpellKnown(spellInfo.id) then
+            elseif not FieldGuideOptions.showKnownSpells and ((selectedClass == "HUNTER_PETS" or selectedClass == "WARLOCK_PETS") and IsSpellKnown(spellInfo.id, true) or IsSpellKnown(spellInfo.id)) then
                 spellInfo.hidden = true
             elseif not FieldGuideOptions.showEnemySpells and (isAlliance() and spellInfo.faction == 2 or (not isAlliance() and spellInfo.faction == 1)) then
                 spellInfo.hidden = true
@@ -460,6 +454,7 @@ end
 
 -- Resets the scroll bar to top left position.
 local function resetScroll()
+    currentMinLevel = lowestLevel
     FieldGuideFrameVerticalSlider:SetValue(0)
     FieldGuideFrameVerticalSliderScrollUpButton:Disable()
     FieldGuideFrameHorizontalSlider:SetValue(0)
@@ -469,9 +464,11 @@ end
 -- Changes the class to the given class.
 local function setClass(dropdownButton, class)
     if class == "HUNTER_PETS" then
+        setBackground("HUNTER")
         ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
         UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.HUNTER .. "Pet skills")
     elseif class == "WARLOCK_PETS" then
+        setBackground("WARLOCK")
         ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
         UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.WARLOCK .. "Demon spells")
     elseif class ~= "WEAPONS" then
@@ -495,6 +492,7 @@ local function setClass(dropdownButton, class)
         end
         FieldGuideFrameTalentsCheckBox:Show()
         hideUnwantedSpells()
+        resetScroll()
         updateButtons()
     elseif class == "WEAPONS" then
         setBackground(actualClass)
@@ -503,19 +501,19 @@ local function setClass(dropdownButton, class)
         FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 9 - NBR_OF_SPELL_ROWS)
         hideUnwantedWeapons()
         updateWeapons()
-    elseif class == "HUNTER_PETS" then
-        FieldGuideFrameEnemySpellsCheckBox:Hide()
-        FieldGuideFrameTalentsCheckBox:Hide()
-        hideUnwantedSpells()
-        updateButtons()
     elseif class == "WARLOCK_PETS" then
         FieldGuideFrameEnemySpellsCheckBox:Hide()
         FieldGuideFrameTalentsCheckBox:Hide()
         hideUnwantedSpells()
+        resetScroll()
+        updateButtons()
+    elseif class == "HUNTER_PETS" then
+        FieldGuideFrameEnemySpellsCheckBox:Hide()
+        FieldGuideFrameTalentsCheckBox:Hide()
+        hideUnwantedSpells()
+        resetScroll()
         updateButtons()
     end
-    currentMinLevel = lowestLevel
-    resetScroll()
 end
 
 -- Returns true if the given class is currently selected in the dropdown list.
@@ -658,8 +656,6 @@ local function init()
     FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
     FieldGuideFrameVerticalSlider:SetValue(1)
     FieldGuideFrameVerticalSlider:SetValue(0)
-    FieldGuideFrameVerticalSlider:SetEnabled(false)
-    FieldGuideFrameHorizontalSlider:SetEnabled(false)
     if not tomtom then
         for _, pin in pairs(FieldGuideOptions.pins) do
             addMapPin(pin.map, pin.x, pin.y, pin.name)
@@ -742,7 +738,7 @@ function FieldGuideSpellButton_OnClick(self, button)
             else
                 trainer = findClosestTrainer(self)
             end
-            if tomtom and self.spellCost ~= 0 or not doesPinExist(trainer.name) and self.spellCost ~= 0 then
+            if not doesPinExist(trainer.name) and self.spellCost ~= 0 then
                 addMapPin(trainer.map, trainer.x, trainer.y, trainer.name)
                 if not tomtom then
                     FieldGuideOptions.pins[#FieldGuideOptions.pins + 1] = {
@@ -751,9 +747,9 @@ function FieldGuideSpellButton_OnClick(self, button)
                         ["y"] = trainer.y,
                         ["name"] = trainer.name
                     }
+                    print("|cFFFFFF00Field Guide:|r Added a marker to |cFFFF0000" .. trainer.name .. "|r in " .. hbd:GetLocalizedMap(trainer.map) ..
+                            " at |cFF00FF00(" .. trainer.x * 100 .. ", " .. trainer.y * 100 .. ")|r.")
                 end
-                print("|cFFFFFF00[Field Guide]:|r Added a marker to |cFFFF0000" .. trainer.name .. "|r in " .. hbd:GetLocalizedMap(trainer.map) ..
-                        " at |cFF00FF00(" .. trainer.x * 100 .. ", " .. trainer.y * 100 .. ")|r.")
             end
         end
     end
@@ -771,6 +767,7 @@ end
 
 -- Is called whenever the value of the vertical slider changes.
 function FieldGuide_OnVerticalValueChanged(self, value)
+    value = math.floor(value + 0.5)
     verticalOffset = value
     if value ~= 0 then
         currentMinLevel = currentMinLevel + (value - lastVerticalValue) * 2
@@ -857,7 +854,7 @@ end
 function FieldGuide_OnLoad(self)
     self:RegisterForDrag("LeftButton")
     self:RegisterEvent("ADDON_LOADED")
-    self:RegisterEvent("PLAYER_LEVEL_UP")
+    self:RegisterEvent("LEARNED_SPELL_IN_TAB")
 end
 
 -- Called on each event the frame receives.
@@ -865,7 +862,10 @@ function FieldGuide_OnEvent(self, event, ...)
     if event == "ADDON_LOADED" then
         if ... == "FieldGuide" then
             tomtom = IsAddOnLoaded("TomTom") and _G["TomTom"]
-            print(not tomtom and "Field Guide loaded! By the way, it is highly recommended to use TomTom with Field Guide." or "Field Guide loaded!")
+            if tomtom then
+                FieldGuideOptions.pins = {}
+            end
+            print(not tomtom and "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls. By the way, it is highly recommended to use TomTom with Field Guide." or "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls.")
             FieldGuideOptions = FieldGuideOptions or {}
             FieldGuideOptions.showTalents = FieldGuideOptions.showTalents
             FieldGuideOptions.showEnemySpells = FieldGuideOptions.showEnemySpells
@@ -876,10 +876,13 @@ function FieldGuide_OnEvent(self, event, ...)
             init()
             self:UnregisterEvent("ADDON_LOADED")
         end
-    elseif event == "PLAYER_LEVEL_UP" then
-        updateButtons()
-        if UnitLevel("player") == 60 then
-            self:UnregisterEvent("PLAYER_LEVEL_UP")
+    elseif event == "LEARNED_SPELL_IN_TAB" then
+        if selectedClass ~= "WEAPONS" then
+            hideUnwantedSpells()
+            updateButtons()
+        else
+            hideUnwantedWeapons()
+            updateWeapons()
         end
     end
 end
