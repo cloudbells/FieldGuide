@@ -3,7 +3,7 @@
     ---------------------------------------
     1. Add price for the pinned vendor in the tooltip.
     2. Add Warlock trainers.
-    3. Add logic for finding closest Warlock/Hunter trainer – refactor so it isn't shit.
+    3. Add logic for finding closest Warlock pet trainer – refactor so it isn't shit.
     4. Add tomes.
     5. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
     6. (Add racials.)
@@ -113,47 +113,27 @@ local function findPortalTrainer(spell)
     return trainer
 end
 
--- Returns the closest spell trainer to the player for the given spell.
-local function findClosestSpellTrainer(spell)
+-- Returns the closest trainer for the given skill.
+local function findClosestTrainer(skill)
     local tempFaction = faction == "Horde" and selectedClass == "PALADIN" and "ALLIANCE" or faction == "Alliance" and selectedClass == "SHAMAN" and "HORDE" or faction:upper()
     local backupTrainer = nil -- For if there is no trainer on the same continent as the player.
     local sameContinentTrainer = nil
     local shortestDistance = 100000 -- For if there is no trainer on the same continent as the player.
     local sameContinentDistance = 100000
     local instance = select(3, hbd:GetPlayerWorldPosition())
-    for _, trainer in ipairs(FieldGuide.SPELL_TRAINERS[selectedClass][tempFaction]) do
-        if not (spell.level > 6 and trainer.noob) then
+    local conditional = nil
+    local trainerTable = nil
+    for _, trainer in ipairs((selectedClass == "WEAPONS" and FieldGuide.WEAPON_TRAINERS[tempFaction])
+            or (selectedClass == "HUNTER_PETS" and FieldGuide.HUNTER_PET_TRAINERS[tempFaction])
+            or (selectedClass == "WARLOCK_PETS" and FieldGuide.WARLOCK_PET_TRAINERS[tempFaction])
+            or FieldGuide.SPELL_TRAINERS[selectedClass][tempFaction]) do
+        if selectedClass == "WEAPONS" and trainer[skill.spellId] or skill.level ~= nil and not (skill.level > 6 and trainer.noob) then
             local distance = getDistance(trainer.x / 100, trainer.y / 100, trainer.map)
             if FieldGuide.getContinent(trainer.map) == instance and distance < sameContinentDistance then
                 sameContinentDistance = distance
                 sameContinentTrainer = FieldGuide.copy(trainer)
             elseif distance < shortestDistance then
                 shortestDistance = distance
-                backupTrainer = FieldGuide.copy(trainer)
-            end
-        end
-    end
-    backupTrainer = sameContinentTrainer ~= nil and sameContinentTrainer or backupTrainer
-    backupTrainer.x = backupTrainer.x / 100
-    backupTrainer.y = backupTrainer.y / 100
-    return backupTrainer
-end
-
--- Returns the closest weapon trainer to the player for the given weapon.
-local function findClosestWeaponTrainer(weapon)
-    local backupTrainer = nil -- For if there is no trainer on the same continent as the player.
-    local sameContinentTrainer = nil
-    local shortestDistance = 100000 -- For if there is no trainer on the same continent as the player.
-    local sameContinentDistance = 100000
-    local instance = select(3, hbd:GetPlayerWorldPosition())
-    for _, trainer in ipairs(FieldGuide.WEAPON_TRAINERS[faction:upper()]) do
-        if trainer[weapon.spellId] then
-            local distance = getDistance(trainer.x / 100, trainer.y / 100, trainer.map)
-            if FieldGuide.getContinent(trainer.map) == instance and distance < sameContinentDistance then
-                sameContinentDistance = distance
-                sameContinentTrainer = FieldGuide.copy(trainer)
-            elseif distance < shortestDistance then
-                shortestDistance = distance 
                 backupTrainer = FieldGuide.copy(trainer)
             end
         end
@@ -647,7 +627,7 @@ end
 -- Initializes all frames, level strings, and textures for reuse.
 local function initFrames()
     NBR_OF_SPELL_ROWS = floor(FieldGuideFrame:GetHeight() / 100)
-    Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.175
+    Y_SPACING = math.ceil(FieldGuideFrame:GetHeight() / NBR_OF_SPELL_ROWS) / 1.1625
     local nbrOfSpellBtns = floor((FieldGuideFrame:GetWidth() - BUTTON_X_START * 2) / BUTTON_X_SPACING) * NBR_OF_SPELL_ROWS
     NBR_OF_SPELL_COLUMNS = nbrOfSpellBtns / NBR_OF_SPELL_ROWS -- The number of buttons in x.
     -- Create spell buttons.
@@ -762,12 +742,8 @@ function FieldGuideSpellButton_OnClick(self, button)
             local trainer = nil
             if self.name:find("Teleport") or self.name:find("Portal") then
                 trainer = findPortalTrainer(self)
-            elseif selectedClass == "HUNTER_PETS" then
-                
-            elseif selectedClass == "WARLOCK_PETS" then
-                
             else
-                trainer = selectedClass ~= "WEAPONS" and findClosestSpellTrainer(self) or findClosestWeaponTrainer(self)
+                trainer = findClosestTrainer(self)
             end
             if not doesPinExist(trainer.name) and self.spellCost ~= 0 then
                 addMapPin(trainer.map, trainer.x, trainer.y, trainer.name)

@@ -276,6 +276,15 @@ FieldGuide.HUNTER_PET_TRAINERS = {
     }
 }
 
+FieldGuide.WARLOCK_PET_TRAINERS = {
+    ["ALLIANCE"] = {
+        
+    },
+    ["HORDE"] = {
+        
+    }
+}
+
 FieldGuide.SPELL_TRAINERS = {
     ["WARRIOR"] = {
         ["ALLIANCE"] = {
