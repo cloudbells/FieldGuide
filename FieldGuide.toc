@@ -5,6 +5,7 @@
 ## Version: @project-version@
 ## SavedVariablesPerCharacter: FieldGuideOptions
 ## OptionalDeps: TomTom
+## X-WoWI-ID: 25176
 
 # Load libraries.
 Libraries\LibStub\LibStub.lua
