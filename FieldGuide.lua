@@ -1,20 +1,15 @@
 --[[
     TODO:
     ---------------------------------------
-    1. Add price for the pinned vendor in the tooltip.
-    2. Add Warlock trainers.
-    3. Add logic for finding closest Warlock pet trainer – refactor so it isn't shit.
-    4. Add tomes.
-    5. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
-    6. (Add racials.)
-    7. (Add professions.)
-    8. (Allow player to scroll manually.)
-    9. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
-   10. (Add travel logic.)
-   11. Add PvP rank and change uimapid's for launch.
-   12. Update README's.
-   13. Take a new pic for curseforge/github.
-   14. Upload to wowinterface.
+    1. Add tomes.
+    2. Add tutorial (shift+scroll for horizontal scroll/shift+right-click for marking all of the same spells etc)
+    3. (Add racials.)
+    4. (Add professions.)
+    5. (Allow player to scroll manually.)
+    6. (Make it so the scroll doesn't reset back to the top after each filtering option changes.)
+    7. Update README's.
+    8. Take a new pic for curseforge/github.
+    9. Upload to wowinterface.
     ---------------------------------------
 ]]
 
@@ -127,7 +122,9 @@ local function findClosestTrainer(skill)
             or (selectedClass == "HUNTER_PETS" and FieldGuide.HUNTER_PET_TRAINERS[tempFaction])
             or (selectedClass == "WARLOCK_PETS" and FieldGuide.WARLOCK_PET_TRAINERS[tempFaction])
             or FieldGuide.SPELL_TRAINERS[selectedClass][tempFaction]) do
-        if selectedClass == "WEAPONS" and trainer[skill.spellId] or skill.level ~= nil and not (skill.level > 6 and trainer.noob) then
+        if selectedClass == "WARLOCK_PETS" and trainer[skill.name]
+                or selectedClass == "WEAPONS" and trainer[skill.spellId]
+                or selectedClass ~= "WARLOCK_PETS" and selectedClass ~= "HUNTER_PETS" and skill.level ~= nil and not (skill.level > 6 and trainer.noob) then
             local distance = getDistance(trainer.x / 100, trainer.y / 100, trainer.map)
             if FieldGuide.getContinent(trainer.map) == instance and distance < sameContinentDistance then
                 sameContinentDistance = distance
@@ -210,7 +207,7 @@ end
 -- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
 local function getCostModifier()
     local honored = false
-    -- local rankThree = UnitPVPRank("player") > 7
+    local rankThree = UnitPVPRank("player") > 7
     if isAlliance() then
         honored = select(3, GetFactionInfoByID(72)) > 5 or select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(54)) > 5
     else
@@ -745,7 +742,7 @@ function FieldGuideSpellButton_OnClick(self, button)
             else
                 trainer = findClosestTrainer(self)
             end
-            if not doesPinExist(trainer.name) and self.spellCost ~= 0 then
+            if tomtom and self.spellCost ~= 0 or not doesPinExist(trainer.name) and self.spellCost ~= 0 then
                 addMapPin(trainer.map, trainer.x, trainer.y, trainer.name)
                 if not tomtom then
                     FieldGuideOptions.pins[#FieldGuideOptions.pins + 1] = {
@@ -755,7 +752,8 @@ function FieldGuideSpellButton_OnClick(self, button)
                         ["name"] = trainer.name
                     }
                 end
-                print("Added a marker to your closest trainer!")
+                print("|cFFFFFF00[Field Guide]:|r Added a marker to |cFFFF0000" .. trainer.name .. "|r in " .. hbd:GetLocalizedMap(trainer.map) ..
+                        " at |cFF00FF00(" .. trainer.x * 100 .. ", " .. trainer.y * 100 .. ")|r.")
             end
         end
     end

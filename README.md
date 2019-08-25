@@ -11,7 +11,7 @@ Best used with [TomTom](https://www.curseforge.com/wow/addons/tomtom).
 - Right click to mark spells as unwanted.
 - Shift-right click a spell to mark all ranks of that spell as unwanted.
 
-![Current progress](https://i.imgur.com/CIbDcin.png)
+![Current progress](https://i.imgur.com/bhADKsT.png)
 
 ## Features
 - Shows you which spells each class learns every level to plan when you need to go back to town (includes Warlock demon spells and Hunter pet skills).
@@ -29,3 +29,5 @@ Best used with [TomTom](https://www.curseforge.com/wow/addons/tomtom).
 
 ## Bugs
 - Some spells and ranks might be wrong, as I've gone off private server and Classic Wowhead (please get an API) data, both of which currently aren't very accurate. For example, on a certain private server (rhymes with Blight's Rope), Shadowburn rank 6 cost 2g 20s while it should have cost 11s only (baseline).
+
+If you notice any inaccuracies or bugs please let me know!
