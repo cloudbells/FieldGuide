@@ -863,6 +863,7 @@ function FieldGuide_OnEvent(self, event, ...)
         if ... == "FieldGuide" then
             tomtom = IsAddOnLoaded("TomTom") and _G["TomTom"]
             if tomtom then
+                FieldGuideOptions = FieldGuideOptions or {}
                 FieldGuideOptions.pins = {}
             end
             print(not tomtom and "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls. By the way, it is highly recommended to use TomTom with Field Guide." or "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls.")
