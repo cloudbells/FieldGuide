@@ -1,5 +1,7 @@
 local _, FieldGuide = ...
 
+local GetNumSkillLines, GetSkillLineInfo = GetNumSkillLines, GetSkillLineInfo
+
 FieldGuide.factions = {
     ["darnassus"] = 69,
     ["darkspear_trolls"] = 530,
@@ -92,4 +94,13 @@ end
 
 function FieldGuide.getContinent(map)
     return continents[map]
+end
+
+function FieldGuide.isWeaponKnown(name)
+    for i = 1, GetNumSkillLines() do
+        if name == GetSkillLineInfo(i) then
+            return true
+        end
+    end
+    return false
 end

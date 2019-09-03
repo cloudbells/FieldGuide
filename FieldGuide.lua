@@ -358,20 +358,16 @@ end
 -- Iterates all weapon skills for the current class and shows/hides any known ones.
 local function hideUnwantedWeapons()
     local maxValue = 0
-    for index, class in ipairs(CLASSES) do
-        local nbrOfSpells = 0
-        for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[CLASS_INDECES[class:upper()]]) do
-            if class == actualClass then
-                if not FieldGuideOptions.showKnownSpells and IsSpellKnown(weaponInfo.id) then
-                    weaponInfo.hidden = true
-                else
-                    weaponInfo.hidden = false
-                end
-            end
-            nbrOfSpells = not weaponInfo.hidden and nbrOfSpells + 1 or nbrOfSpells
+    local nbrOfSpells = 0
+    for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[CLASS_INDECES[actualClass]]) do
+        if not FieldGuideOptions.showKnownSpells and FieldGuide.isWeaponKnown(weaponInfo.name) then
+            weaponInfo.hidden = true
+        else
+            weaponInfo.hidden = false
         end
-        maxValue = nbrOfSpells > maxValue and nbrOfSpells or maxValue
+        nbrOfSpells = not weaponInfo.hidden and nbrOfSpells + 1 or nbrOfSpells
     end
+    maxValue = nbrOfSpells > maxValue and nbrOfSpells or maxValue
     setHorizontalSliderMaxValue(maxValue)
 end
 
@@ -404,16 +400,20 @@ end
 
 -- Hides all unwanted spells (known spells/talents/opposite faction spells). Also adjusts the horizontal slider appropriately.
 local function hideUnwantedSpells()
+    local knownSpells = {}
     local maxSpellIndex = 0
     local currentSpellIndex = 0
     local nbrOfHiddenRows = 0
     lowestLevel = 52
-    for level = 2, 60, 2 do
+    for level = 60, 2, -2 do
         local hiddenCounter = 0
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
+            if IsSpellKnown(spellInfo.id) then
+                knownSpells[spellInfo.name] = true
+            end
             if spellInfo.empty then
                 spellInfo.hidden = true
-            elseif not FieldGuideOptions.showKnownSpells and ((selectedClass == "HUNTER_PETS" or selectedClass == "WARLOCK_PETS") and IsSpellKnown(spellInfo.id, true) or IsSpellKnown(spellInfo.id)) then
+            elseif not FieldGuideOptions.showKnownSpells and ((selectedClass == "HUNTER_PETS" or selectedClass == "WARLOCK_PETS") and IsSpellKnown(spellInfo.id, true) or knownSpells[spellInfo.name]) then
                 spellInfo.hidden = true
             elseif not FieldGuideOptions.showEnemySpells and (isAlliance() and spellInfo.faction == 2 or (not isAlliance() and spellInfo.faction == 1)) then
                 spellInfo.hidden = true
@@ -462,7 +462,7 @@ local function resetScroll()
 end
 
 -- Changes the class to the given class.
-local function setClass(dropdownButton, class)
+local function setClass(_, class)
     if class == "HUNTER_PETS" then
         setBackground("HUNTER")
         ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
@@ -471,8 +471,6 @@ local function setClass(dropdownButton, class)
         setBackground("WARLOCK")
         ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
         UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.WARLOCK .. "Demon spells")
-    elseif class ~= "WEAPONS" then
-        UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[class] .. class:sub(1, 1) .. class:sub(2):lower())
     else
         UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[class] .. class:sub(1, 1) .. class:sub(2):lower())
     end
@@ -645,15 +643,12 @@ end
 local function init()
     tinsert(UISpecialFrames, FieldGuideFrame:GetName()) -- Allows us to close the window with escape.
     initFrames()
-    selectedClass = actualClass
-    setBackground(selectedClass)
-    FieldGuide_ToggleButtons() -- Need to call this, or spells won't be hidden regardless of saved variables.
-    resetScroll()
+    setClass(nil, actualClass)
     initDropdown()
     initCheckboxes()
     initMinimapButton()
     initSlash()
-    FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS) -- If we show 5 spell rows, the scroll max value should be 25 (it scrolls to 25th row, and shows the last 5 already).
+    FieldGuide_ToggleButtons() -- Need to call this, or spells won't be hidden regardless of saved variables.
     FieldGuideFrameVerticalSlider:SetValue(1)
     FieldGuideFrameVerticalSlider:SetValue(0)
     if not tomtom then
@@ -829,13 +824,13 @@ function FieldGuide_Scroll(delta, horizontal)
 end
 
 -- Shows or hides the talents (type == 1), enemy spells (type == 2), or known spells (type == 3).
-function FieldGuide_ToggleButtons(type)
+function FieldGuide_ToggleButtons(t)
     PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-    if type == 3 then -- Known spells.
+    if t == 3 then -- Known spells.
         FieldGuideOptions.showKnownSpells = not FieldGuideOptions.showKnownSpells
-    elseif type == 2 then -- Enemy spells.
+    elseif t == 2 then -- Enemy spells.
         FieldGuideOptions.showEnemySpells = not FieldGuideOptions.showEnemySpells
-    elseif type == 1 then -- Talents.
+    elseif t == 1 then -- Talents.
         FieldGuideOptions.showTalents = not FieldGuideOptions.showTalents
     end
     if selectedClass ~= "WEAPONS" then
@@ -845,7 +840,6 @@ function FieldGuide_ToggleButtons(type)
         updateButtons()
     else
         hideUnwantedWeapons()
-        resetScroll()
         updateWeapons()
     end
 end
@@ -855,6 +849,7 @@ function FieldGuide_OnLoad(self)
     self:RegisterForDrag("LeftButton")
     self:RegisterEvent("ADDON_LOADED")
     self:RegisterEvent("LEARNED_SPELL_IN_TAB")
+    self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 -- Called on each event the frame receives.
@@ -866,7 +861,6 @@ function FieldGuide_OnEvent(self, event, ...)
                 FieldGuideOptions = FieldGuideOptions or {}
                 FieldGuideOptions.pins = {}
             end
-            print(not tomtom and "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls. By the way, it is highly recommended to use TomTom with Field Guide." or "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls.")
             FieldGuideOptions = FieldGuideOptions or {}
             FieldGuideOptions.showTalents = FieldGuideOptions.showTalents
             FieldGuideOptions.showEnemySpells = FieldGuideOptions.showEnemySpells
@@ -874,7 +868,7 @@ function FieldGuide_OnEvent(self, event, ...)
             FieldGuideOptions.unwantedSpells = FieldGuideOptions.unwantedSpells or {}
             FieldGuideOptions.minimapTable = FieldGuideOptions.minimapTable or {}
             FieldGuideOptions.pins = FieldGuideOptions.pins or {}
-            init()
+            print(not tomtom and "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls. By the way, it is highly recommended to use TomTom with Field Guide." or "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls.")
             self:UnregisterEvent("ADDON_LOADED")
         end
     elseif event == "LEARNED_SPELL_IN_TAB" then
@@ -885,5 +879,9 @@ function FieldGuide_OnEvent(self, event, ...)
             hideUnwantedWeapons()
             updateWeapons()
         end
+    elseif event == "PLAYER_ENTERING_WORLD" then
+        init()
+        FieldGuideFrame:Hide()
+        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end
 end

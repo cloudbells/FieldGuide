@@ -112,14 +112,6 @@
                 <Anchors>
                     <Anchor point="TOP" x="0" y="10" />
                 </Anchors>
-                <Scripts>
-                    <OnMouseDown>
-                        self:GetParent():StartMoving()
-                    </OnMouseDown>
-                    <OnMouseUp>
-                        self:GetParent():StopMovingOrSizing()
-                    </OnMouseUp>
-                </Scripts>
             </Frame>
             <Slider name="$parentVerticalSlider" orientation="VERTICAL" minValue="0" maxValue="0" defaultValue="0" valueStep="1">
                 <Size x="22" y="1" />
@@ -279,6 +271,12 @@
             <OnHide>
                 PlaySound(SOUNDKIT.IG_SPELLBOOK_CLOSE)
             </OnHide>
+            <OnDragStart>
+                self:StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                self:StopMovingOrSizing()
+            </OnDragStop>
             <OnMouseWheel>
                 FieldGuide_Scroll(delta)
             </OnMouseWheel>

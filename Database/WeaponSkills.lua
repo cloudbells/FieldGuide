@@ -37,21 +37,21 @@ local weapons = {
         ["id"] = 266
     },
     ["one_handed_axes"] = {
-        ["name"] = "One-Handed Axes",
+        ["name"] = "Axes",
         ["rank"] = 1,
         ["cost"] = 1000,
         ["texture"] = "Interface/ICONS/inv_axe_01",
         ["id"] = 196
     },
     ["one_handed_maces"] = {
-        ["name"] = "One-Handed Maces",
+        ["name"] = "Maces",
         ["rank"] = 1,
         ["cost"] = 1000,
         ["texture"] = "Interface/ICONS/inv_mace_01",
         ["id"] = 198
     },
     ["one_handed_swords"] = {
-        ["name"] = "One-Handed Swords",
+        ["name"] = "Swords",
         ["rank"] = 1,
         ["cost"] = 1000,
         ["texture"] = "Interface/ICONS/ability_meleedamage",
@@ -165,11 +165,12 @@ FieldGuide.WEAPONS = {
         FieldGuide.copy(weapons.wands)
     },
     [6] = { -- Shaman.
+        FieldGuide.copy(weapons.daggers),
         FieldGuide.copy(weapons.one_handed_axes),
         FieldGuide.copy(weapons.one_handed_maces),
         FieldGuide.copy(weapons.staves),
         FieldGuide.copy(weapons.two_handed_axes),
-        FieldGuide.copy(weapons.two_handed_maces)
+        FieldGuide.copy(weapons.two_handed_maces),
     },
     [7] = { -- Mage.
         FieldGuide.copy(weapons.daggers),
@@ -185,8 +186,9 @@ FieldGuide.WEAPONS = {
     },
     [9] = { -- Druid.
         FieldGuide.copy(weapons.daggers),
+        FieldGuide.copy(weapons.fist_weapons),
         FieldGuide.copy(weapons.one_handed_maces),
         FieldGuide.copy(weapons.staves),
-        FieldGuide.copy(weapons.wands)
+        FieldGuide.copy(weapons.two_handed_maces),
     },
 }
