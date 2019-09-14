@@ -107,7 +107,7 @@
             </Layer>
         </Layers>
         <Frames>
-            <Frame name="$parentTitleDraggable" enableMouse="true">
+            <Frame name="$parentTitleDraggable">
                 <Size x="120" y="30" />
                 <Anchors>
                     <Anchor point="TOP" x="0" y="10" />
@@ -255,11 +255,6 @@
                     <Anchor point="TOPRIGHT" x="-8" y="-8" />
                 </Anchors>
             </Button>
-            <Frame name="FieldGuideDropdownFrame" inherits="UIDropDownMenuTemplate">
-            <Anchors>
-                    <Anchor point="TOPRIGHT" x="-36" y="-28" />
-                </Anchors>
-            </Frame>
         </Frames>
         <Scripts>
             <OnLoad>

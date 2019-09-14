@@ -1187,13 +1187,6 @@ FieldGuide.MAGE = {
             ["id"] = 10220
         },
         [9] = {
-            ["name"] = "Frost Ward",
-            ["rank"] = 5,
-            ["cost"] = 42000,
-            ["texture"] = "Interface/ICONS/spell_frost_frostward",
-            ["id"] = 28609
-        },
-        [10] = {
             ["name"] = "Blizzard",
             ["rank"] = 6,
             ["cost"] = 42000,

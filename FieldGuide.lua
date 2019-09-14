@@ -376,11 +376,21 @@ local function updateButtons()
     local frameCounter = 1
     local currentLevel = currentMinLevel
     for row = 1, NBR_OF_SPELL_ROWS do
+        if currentLevel >= 62 then
+            -- Hide all hidden rows.
+            for i = NBR_OF_SPELL_COLUMNS * row - NBR_OF_SPELL_COLUMNS + 1, #spellButtons do
+                spellButtons[i]:Hide()
+            end
+            for i = row, NBR_OF_SPELL_ROWS do
+                levelStrings[i]:SetText("")
+            end
+            break
+        end
         local hiddenCounter = 0
         local shownCounter = 0
-        while emptyLevels[currentLevel] do
-        currentLevel = currentLevel + 2
-    end
+        while currentLevel < 60 and emptyLevels[currentLevel] do
+            currentLevel = currentLevel + 2
+        end
         levelStrings[row]:SetText(currentLevel ~= 2 and "Level " .. currentLevel or "Level 1")
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
             if not spellInfo.hidden then
@@ -408,7 +418,7 @@ local function hideUnwantedSpells()
     for level = 60, 2, -2 do
         local hiddenCounter = 0
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
-            if IsSpellKnown(spellInfo.id) then
+            if selectedClass ~= "HUNTER_PETS" and selectedClass ~= "WARLOCK_PETS" and IsSpellKnown(spellInfo.id) then
                 knownSpells[spellInfo.name] = true
             end
             if spellInfo.empty then
@@ -442,7 +452,13 @@ local function hideUnwantedSpells()
         end
     end
     setHorizontalSliderMaxValue(maxSpellIndex)
-    FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS - nbrOfHiddenRows)
+    if 30 - NBR_OF_SPELL_ROWS - nbrOfHiddenRows <= 0 then
+        FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 0)
+        FieldGuideFrameVerticalSliderScrollDownButton:Disable()
+    else
+        FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS - nbrOfHiddenRows)
+        FieldGuideFrameVerticalSliderScrollDownButton:Enable()
+    end
 end
 
 -- Sets the background to the given class. Class must be a capitalized string.
@@ -465,14 +481,14 @@ end
 local function setClass(_, class)
     if class == "HUNTER_PETS" then
         setBackground("HUNTER")
-        ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
-        UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.HUNTER .. "Pet skills")
+        L_ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
+        L_UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.HUNTER .. "Pet skills")
     elseif class == "WARLOCK_PETS" then
         setBackground("WARLOCK")
-        ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
-        UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.WARLOCK .. "Demon spells")
+        L_ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
+        L_UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.WARLOCK .. "Demon spells")
     else
-        UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[class] .. class:sub(1, 1) .. class:sub(2):lower())
+        L_UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[class] .. class:sub(1, 1) .. class:sub(2):lower())
     end
     selectedClass = class
     if class ~= "WEAPONS" and class ~= "HUNTER_PETS" and class ~= "WARLOCK_PETS" then
@@ -521,9 +537,8 @@ end
 
 -- Initializes the dropdown menu.
 local function initDropdown()
-    local dropdown = FieldGuideDropdownFrame
-    UIDropDownMenu_Initialize(dropdown, function(self, level, menuList)
-        local info = UIDropDownMenu_CreateInfo()
+    L_UIDropDownMenu_Initialize(FieldGuideDropdownFrame, function(self, level, menuList)
+        local info = L_UIDropDownMenu_CreateInfo()
         info.isNotRadio = true
         info.func = setClass
         if level == 1 then
@@ -532,13 +547,13 @@ local function initDropdown()
             info.colorCode = CLASS_COLORS.WARRIOR
             info.arg1 = "WARRIOR"
             info.checked = isSelected("WARRIOR")
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
             -- Paladin.
             info.text = "Paladin"
             info.colorCode = CLASS_COLORS.PALADIN
             info.arg1 = "PALADIN"
             info.checked = isSelected("PALADIN")
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
             -- Hunter.
             info.text = "Hunter"
             info.colorCode = CLASS_COLORS.HUNTER
@@ -546,7 +561,7 @@ local function initDropdown()
             info.checked = isSelected("HUNTER")
             info.hasArrow = true
             info.menuList = "HUNTER_PETS"
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
             -- Rogue.
             info.text = "Rogue"
             info.colorCode = CLASS_COLORS.ROGUE
@@ -554,25 +569,25 @@ local function initDropdown()
             info.checked = isSelected("ROGUE")
             info.hasArrow = false
             info.menuList = nil
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
             -- Priest.
             info.text = "Priest"
             info.colorCode = CLASS_COLORS.PRIEST
             info.arg1 = "PRIEST"
             info.checked = isSelected("PRIEST")
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
             -- Shaman.
             info.text = "Shaman"
             info.colorCode = CLASS_COLORS.SHAMAN
             info.arg1 = "SHAMAN"
             info.checked = isSelected("SHAMAN")
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
             -- Mage.
             info.text = "Mage"
             info.colorCode = CLASS_COLORS.MAGE
             info.checked = isSelected("MAGE")
             info.arg1 = "MAGE"
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
             -- Warlock.
             info.text = "Warlock"
             info.colorCode = CLASS_COLORS.WARLOCK
@@ -580,7 +595,7 @@ local function initDropdown()
             info.checked = isSelected("WARLOCK")
             info.hasArrow = true
             info.menuList = "WARLOCK_PETS"
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
             -- Druid.
             info.text = "Druid"
             info.colorCode = CLASS_COLORS.DRUID
@@ -588,33 +603,33 @@ local function initDropdown()
             info.checked = isSelected("DRUID")
             info.hasArrow = false
             info.menuList = nil
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
             -- Weapon skills.
             info.text = "Weapons"
             info.colorCode = "|cFFDFDFDF"
             info.arg1 = "WEAPONS"
             info.checked = isSelected("WEAPONS")
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
         elseif menuList == "WARLOCK_PETS" then
             info.text = "Demon spells"
             info.colorCode = CLASS_COLORS.WARLOCK
             info.arg1 = "WARLOCK_PETS"
             info.checked = isSelected("WARLOCK_PETS")
             info.func = setClass
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
         elseif menuList == "HUNTER_PETS" then
             info.text = "Pet skills"
             info.colorCode = CLASS_COLORS.HUNTER
             info.arg1 = "HUNTER_PETS"
             info.checked = isSelected("HUNTER_PETS")
             info.func = setClass
-            UIDropDownMenu_AddButton(info, level)
+            L_UIDropDownMenu_AddButton(info, level)
         end
     end)
-    UIDropDownMenu_SetWidth(dropdown, 100);
-    UIDropDownMenu_SetButtonWidth(dropdown, 124)
-    UIDropDownMenu_JustifyText(dropdown, "RIGHT")
-    UIDropDownMenu_SetText(dropdown, CLASS_COLORS[actualClass].. actualClass:sub(1, 1) .. actualClass:sub(2):lower())
+    L_UIDropDownMenu_SetWidth(FieldGuideDropdownFrame, 100);
+    L_UIDropDownMenu_SetButtonWidth(FieldGuideDropdownFrame, 124)
+    L_UIDropDownMenu_JustifyText(FieldGuideDropdownFrame, "RIGHT")
+    L_UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[actualClass].. actualClass:sub(1, 1) .. actualClass:sub(2):lower())
 end
 
 -- Initializes all frames, level strings, and textures for reuse.
@@ -637,6 +652,9 @@ local function initFrames()
         levelStrings[stringIndex] = FieldGuideFrame:CreateFontString(nil, "ARTWORK", "FieldGuideLevelStringTemplate")
         levelStrings[stringIndex]:SetPoint("TOPLEFT", LEVEL_STRING_X_START, -LEVEL_STRING_Y_START - Y_SPACING * stringIndex)
     end
+    -- The fact that this is even needed...
+    L_Create_UIDropDownMenu("FieldGuideDropdownFrame", FieldGuideFrame)
+    FieldGuideDropdownFrame:SetPoint("TOPRIGHT", -36, -28)
 end
 
 -- Initializes everything.
@@ -850,6 +868,8 @@ function FieldGuide_OnLoad(self)
     self:RegisterEvent("ADDON_LOADED")
     self:RegisterEvent("LEARNED_SPELL_IN_TAB")
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
+    self:RegisterEvent("SKILL_LINES_CHANGED")
+    self:RegisterEvent("UNIT_PET")
 end
 
 -- Called on each event the frame receives.
@@ -875,9 +895,18 @@ function FieldGuide_OnEvent(self, event, ...)
         if selectedClass ~= "WEAPONS" then
             hideUnwantedSpells()
             updateButtons()
-        else
+            resetScroll()
+        end
+    elseif event == "SKILL_LINES_CHANGED" then
+        if selectedClass == "WEAPONS" then
             hideUnwantedWeapons()
-            updateWeapons()
+            updateButtons()
+        end
+    elseif event == "UNIT_PET" then
+        if selectedClass == "HUNTER_PETS" or selectedClass == "WARLOCK_PETS" then
+            hideUnwantedSpells()
+            updateButtons()
+            resetScroll()
         end
     elseif event == "PLAYER_ENTERING_WORLD" then
         init()

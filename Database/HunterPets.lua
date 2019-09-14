@@ -2,7 +2,13 @@ local _, FieldGuide = ...
 
 FieldGuide.HUNTER_PETS = {
     [2] = {
-        { empty = true } -- No spells at this level.
+        [1] = {
+            ["name"] = "Growl",
+            ["rank"] = 1,
+            ["cost"] = 0,
+            ["texture"] = "Interface/ICONS/ability_physical_taunt",
+            ["id"] = 2649
+        },
     },
     [4] = {
         { empty = true }
@@ -22,6 +28,13 @@ FieldGuide.HUNTER_PETS = {
             ["id"] = 4187
         },
         [2] = {
+            ["name"] = "Growl",
+            ["rank"] = 2,
+            ["cost"] = 0,
+            ["texture"] = "Interface/ICONS/ability_physical_taunt",
+            ["id"] = 14916
+        },
+        [3] = {
             ["name"] = "Natural Armor",
             ["rank"] = 1,
             ["cost"] = 10,

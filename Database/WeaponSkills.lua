@@ -170,7 +170,7 @@ FieldGuide.WEAPONS = {
         FieldGuide.copy(weapons.one_handed_maces),
         FieldGuide.copy(weapons.staves),
         FieldGuide.copy(weapons.two_handed_axes),
-        FieldGuide.copy(weapons.two_handed_maces),
+        FieldGuide.copy(weapons.two_handed_maces)
     },
     [7] = { -- Mage.
         FieldGuide.copy(weapons.daggers),
@@ -189,6 +189,6 @@ FieldGuide.WEAPONS = {
         FieldGuide.copy(weapons.fist_weapons),
         FieldGuide.copy(weapons.one_handed_maces),
         FieldGuide.copy(weapons.staves),
-        FieldGuide.copy(weapons.two_handed_maces),
+        FieldGuide.copy(weapons.two_handed_maces)
     },
 }
