@@ -882,9 +882,9 @@ function FieldGuide_OnEvent(self, event, ...)
                 FieldGuideOptions.pins = {}
             end
             FieldGuideOptions = FieldGuideOptions or {}
-            FieldGuideOptions.showTalents = FieldGuideOptions.showTalents
-            FieldGuideOptions.showEnemySpells = FieldGuideOptions.showEnemySpells
-            FieldGuideOptions.showKnownSpells = FieldGuideOptions.showKnownSpells
+            FieldGuideOptions.showTalents = FieldGuideOptions.showTalents or true
+            FieldGuideOptions.showEnemySpells = FieldGuideOptions.showEnemySpells or true
+            FieldGuideOptions.showKnownSpells = FieldGuideOptions.showKnownSpells or false
             FieldGuideOptions.unwantedSpells = FieldGuideOptions.unwantedSpells or {}
             FieldGuideOptions.minimapTable = FieldGuideOptions.minimapTable or {}
             FieldGuideOptions.pins = FieldGuideOptions.pins or {}
@@ -900,7 +900,7 @@ function FieldGuide_OnEvent(self, event, ...)
     elseif event == "SKILL_LINES_CHANGED" then
         if selectedClass == "WEAPONS" then
             hideUnwantedWeapons()
-            updateButtons()
+            updateWeapons()
         end
     elseif event == "UNIT_PET" then
         if selectedClass == "HUNTER_PETS" or selectedClass == "WARLOCK_PETS" then
