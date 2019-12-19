@@ -440,17 +440,22 @@ local function hideUnwantedSpells()
     for level = 60, 2, -2 do
         local hiddenCounter = 0
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
-            if selectedClass ~= "HUNTER_PETS" and selectedClass ~= "WARLOCK_PETS" and IsSpellKnown(spellInfo.id) then
+            -- Fix for spells that overwrite older ranks (Heroic Strike, Sinister Strike etc.)
+            if selectedClass ~= "HUNTER_PETS" and selectedClass ~= "WARLOCK_PETS" and IsPlayerSpell(spellInfo.id) then
                 knownSpells[spellInfo.name] = true
             end
             if spellInfo.empty then
                 spellInfo.hidden = true
+            -- Known spells.
             elseif not FieldGuideOptions.showKnownSpells and ((selectedClass == "HUNTER_PETS" or selectedClass == "WARLOCK_PETS") and IsSpellKnown(spellInfo.id, true) or knownSpells[spellInfo.name]) then
                 spellInfo.hidden = true
+            -- Enemy spells.
             elseif not FieldGuideOptions.showEnemySpells and (isAlliance() and spellInfo.faction == 2 or (not isAlliance() and spellInfo.faction == 1)) then
                 spellInfo.hidden = true
+            -- Other Priest races' spells.
             elseif actualClass == "PRIEST" and selectedClass == "PRIEST" and spellInfo.race and not FieldGuideOptions.showEnemySpells and not spellInfo.race:find(race) then
                 spellInfo.hidden = true
+            -- Talents.
             elseif not FieldGuideOptions.showTalents and spellInfo.talent then
                 spellInfo.hidden = true
             else
