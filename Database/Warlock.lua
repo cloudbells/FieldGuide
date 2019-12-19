@@ -655,14 +655,14 @@ FieldGuide.WARLOCK = {
             ["texture"] = "Interface/ICONS/spell_shadow_antishadow",
             ["id"] = 11739
         },
-        [4] = {
+        [5] = {
             ["name"] = "Hellfire",
             ["rank"] = 2,
             ["cost"] = 9900,
             ["texture"] = "Interface/ICONS/spell_fire_incinerate",
             ["id"] = 11683
         },
-        [5] = {
+        [6] = {
             ["name"] = "Searing Pain",
             ["rank"] = 4,
             ["cost"] = 11000,
@@ -996,7 +996,7 @@ FieldGuide.WARLOCK = {
             ["texture"] = "Interface/ICONS/inv_misc_gem_bloodstone_02",
             ["id"] = 17953
         },
-        [5] = {
+        [6] = {
             ["name"] = "Shadowburn",
             ["rank"] = 6,
             ["cost"] = 1100,
@@ -1004,7 +1004,7 @@ FieldGuide.WARLOCK = {
             ["id"] = 18871,
             ["talent"] = true
         },
-        [6] = {
+        [7] = {
             ["name"] = "Soul Fire",
             ["rank"] = 2,
             ["cost"] = 22000,

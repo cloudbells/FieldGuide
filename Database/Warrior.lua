@@ -303,28 +303,28 @@ FieldGuide.WARRIOR = {
         },
     },
     [30] = {
-        [4] = {
+        [1] = {
             ["name"] = "Rend",
             ["rank"] = 4,
             ["cost"] = 12000,
             ["texture"] = "Interface/ICONS/ability_gouge",
             ["id"] = 6548
         },
-        [1] = {
+        [2] = {
             ["name"] = "Berserker Stance",
             ["rank"] = 1,
             ["cost"] = 0,
             ["texture"] = "Interface/ICONS/ability_racial_avatar",
             ["id"] = 2458
         },
-        [2] = {
+        [3] = {
             ["name"] = "Cleave",
             ["rank"] = 2,
             ["cost"] = 12000,
             ["texture"] = "Interface/ICONS/ability_warrior_cleave",
             ["id"] = 7369
         },
-        [3] = {
+        [4] = {
             ["name"] = "Intercept",
             ["rank"] = 1,
             ["cost"] = 0,
@@ -354,21 +354,21 @@ FieldGuide.WARRIOR = {
             ["texture"] = "Interface/ICONS/ability_rogue_ambush",
             ["id"] = 11564
         },
-        [1] = {
+        [3] = {
             ["name"] = "Battle Shout",
             ["rank"] = 4,
             ["cost"] = 14000,
             ["texture"] = "Interface/ICONS/ability_warrior_battleshout",
             ["id"] = 11549
         },
-        [2] = {
+        [4] = {
             ["name"] = "Berserker Rage",
             ["rank"] = 1,
             ["cost"] = 14000,
             ["texture"] = "Interface/ICONS/spell_nature_ancestralguardian",
             ["id"] = 18499
         },
-        [3] = {
+        [5] = {
             ["name"] = "Execute",
             ["rank"] = 2,
             ["cost"] = 14000,
@@ -574,7 +574,7 @@ FieldGuide.WARRIOR = {
             ["texture"] = "Interface/ICONS/spell_nature_thunderclap",
             ["id"] = 11580
         },
-        [1] = {
+        [4] = {
             ["name"] = "Bloodthirst",
             ["rank"] = 2,
             ["cost"] = 2000,
@@ -582,14 +582,14 @@ FieldGuide.WARRIOR = {
             ["id"] = 23892,
             ["talent"] = true
         },
-        [2] = {
+        [5] = {
             ["name"] = "Execute",
             ["rank"] = 4,
             ["cost"] = 40000,
             ["texture"] = "Interface/ICONS/inv_sword_48",
             ["id"] = 20661
         },
-        [5] = {
+        [6] = {
             ["name"] = "Shield Slam",
             ["rank"] = 2,
             ["cost"] = 200, -- Typo on pservers?
@@ -689,7 +689,7 @@ FieldGuide.WARRIOR = {
             ["texture"] = "Interface/ICONS/ability_warrior_revenge",
             ["id"] = 11601
         },
-        [6] = {
+        [7] = {
             ["name"] = "Shield Slam",
             ["rank"] = 3,
             ["cost"] = 2800,

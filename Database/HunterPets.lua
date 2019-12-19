@@ -391,14 +391,14 @@ FieldGuide.HUNTER_PETS = {
             ["texture"] = "Interface/ICONS/spell_nature_unyeildingstamina",
             ["id"] = 5042
         },
-        [3] = {
+        [2] = {
             ["name"] = "Growl",
             ["rank"] = 7,
             ["cost"] = 9000,
             ["texture"] = "Interface/ICONS/ability_physical_taunt",
             ["id"] = 14921
         },
-        [2] = {
+        [3] = {
             ["name"] = "Natural Armor",
             ["rank"] = 10,
             ["cost"] = 9000,

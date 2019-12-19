@@ -407,7 +407,7 @@ FieldGuide.WARLOCK_PETS = {
             ["texture"] = "Interface/ICONS/spell_nature_purge",
             ["id"] = 19736
         },
-        [1] = {
+        [2] = {
             ["name"] = "Fire Shield",
             ["rank"] = 5,
             ["cost"] = 20000,

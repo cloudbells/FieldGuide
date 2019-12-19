@@ -295,7 +295,7 @@ FieldGuide.SHAMAN = {
 			["texture"] = "Interface/ICONS/spell_nature_poisoncleansingtotem",
 			["id"] = 8166
 		},
-		[3] = {
+		[4] = {
 			["name"] = "Cure Disease",
 			["rank"] = 1,
 			["cost"] = 3000,
