@@ -1,27 +1,5 @@
 local _, FieldGuide = ...
 
---[[
-    TODO:
-    1. Fix bugs.
-    2. Add tradeskills (Enchanting is part of Craft UI and not normal tradeskill API).
-    3. Modularize all functions (pin functionality into separate .lua file etc.) – pins/logic/UI stuff.
-    4. Change function names to uppercase.
-    5. Load libs in embeds.xml.
-    6. Left and right knob positions need to be more in line with north and south.
-    7. Add hunter pet skills that are learned by other pets in the wild.
-    
-    BUGS:
-    1. Hunter pet skills/demon spells do not get marked as known, because they are part of the Craft UI. (https://wow.gamepedia.com/World_of_Warcraft_API#Crafting)
-        1.1. Make sure hunter pet skills/demon spells window updates in real time if it is open while learning a pet skill.
-    2. Mail and Plate skills are not spells and won't react to ticking known spells box (check skill line).
-    3. Fix wonky Level strings showing/not showing when there are no spells at 52, 54, 56, 58, and 60.
-    4. Rogue poisons are also part of crafting UI.
-    5. Fist weapons do not track at all because they are untrackable – how to solve?
-    6. If manually dragging scroll knob, and 1+ rows are hidden, it will sometimes end up at the bottom too early, i.e. it skips too many lines or something.
-    7. Dire Bear Form overwrites normal Bear Form and Bear Form will show up as learnable again.
-    8. Warrior spells such as Hamstring, Heroic Strike etc. overwrite the older spells so they won't show up as learned.
---]]
-
 local pairs, ipairs, select, floor = pairs, ipairs, select, math.floor
 local GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString = GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString
 local hbd = LibStub("HereBeDragons-2.0")
@@ -173,7 +151,7 @@ local function addMapPin(map, x, y, name)
     local mapName = hbd:GetLocalizedMap(map)
     local coordString = string.format("%.2f, %.2f", x * 100, y * 100)
     if tomtom then
-        tomtom:AddWaypoint(map, x, y, {title = name})
+        tomtom:AddWaypoint(map, x, y, {title = name, from = "Field Guide"})
     else
         local world = FieldGuide:getPin()
         local minimap = FieldGuide:getPin()
@@ -441,7 +419,7 @@ local function hideUnwantedSpells()
         local hiddenCounter = 0
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
             -- Fix for spells that overwrite older ranks (Heroic Strike, Sinister Strike etc.)
-            if selectedClass ~= "HUNTER_PETS" and selectedClass ~= "WARLOCK_PETS" and IsPlayerSpell(spellInfo.id) then
+            if selectedClass == actualClass and IsPlayerSpell(spellInfo.id) then
                 knownSpells[spellInfo.name] = true
             end
             if spellInfo.empty then
@@ -904,17 +882,16 @@ function FieldGuide_OnEvent(self, event, ...)
     if event == "ADDON_LOADED" then
         if ... == "FieldGuide" then
             tomtom = IsAddOnLoaded("TomTom") and _G["TomTom"]
+            FieldGuideOptions = FieldGuideOptions == nil and {} or FieldGuideOptions
             if tomtom then
-                FieldGuideOptions = FieldGuideOptions or {}
                 FieldGuideOptions.pins = {}
             end
-            FieldGuideOptions = FieldGuideOptions or {}
-            FieldGuideOptions.showTalents = FieldGuideOptions.showTalents or true
-            FieldGuideOptions.showEnemySpells = FieldGuideOptions.showEnemySpells or true
-            FieldGuideOptions.showKnownSpells = FieldGuideOptions.showKnownSpells or false
-            FieldGuideOptions.unwantedSpells = FieldGuideOptions.unwantedSpells or {}
-            FieldGuideOptions.minimapTable = FieldGuideOptions.minimapTable or {}
-            FieldGuideOptions.pins = FieldGuideOptions.pins or {}
+            FieldGuideOptions.pins = FieldGuideOptions.pins == nil and {} or FieldGuideOptions.pins
+            FieldGuideOptions.showTalents = FieldGuideOptions.showTalents == nil and true or FieldGuideOptions.showTalents
+            FieldGuideOptions.showEnemySpells = FieldGuideOptions.showEnemySpells == nil and false or FieldGuideOptions.showEnemySpells
+            FieldGuideOptions.showKnownSpells = FieldGuideOptions.showKnownSpells == nil and false or FieldGuideOptions.showKnownSpells
+            FieldGuideOptions.unwantedSpells = FieldGuideOptions.unwantedSpells == nil and {} or FieldGuideOptions.unwantedSpells
+            FieldGuideOptions.minimapTable = FieldGuideOptions.minimapTable == nil and {} or FieldGuideOptions.minimapTable
             print(not tomtom and "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls. By the way, it is highly recommended to use TomTom with Field Guide." or "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls.")
             self:UnregisterEvent("ADDON_LOADED")
         end
