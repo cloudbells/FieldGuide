@@ -1,4 +1,4 @@
-## Interface: 11304
+## Interface: 11305
 ## Title: Field Guide
 ## Notes: Shows when spells are trainable and how much each spell costs to train, and other stuff.
 ## Author: cloudbells
