@@ -62,7 +62,7 @@
             <AbsValue val="16" />
         </FontHeight>
     </FontString>
-    <Frame name="FieldGuideFrame" parent="UIParent" clampedToScreen="true" enableMouse="true" movable="true" frameStrata="DIALOG">
+    <Frame name="FieldGuideFrame" parent="UIParent" clampedToScreen="true" enableMouse="true" movable="true" frameStrata="DIALOG" inherits="BackdropTemplate">
         <Size x="668" y="500" /> <!-- 668x500 original (13 spells) -->
         <Anchors>
             <Anchor point="CENTER" />
