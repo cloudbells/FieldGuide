@@ -5,6 +5,7 @@ local GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString = GetFact
 local hbd = LibStub("HereBeDragons-2.0")
 local hbdp = LibStub("HereBeDragons-Pins-2.0")
 local minimapIcon = LibStub("LibDBIcon-1.0")
+local libDD = LibStub("LibUIDropDownMenu-4.0")
 
 -- Variables.
 local tomtom = nil
@@ -111,6 +112,9 @@ local function findClosestTrainer(skill)
                 or selectedClass == "WEAPONS" and trainer[skill.spellId]
                 or selectedClass ~= "WARLOCK_PETS" and skill.level ~= nil and not (skill.level > 6 and trainer.noob) then
             local distance = getDistance(trainer.x / 100, trainer.y / 100, trainer.map)
+            if distance == nil then -- Most likely means player is inside an instance.
+                return nil
+            end
             if FieldGuide.getContinent(trainer.map) == instance and distance < sameContinentDistance then
                 sameContinentDistance = distance
                 sameContinentTrainer = FieldGuide.copy(trainer)
@@ -235,6 +239,7 @@ local function initSlash()
                     .. "/fg or /fieldguide both work to toggle the addon.\n"
                     .. "/fg minimap toggles the minimap button.\n"
                     .. "Scroll horizontally by holding Shift and scrolling.\n"
+                    .. "Left click a spell to mark the trainer for that spell on your map.\n"
                     .. "Right click a spell to mark it as unwanted.\n"
                     .. "Shift-right click a spell to mark all ranks of that spell as unwanted.\n"
                     .. "You can drag any spell onto an action bar from the addon.")
@@ -325,12 +330,12 @@ end
 -- Updates all the buttons in the frame if weapons are selected.
 local function updateWeapons()
     local frameCounter = 1
-    for row = 1, NBR_OF_SPELL_ROWS do
+    for row = 1, NBR_OF_SPELL_ROWS do -- For all rows currently in view.
         local hiddenCounter = 0
         local shownCounter = 0
         levelStrings[row]:SetText(CLASS_COLORS[CLASSES[row + verticalOffset]:upper()] .. CLASSES[row + verticalOffset])
-        for col = 1, #FieldGuide.WEAPONS[row + verticalOffset] do
-            if not FieldGuide.WEAPONS[row + verticalOffset][col].hidden then
+        for col = 1, #FieldGuide.WEAPONS[row + verticalOffset] do -- For all columns currently in view.
+            if not FieldGuide.WEAPONS[row + verticalOffset][col].hidden then -- If the column (skill) is supposed to be not hidden.
                 if col - hiddenCounter >= horizontalOffset + 1 and col - hiddenCounter <= NBR_OF_SPELL_COLUMNS + horizontalOffset then
                     updateFrame(spellButtons[frameCounter].texture, spellButtons[frameCounter], FieldGuide.WEAPONS[row + verticalOffset][col])
                     frameCounter = frameCounter + 1
@@ -358,16 +363,24 @@ end
 -- Iterates all weapon skills for the current class and shows/hides any known ones.
 local function hideUnwantedWeapons()
     local maxValue = 0
-    local nbrOfSpells = 0
     for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[CLASS_INDECES[actualClass]]) do
         if not FieldGuideOptions.showKnownSpells and FieldGuide.isWeaponKnown(weaponInfo.name) then
             weaponInfo.hidden = true
         else
             weaponInfo.hidden = false
         end
-        nbrOfSpells = not weaponInfo.hidden and nbrOfSpells + 1 or nbrOfSpells
     end
-    maxValue = nbrOfSpells > maxValue and nbrOfSpells or maxValue
+    for i = 1, 9, 1 do -- Iterate through each class and count the maximum number of spells being shown.
+        local currentMax = 0
+        for weaponIndex, weaponInfo in ipairs(FieldGuide.WEAPONS[i]) do
+            if not weaponInfo.hidden then
+                currentMax = currentMax + 1
+            end
+        end
+        if currentMax > maxValue then
+            maxValue = currentMax
+        end
+    end
     setHorizontalSliderMaxValue(maxValue)
 end
 
@@ -487,13 +500,13 @@ local function setClass(_, class)
     if class == "HUNTER_PETS" then
         setBackground("HUNTER")
         L_ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
-        L_UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.HUNTER .. "Pet skills")
+        libDD:UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.HUNTER .. "Pet skills")
     elseif class == "WARLOCK_PETS" then
         setBackground("WARLOCK")
-        L_ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
-        L_UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.WARLOCK .. "Demon spells")
+        libDD:ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
+        libDD:UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.WARLOCK .. "Demon spells")
     else
-        L_UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[class] .. class:sub(1, 1) .. class:sub(2):lower())
+        libDD:UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[class] .. class:sub(1, 1) .. class:sub(2):lower())
     end
     selectedClass = class
     if class ~= "WEAPONS" and class ~= "HUNTER_PETS" and class ~= "WARLOCK_PETS" then
@@ -542,8 +555,8 @@ end
 
 -- Initializes the dropdown menu.
 local function initDropdown()
-    L_UIDropDownMenu_Initialize(FieldGuideDropdownFrame, function(self, level, menuList)
-        local info = L_UIDropDownMenu_CreateInfo()
+    libDD:UIDropDownMenu_Initialize(FieldGuideDropdownFrame, function(self, level, menuList)
+        local info = libDD:UIDropDownMenu_CreateInfo()
         info.isNotRadio = true
         info.func = setClass
         if level == 1 then
@@ -552,13 +565,13 @@ local function initDropdown()
             info.colorCode = CLASS_COLORS.WARRIOR
             info.arg1 = "WARRIOR"
             info.checked = isSelected("WARRIOR")
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
             -- Paladin.
             info.text = "Paladin"
             info.colorCode = CLASS_COLORS.PALADIN
             info.arg1 = "PALADIN"
             info.checked = isSelected("PALADIN")
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
             -- Hunter.
             info.text = "Hunter"
             info.colorCode = CLASS_COLORS.HUNTER
@@ -566,7 +579,7 @@ local function initDropdown()
             info.checked = isSelected("HUNTER")
             info.hasArrow = true
             info.menuList = "HUNTER_PETS"
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
             -- Rogue.
             info.text = "Rogue"
             info.colorCode = CLASS_COLORS.ROGUE
@@ -574,25 +587,25 @@ local function initDropdown()
             info.checked = isSelected("ROGUE")
             info.hasArrow = false
             info.menuList = nil
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
             -- Priest.
             info.text = "Priest"
             info.colorCode = CLASS_COLORS.PRIEST
             info.arg1 = "PRIEST"
             info.checked = isSelected("PRIEST")
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
             -- Shaman.
             info.text = "Shaman"
             info.colorCode = CLASS_COLORS.SHAMAN
             info.arg1 = "SHAMAN"
             info.checked = isSelected("SHAMAN")
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
             -- Mage.
             info.text = "Mage"
             info.colorCode = CLASS_COLORS.MAGE
             info.checked = isSelected("MAGE")
             info.arg1 = "MAGE"
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
             -- Warlock.
             info.text = "Warlock"
             info.colorCode = CLASS_COLORS.WARLOCK
@@ -600,7 +613,7 @@ local function initDropdown()
             info.checked = isSelected("WARLOCK")
             info.hasArrow = true
             info.menuList = "WARLOCK_PETS"
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
             -- Druid.
             info.text = "Druid"
             info.colorCode = CLASS_COLORS.DRUID
@@ -608,33 +621,33 @@ local function initDropdown()
             info.checked = isSelected("DRUID")
             info.hasArrow = false
             info.menuList = nil
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
             -- Weapon skills.
             info.text = "Weapons"
             info.colorCode = "|cFFDFDFDF"
             info.arg1 = "WEAPONS"
             info.checked = isSelected("WEAPONS")
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
         elseif menuList == "WARLOCK_PETS" then
             info.text = "Demon spells"
             info.colorCode = CLASS_COLORS.WARLOCK
             info.arg1 = "WARLOCK_PETS"
             info.checked = isSelected("WARLOCK_PETS")
             info.func = setClass
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
         elseif menuList == "HUNTER_PETS" then
             info.text = "Pet skills"
             info.colorCode = CLASS_COLORS.HUNTER
             info.arg1 = "HUNTER_PETS"
             info.checked = isSelected("HUNTER_PETS")
             info.func = setClass
-            L_UIDropDownMenu_AddButton(info, level)
+            libDD:UIDropDownMenu_AddButton(info, level)
         end
     end)
-    L_UIDropDownMenu_SetWidth(FieldGuideDropdownFrame, 100);
-    L_UIDropDownMenu_SetButtonWidth(FieldGuideDropdownFrame, 124)
-    L_UIDropDownMenu_JustifyText(FieldGuideDropdownFrame, "RIGHT")
-    L_UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[actualClass].. actualClass:sub(1, 1) .. actualClass:sub(2):lower())
+    libDD:UIDropDownMenu_SetWidth(FieldGuideDropdownFrame, 100);
+    libDD:UIDropDownMenu_SetButtonWidth(FieldGuideDropdownFrame, 124)
+    libDD:UIDropDownMenu_JustifyText(FieldGuideDropdownFrame, "RIGHT")
+    libDD:UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS[actualClass].. actualClass:sub(1, 1) .. actualClass:sub(2):lower())
 end
 
 -- Initializes all frames, level strings, and textures for reuse.
@@ -658,7 +671,7 @@ local function initFrames()
         levelStrings[stringIndex]:SetPoint("TOPLEFT", LEVEL_STRING_X_START, -LEVEL_STRING_Y_START - Y_SPACING * stringIndex)
     end
     -- The fact that this is even needed...
-    L_Create_UIDropDownMenu("FieldGuideDropdownFrame", FieldGuideFrame)
+    libDD:Create_UIDropDownMenu("FieldGuideDropdownFrame", FieldGuideFrame)
     FieldGuideDropdownFrame:SetPoint("TOPRIGHT", -36, -28)
 end
 
@@ -755,6 +768,9 @@ function FieldGuideSpellButton_OnClick(self, button)
                 trainer = findPortalTrainer(self)
             else
                 trainer = findClosestTrainer(self)
+            end
+            if trainer == nil then
+                return
             end
             if not doesPinExist(trainer.name) and self.spellCost ~= 0 then
                 addMapPin(trainer.map, trainer.x, trainer.y, trainer.name)
