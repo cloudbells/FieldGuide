@@ -499,7 +499,7 @@ end
 local function setClass(_, class)
     if class == "HUNTER_PETS" then
         setBackground("HUNTER")
-        L_ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
+        libDD:ToggleDropDownMenu(nil, nil, FieldGuideDropdownFrame)
         libDD:UIDropDownMenu_SetText(FieldGuideDropdownFrame, CLASS_COLORS.HUNTER .. "Pet skills")
     elseif class == "WARLOCK_PETS" then
         setBackground("WARLOCK")
