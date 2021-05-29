@@ -12,7 +12,7 @@ local tomtom = nil
 local faction = UnitFactionGroup("player")
 local race = UnitRace("player")
 local actualClass = select(2, UnitClass("player"))
-local lowestLevel = 52 -- Used for figuring out which row is at the top when hiding entire rows.
+local lowestLevel = 62 -- Used for figuring out which row is at the top when hiding entire rows.
 local currentMinLevel = 2 -- The current top row to show.
 local selectedClass -- The currently selected class.
 local emptyLevels = {} -- Holds info on if a row is empty or not.
@@ -195,14 +195,28 @@ end
 
 -- Returns the cost modifier (0.9 if player is honored or rank 3, 0.8 if both, 1 otherwise).
 local function getCostModifier()
-    local honored = false
-    local rankThree = UnitPVPRank("player") > 6
-    if isAlliance() then
-        honored = select(3, GetFactionInfoByID(72)) > 5 or select(3, GetFactionInfoByID(69)) > 5 or select(3, GetFactionInfoByID(47)) > 5 or select(3, GetFactionInfoByID(54)) > 5
-    else
-        honored = select(3, GetFactionInfoByID(68)) > 5 or select(3, GetFactionInfoByID(76)) > 5 or select(3, GetFactionInfoByID(81)) > 5 or select(3, GetFactionInfoByID(530)) > 5
+    local highestRep = 0
+    local allianceFactions = {
+        72, -- Stormwind
+        47, -- Ironforge
+        69, -- Darnassus
+        53, -- Gnomeregan Exiles
+        930 -- Exodar
+    }
+    local hordeFactions = {
+        76, -- Orgrimmar
+        81, -- Thunder Bluff
+        68, -- Undercity
+        530, -- Darkspear Trolls
+        911 -- Silvermoon City
+    }
+    for k, v in pairs(isAlliance() and allianceFactions or hordeFactions) do
+        local _, _, repLevel = GetFactionInfoByID(v)
+        if repLevel > highestRep then
+            highestRep = repLevel
+        end
     end
-    return rankThree and honored and 0.8 or (honored or rankThree) and 0.9 or 1
+    return 1 - 0.05 * (highestRep - 4)
 end
 
 -- Shows/hides the frame.
@@ -389,7 +403,7 @@ local function updateButtons()
     local frameCounter = 1
     local currentLevel = currentMinLevel
     for row = 1, NBR_OF_SPELL_ROWS do
-        if currentLevel >= 62 then
+        if currentLevel >= 72 then
             -- Hide all hidden rows.
             for i = NBR_OF_SPELL_COLUMNS * row - NBR_OF_SPELL_COLUMNS + 1, #spellButtons do
                 spellButtons[i]:Hide()
@@ -401,7 +415,7 @@ local function updateButtons()
         end
         local hiddenCounter = 0
         local shownCounter = 0
-        while currentLevel < 60 and emptyLevels[currentLevel] do
+        while currentLevel < 70 and emptyLevels[currentLevel] do
             currentLevel = currentLevel + 2
         end
         levelStrings[row]:SetText(currentLevel ~= 2 and "Level " .. currentLevel or "Level 1")
@@ -427,12 +441,12 @@ local function hideUnwantedSpells()
     local maxSpellIndex = 0
     local currentSpellIndex = 0
     local nbrOfHiddenRows = 0
-    lowestLevel = 52
-    for level = 60, 2, -2 do
+    lowestLevel = 62
+    for level = 70, 2, -2 do
         local hiddenCounter = 0
         for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
             -- Fix for spells that overwrite older ranks (Heroic Strike, Sinister Strike etc.)
-            if selectedClass == actualClass and IsPlayerSpell(spellInfo.id) then
+            if selectedClass == actualClass and IsPlayerSpell(13) then
                 knownSpells[spellInfo.name] = true
             end
             if spellInfo.empty then
@@ -470,11 +484,11 @@ local function hideUnwantedSpells()
         end
     end
     setHorizontalSliderMaxValue(maxSpellIndex)
-    if 30 - NBR_OF_SPELL_ROWS - nbrOfHiddenRows <= 0 then
+    if 35 - NBR_OF_SPELL_ROWS - nbrOfHiddenRows <= 0 then
         FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 0)
         FieldGuideFrameVerticalSliderScrollDownButton:Disable()
     else
-        FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 30 - NBR_OF_SPELL_ROWS - nbrOfHiddenRows)
+        FieldGuideFrameVerticalSlider:SetMinMaxValues(0, 35 - NBR_OF_SPELL_ROWS - nbrOfHiddenRows)
         FieldGuideFrameVerticalSliderScrollDownButton:Enable()
     end
 end
@@ -728,7 +742,8 @@ function FieldGuideSpellButton_OnEnter(self)
             if self.talent then
                 GameTooltip:AddLine("Talent")
             end
-            GameTooltip:AddLine("Rank: " .. "|cFFFFFFFF" .. self.rank)
+            local rank = self.rank == nil and 1 or self.rank
+            GameTooltip:AddLine("Rank: " .. "|cFFFFFFFF" .. rank)
         elseif self.spellId ~= 5009 then
             GameTooltip:AddLine(" ")
             GameTooltip:AddLine("Trained by:")
@@ -808,7 +823,7 @@ function FieldGuide_OnVerticalValueChanged(self, value)
         while emptyLevels[currentMinLevel] do
             currentMinLevel = value - lastVerticalValue > 0 and currentMinLevel + 2 or currentMinLevel - 2
         end
-        currentMinLevel = currentMinLevel < lowestLevel and lowestLevel or currentMinLevel > 52 and 52 or currentMinLevel
+        currentMinLevel = currentMinLevel < lowestLevel and lowestLevel or currentMinLevel > 62 and 62 or currentMinLevel
     else
         currentMinLevel = lowestLevel
     end
@@ -891,6 +906,7 @@ function FieldGuide_OnLoad(self)
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("SKILL_LINES_CHANGED")
     self:RegisterEvent("UNIT_PET")
+    self:RegisterEvent("TRAINER_SHOW")
 end
 
 -- Called on each event the frame receives.
@@ -908,7 +924,35 @@ function FieldGuide_OnEvent(self, event, ...)
             FieldGuideOptions.showKnownSpells = FieldGuideOptions.showKnownSpells == nil and false or FieldGuideOptions.showKnownSpells
             FieldGuideOptions.unwantedSpells = FieldGuideOptions.unwantedSpells == nil and {} or FieldGuideOptions.unwantedSpells
             FieldGuideOptions.minimapTable = FieldGuideOptions.minimapTable == nil and {} or FieldGuideOptions.minimapTable
+            FieldGuideOptions.test = FieldGuideOptions.test == nil and {} or FieldGuideOptions.test
             print(not tomtom and "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls. By the way, it is highly recommended to use TomTom with Field Guide." or "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls.")
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- run first time when logging in on a level 60 char
+            -- if UnitLevel("player") == 60 then
+                -- for level, spells in pairs(FieldGuide.WARLOCK) do
+                    -- for spellIndex, spell in pairs(spells) do
+                        -- -- local rank = spell.rank ~= nil and spell.rank or 1
+                        -- local id = 0
+                        -- if spell.rank == nil then
+                            -- _, _, _, _, _, _, id = GetSpellInfo(spell.name)
+                        -- else
+                            -- _, _, _, _, _, _, id = GetSpellInfo(spell.name, "Rank " .. spell.rank)
+                        -- end
+                        -- spell.id = id
+                    -- end
+                    -- FieldGuideOptions.test = FieldGuide.WARLOCK
+                -- end
+            -- end
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- says which spells have no ID:
+            -- for level, spells in pairs(FieldGuide.WARLOCK) do
+                -- for spellIndex, spell in pairs(spells) do
+                    -- if spell.id == nil then
+                        -- print(level.. "\t\t" .. spell.name)
+                    -- end
+                -- end
+            -- end
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
             self:UnregisterEvent("ADDON_LOADED")
         end
     elseif event == "LEARNED_SPELL_IN_TAB" then
@@ -932,5 +976,31 @@ function FieldGuide_OnEvent(self, event, ...)
         init()
         FieldGuideFrame:Hide()
         self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    -- elseif event == "TRAINER_SHOW" and UnitLevel("player") == 1 then
+        -- local classTable = {}
+        -- for i = 1, GetNumTrainerServices() do
+            -- local cost = GetTrainerServiceCost(i)               --cost
+            -- local reqLevel = GetTrainerServiceLevelReq(i)       --level
+            -- local name, rank = GetTrainerServiceInfo(i)         --name, rank
+            -- local icon = GetTrainerServiceIcon(i)               --icon
+            -- print(cost, reqLevel, name, rank, icon)
+            -- if icon ~= 136243 then
+                -- local spellTable = {
+                    -- ["name"] = name,
+                    -- ["rank"] = tonumber(rank:gsub("Rank ", ""), "10"),
+                    -- ["cost"] = cost,
+                    -- ["texture"] = icon,
+                    -- ["id"] = 0
+                -- }
+                -- if not classTable[reqLevel] then
+                    -- classTable[reqLevel] = {}
+                -- end
+                -- table.insert(classTable[reqLevel], spellTable)
+            -- end
+            -- FieldGuideOptions.test = classTable
+        -- end
+        -- self:UnregisterEvent("TRAINER_SHOW")
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
     end
 end

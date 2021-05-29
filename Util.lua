@@ -66,6 +66,7 @@ local continents = {
 
 FieldGuide.pinPool = {}
 
+-- Returns a pin from the pin pool, and creates one if there is none free.
 function FieldGuide:getPin()
     for _, pin in pairs(FieldGuide.pinPool) do
         if not pin.used then
@@ -92,10 +93,12 @@ function FieldGuide.copy(original)
     return copy
 end
 
+-- Returns the current continent of the given map.
 function FieldGuide.getContinent(map)
     return continents[map]
 end
 
+-- Returns true if the weapon skill with the given name is known to the player, false if not.
 function FieldGuide.isWeaponKnown(name)
     for i = 1, GetNumSkillLines() do
         if name == GetSkillLineInfo(i) then
