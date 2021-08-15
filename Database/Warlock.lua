@@ -1,7 +1,7 @@
 local _, FieldGuide = ...
 
 FieldGuide.WARLOCK = {
-    [1] = {
+    [2] = {
         {
             ["name"] = "Immolate",
             ["cost"] = 10,
@@ -1325,7 +1325,7 @@ FieldGuide.WARLOCK = {
             ["name"] = "Ritual of Doom",
             ["cost"] = 0,
             ["id"] = 18540,
-            ["texture"] = 132238,
+            ["texture"] = 136120,
         }, -- [17]
     },
     [16] = {

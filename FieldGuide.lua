@@ -403,7 +403,7 @@ local function updateButtons()
     local frameCounter = 1
     local currentLevel = currentMinLevel
     for row = 1, NBR_OF_SPELL_ROWS do
-        if currentLevel >= 72 then
+        if currentLevel >= 62 then
             -- Hide all hidden rows.
             for i = NBR_OF_SPELL_COLUMNS * row - NBR_OF_SPELL_COLUMNS + 1, #spellButtons do
                 spellButtons[i]:Hide()
@@ -415,19 +415,21 @@ local function updateButtons()
         end
         local hiddenCounter = 0
         local shownCounter = 0
-        while currentLevel < 70 and emptyLevels[currentLevel] do
+        while currentLevel < 60 and emptyLevels[currentLevel] do
             currentLevel = currentLevel + 2
         end
-        levelStrings[row]:SetText(currentLevel ~= 2 and "Level " .. currentLevel or "Level 1")
-        for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
-            if not spellInfo.hidden then
-                if spellIndex - hiddenCounter >= horizontalOffset + 1 and spellIndex - hiddenCounter <= NBR_OF_SPELL_COLUMNS + horizontalOffset then
-                    updateFrame(spellButtons[frameCounter].texture, spellButtons[frameCounter], spellInfo, currentLevel)
-                    shownCounter = shownCounter + 1
-                    frameCounter = frameCounter + 1
+        levelStrings[row]:SetText("Level " .. currentLevel)
+        if FieldGuide[selectedClass][currentLevel] ~= nil then
+            for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][currentLevel]) do
+                if not spellInfo.hidden then
+                    if spellIndex - hiddenCounter >= horizontalOffset + 1 and spellIndex - hiddenCounter <= NBR_OF_SPELL_COLUMNS + horizontalOffset then
+                        updateFrame(spellButtons[frameCounter].texture, spellButtons[frameCounter], spellInfo, currentLevel)
+                        shownCounter = shownCounter + 1
+                        frameCounter = frameCounter + 1
+                    end
+                else
+                    hiddenCounter = hiddenCounter + 1
                 end
-            else
-                hiddenCounter = hiddenCounter + 1
             end
         end
         frameCounter = hideExtraFrames(frameCounter, shownCounter)
@@ -442,36 +444,38 @@ local function hideUnwantedSpells()
     local currentSpellIndex = 0
     local nbrOfHiddenRows = 0
     lowestLevel = 62
-    for level = 70, 2, -2 do
+    for level = 60, 2, -2 do
         local hiddenCounter = 0
-        for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
-            -- Fix for spells that overwrite older ranks (Heroic Strike, Sinister Strike etc.)
-            if selectedClass == actualClass and IsPlayerSpell(13) then
-                knownSpells[spellInfo.name] = true
+        if FieldGuide[selectedClass][level] ~= nil then
+            for spellIndex, spellInfo in ipairs(FieldGuide[selectedClass][level]) do
+                -- Fix for spells that overwrite older ranks (Heroic Strike, Sinister Strike etc.)
+                if selectedClass == actualClass and IsPlayerSpell(13) then
+                    knownSpells[spellInfo.name] = true
+                end
+                if spellInfo.empty then
+                    spellInfo.hidden = true
+                -- Known spells.
+                elseif not FieldGuideOptions.showKnownSpells and ((selectedClass == "HUNTER_PETS" or selectedClass == "WARLOCK_PETS") and IsSpellKnown(spellInfo.id, true) or knownSpells[spellInfo.name]) then
+                    spellInfo.hidden = true
+                -- Enemy spells.
+                elseif not FieldGuideOptions.showEnemySpells and (isAlliance() and spellInfo.faction == 2 or (not isAlliance() and spellInfo.faction == 1)) then
+                    spellInfo.hidden = true
+                -- Other Priest races' spells.
+                elseif actualClass == "PRIEST" and selectedClass == "PRIEST" and spellInfo.race and not FieldGuideOptions.showEnemySpells and not spellInfo.race:find(race) then
+                    spellInfo.hidden = true
+                -- Talents.
+                elseif not FieldGuideOptions.showTalents and spellInfo.talent then
+                    spellInfo.hidden = true
+                else
+                    spellInfo.hidden = false
+                end
+                if spellInfo.hidden then
+                    hiddenCounter = hiddenCounter + 1
+                elseif spellIndex - hiddenCounter > maxSpellIndex then
+                    maxSpellIndex = spellIndex - hiddenCounter
+                end
+                currentSpellIndex = spellIndex
             end
-            if spellInfo.empty then
-                spellInfo.hidden = true
-            -- Known spells.
-            elseif not FieldGuideOptions.showKnownSpells and ((selectedClass == "HUNTER_PETS" or selectedClass == "WARLOCK_PETS") and IsSpellKnown(spellInfo.id, true) or knownSpells[spellInfo.name]) then
-                spellInfo.hidden = true
-            -- Enemy spells.
-            elseif not FieldGuideOptions.showEnemySpells and (isAlliance() and spellInfo.faction == 2 or (not isAlliance() and spellInfo.faction == 1)) then
-                spellInfo.hidden = true
-            -- Other Priest races' spells.
-            elseif actualClass == "PRIEST" and selectedClass == "PRIEST" and spellInfo.race and not FieldGuideOptions.showEnemySpells and not spellInfo.race:find(race) then
-                spellInfo.hidden = true
-            -- Talents.
-            elseif not FieldGuideOptions.showTalents and spellInfo.talent then
-                spellInfo.hidden = true
-            else
-                spellInfo.hidden = false
-            end
-            if spellInfo.hidden then
-                hiddenCounter = hiddenCounter + 1
-            elseif spellIndex - hiddenCounter > maxSpellIndex then
-                maxSpellIndex = spellIndex - hiddenCounter
-            end
-            currentSpellIndex = spellIndex
         end
         if currentSpellIndex - hiddenCounter == 0 then -- This means all buttons on the row are hidden, so we should hide the entire row.
             emptyLevels[level] = true -- Hide current level if all buttons are empty.
@@ -924,6 +928,8 @@ function FieldGuide_OnEvent(self, event, ...)
             FieldGuideOptions.showKnownSpells = FieldGuideOptions.showKnownSpells == nil and false or FieldGuideOptions.showKnownSpells
             FieldGuideOptions.unwantedSpells = FieldGuideOptions.unwantedSpells == nil and {} or FieldGuideOptions.unwantedSpells
             FieldGuideOptions.minimapTable = FieldGuideOptions.minimapTable == nil and {} or FieldGuideOptions.minimapTable
+            
+            -- remove this when done 
             FieldGuideOptions.test = FieldGuideOptions.test == nil and {} or FieldGuideOptions.test
             print(not tomtom and "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls. By the way, it is highly recommended to use TomTom with Field Guide." or "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls.")
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
