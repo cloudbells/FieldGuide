@@ -62,11 +62,14 @@
             <AbsValue val="16" />
         </FontHeight>
     </FontString>
-    <Frame name="FieldGuideFrame" parent="UIParent" inherits="BackdropTemplate" clampedToScreen="true" enableMouse="true" movable="true" frameStrata="DIALOG">
+    <Frame name="FieldGuideFrame" parent="UIParent" clampedToScreen="true" enableMouse="true" movable="true" frameStrata="DIALOG" inherits="BackdropTemplate">
         <Size x="668" y="500" /> <!-- 668x500 original (13 spells) -->
         <Anchors>
             <Anchor point="CENTER" />
         </Anchors>
+        <Backdrop edgeFile="Interface/DialogFrame/UI-DialogBox-Border">
+			<EdgeSize val="32"/>
+		</Backdrop>
         <Layers>
             <Layer level="BACKGROUND">
                 <Texture name="$parentBackgroundTexture" file="Interface/Addons/FieldGuide/Media/Background/Background">
@@ -104,6 +107,12 @@
             </Layer>
         </Layers>
         <Frames>
+            <Frame name="$parentTitleDraggable">
+                <Size x="120" y="30" />
+                <Anchors>
+                    <Anchor point="TOP" x="0" y="10" />
+                </Anchors>
+            </Frame>
             <Slider name="$parentVerticalSlider" orientation="VERTICAL" minValue="0" maxValue="0" defaultValue="0" valueStep="1">
                 <Size x="22" y="1" />
                 <Anchors>
