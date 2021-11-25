@@ -259,6 +259,10 @@
         <Scripts>
             <OnLoad>
                 FieldGuide_OnLoad(self)
+                FieldGuideFrame:SetBackdrop({
+                    edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
+                    edgeSize = 32,
+                })
             </OnLoad>
             <OnShow>
                 PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
