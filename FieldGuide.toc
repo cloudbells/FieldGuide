@@ -1,4 +1,4 @@
-## Interface: 11401
+## Interface: 20504
 ## Title: Field Guide
 ## Notes: Shows when spells are trainable and how much each spell costs to train, and other stuff.
 ## Author: cloudbells
@@ -12,27 +12,37 @@ Libraries\LibStub\LibStub.lua
 Libraries\CallbackHandler-1.0\CallbackHandler-1.0.lua
 Libraries\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libraries\LibDBIcon-1.0\LibDBIcon-1.0.lua
-Libraries\HereBeDragons-2.0\HereBeDragons-2.0.lua
-Libraries\HereBeDragons-2.0\HereBeDragons-Pins-2.0.lua
 Libraries\LibUIDropDownMenu\LibUIDropDownMenu.xml
 
 # Load utilites.
 Util.lua
 
 # Load spell tables.
-Database\WeaponSkills.lua
-Database\Druid.lua
-Database\Hunter.lua
-Database\HunterPets.lua
-Database\Mage.lua
-Database\Paladin.lua
-Database\Priest.lua
-Database\Rogue.lua
-Database\Shaman.lua
-Database\Warlock.lua
-Database\WarlockPets.lua
-Database\Warrior.lua
-Database\Trainers.lua
+Database\classes\Druid.lua
+Database\classes\Hunter.lua
+Database\classes\HunterPets.lua
+Database\classes\Mage.lua
+Database\classes\Paladin.lua
+Database\classes\Priest.lua
+Database\classes\Rogue.lua
+Database\classes\Shaman.lua
+Database\classes\Warlock.lua
+Database\classes\WarlockPets.lua
+Database\classes\Warrior.lua
+Database\professions\Alchemy.lua
+Database\professions\Blacksmithing.lua
+Database\professions\Cooking.lua
+Database\professions\Enchanting.lua
+Database\professions\Engineering.lua
+Database\professions\FirstAid.lua
+Database\professions\Fishing.lua
+Database\professions\Herbalism.lua
+Database\professions\Jewelcrafting.lua
+Database\professions\Leatherworking.lua
+Database\professions\Mining.lua
+Database\professions\Skinning.lua
+Database\professions\Tailoring.lua
+Database\Weapons.lua
 
 # Load core files.
 FieldGuide.lua

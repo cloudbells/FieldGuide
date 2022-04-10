@@ -66,6 +66,7 @@ local continents = {
 
 FieldGuide.pinPool = {}
 
+-- Returns a pin from the pin pool, and creates one if there is none free.
 function FieldGuide:getPin()
     for _, pin in pairs(FieldGuide.pinPool) do
         if not pin.used then
@@ -92,10 +93,12 @@ function FieldGuide.copy(original)
     return copy
 end
 
+-- Returns the current continent of the given map.
 function FieldGuide.getContinent(map)
     return continents[map]
 end
 
+-- Returns true if the weapon skill with the given name is known to the player, false if not.
 function FieldGuide.isWeaponKnown(name)
     for i = 1, GetNumSkillLines() do
         if name == GetSkillLineInfo(i) then
@@ -103,4 +106,35 @@ function FieldGuide.isWeaponKnown(name)
         end
     end
     return false
+end
+
+function round(num, numDecimalPlaces)
+    local mult = 10^(numDecimalPlaces or 0)
+    return math.floor(num * mult + 0.5) / mult
+end
+
+function pairsByKeys (t, f)
+    local a = {}
+    for n in pairs(t) do table.insert(a, n) end
+    table.sort(a, f)
+    local i = 0      -- iterator variable
+    local iter = function ()   -- iterator function
+      i = i + 1
+      if a[i] == nil then return nil
+      else return a[i], t[a[i]]
+      end
+    end
+    return iter
+  end
+
+function getTableSize(t)
+    local count = 0
+
+    if t ~= nil then
+        for a,b in pairsByKeys(t) do
+            count = count + 1
+        end
+    end
+
+    return count
 end
