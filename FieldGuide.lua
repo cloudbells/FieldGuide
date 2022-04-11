@@ -77,12 +77,17 @@ local function getCostModifier ()
         911 -- Silvermoon City
     }
     for k, v in pairs(isAlliance() and allianceFactions or hordeFactions) do
-        local _, _, repLevel = GetFactionInfoByID(v)
+        local a, b, repLevel = GetFactionInfoByID(v)
         if repLevel > highestRep then
             highestRep = repLevel
         end
     end
-    return 1 - 0.05 * (highestRep - 4)
+
+    if (highestRep > 5) then
+        return 1 - 0.05 * (highestRep - 4)
+    else
+        return 1
+    end
 end
 
 -- Shows/hides the frame.
@@ -275,7 +280,7 @@ local function setClass (class)
     selectedClass = class
     setBackground(selectedClass)
 
-    if selectedClass ~= "WEAPONS" and selectedClass ~= "HUNTER_PETSx" and selectedClass ~= "WARLOCK_PETS" and selectedCategory ~= "PROFESSIONS" then
+    if selectedClass ~= "WEAPONS" and selectedClass ~= "HUNTER_PETS" and selectedClass ~= "WARLOCK_PETS" and selectedCategory ~= "PROFESSIONS" then
         if selectedClass == "PRIEST" and actualClass == "PRIEST" then
             FieldGuideFrameEnemySpellsCheckBoxText:SetText("Non-" .. race .. " spells")
             FieldGuideFrameEnemySpellsCheckBox:Show()
@@ -839,7 +844,7 @@ function FieldGuide_OnEvent (self, event, ...)
         resetScroll()
     elseif event == "PLAYER_ENTERING_WORLD" then
         init()
-        -- FieldGuideFrame:Hide()
+        FieldGuideFrame:Hide() -- Comment this out to auto-show the frame when your UI loads
         self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end
 end
