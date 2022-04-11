@@ -42,6 +42,7 @@ Database\professions\Leatherworking.lua
 Database\professions\Mining.lua
 Database\professions\Skinning.lua
 Database\professions\Tailoring.lua
+Database\Riding.lua
 Database\Weapons.lua
 
 # Load core files.

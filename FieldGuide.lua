@@ -26,6 +26,7 @@ local CLASS_BACKGROUNDS = {
     MAGE = "MageFrost",
     WARLOCK = "WarlockCurses",
     DRUID = "DruidFeralCombat",
+    RIDING = "MageFrost",
     WEAPONS = "MageFrost"
 }
 local CLASS_COLORS = {
@@ -38,6 +39,7 @@ local CLASS_COLORS = {
     ["MAGE"] = "|cFF40C7EB",
     ["WARLOCK"] = "|cFF8787ED",
     ["DRUID"] = "|cFFFF7D0A",
+    ["RIDING"] = "|cFFDFDFDF",
     ["WEAPONS"] = "|cFFDFDFDF"
 }
 
@@ -197,6 +199,7 @@ local function updateFrame (texture, frame, info, level)
         frame.itemId = ''
         frame.spellId = info.id
     end
+    if info.cost_modifier ~= nil then frame.cost_modifier = info.cost_modifier end
     frame.spellCost = info.cost
     frame.level = level
     frame:Show()
@@ -307,6 +310,10 @@ local function setClass (class)
     elseif selectedClass == "MINING" then
         FieldGuideFrameEnemySpellsCheckBox:Hide()
         FieldGuideFrameTalentsCheckBox:Hide()
+    elseif selectedCategory == "GENERAL" then
+        setBackground(actualClass)
+        FieldGuideFrameTalentsCheckBox:Hide()
+        FieldGuideFrameEnemySpellsCheckBox:Hide()
     end
 
     if CLASS_COLORS[selectedClass] ~= nil then
@@ -441,11 +448,21 @@ local function initDropdown ()
             info.menuList = nil
             info.func = changeClass
             libDD:UIDropDownMenu_AddButton(info, level)
+            -- Riding skills.
+            info.text = "Riding"
+            info.colorCode = "|cFFDFDFDF"
+            info.arg1 = "RIDING"
+            info.arg2 = "GENERAL"
+            info.checked = isSelected("RIDING")
+            info.hasArrow = false
+            info.menuList = nil
+            info.func = changeClass
+            libDD:UIDropDownMenu_AddButton(info, level)
             -- Weapon skills.
             info.text = "Weapons"
             info.colorCode = "|cFFDFDFDF"
             info.arg1 = "WEAPONS"
-            info.arg2 = "WEAPONS"
+            info.arg2 = "GENERAL"
             info.checked = isSelected("WEAPONS")
             info.hasArrow = false
             info.menuList = nil
@@ -715,17 +732,26 @@ function FieldGuideSpellButton_OnEnter (self)
             --GameTooltip:AddLine("Talent") -- Sell price per unit
             --GameTooltip:AddLine("Talent") -- Sell price per stack
 
+            -- Cost
+            if self.spellCost ~= nil and self.spellCost > 0 then
+                local adjustedPrice = self.spellCost
+                if self.cost_modifier == nil or self.cost_modifier ~= false then
+                    adjustedPrice = adjustedPrice * getCostModifier()
+                end
+                local priceString = GetCoinTextureString(adjustedPrice)
+                local costColor = GetMoney() < adjustedPrice and "|cFFFF0000" or "|cFFFFFFFF" -- Modifies string to be red if player can't afford, white otherwise.
+                if self.spellId ~= nil then
+                    GameTooltip:AddLine(" ")
+                    GameTooltip:AddLine(self.spellCost ~= 0 and "Price: " .. costColor .. priceString or "Learned via quest(s)")
+                end
+            end
+
             GameTooltip:Show()
         end)
     elseif self.spellId ~= '' then
         local spell = Spell:CreateFromSpellID(self.spellId)
         spell:ContinueOnSpellLoad(function()
             GameTooltip:SetHyperlink("spell:" .. self.spellId)
-
-            if self.talent then
-                GameTooltip:AddLine(" ")
-                GameTooltip:AddLine("Talent")
-            end
 
             -- Spell Rank
             local rank = self.rank == nil and 0 or self.rank
@@ -734,13 +760,24 @@ function FieldGuideSpellButton_OnEnter (self)
                 GameTooltip:AddLine("Rank: " .. "|cFFFFFFFF" .. rank)
             end
 
-            -- Cost
-            local adjustedPrice = self.spellCost * getCostModifier()
-            local priceString = GetCoinTextureString(adjustedPrice)
-            local costColor = GetMoney() < adjustedPrice and "|cFFFF0000" or "|cFFFFFFFF" -- Modifies string to be red if player can't afford, white otherwise.
-            if self.spellId ~= nil and self.spellId ~= 5009 then
+            -- Is this ability a talent?
+            if self.talent then
                 GameTooltip:AddLine(" ")
-                GameTooltip:AddLine(self.spellCost ~= 0 and "Price: " .. costColor .. priceString or "Learned via quest(s)")
+                GameTooltip:AddLine("Talent")
+            end
+
+            -- Cost
+            if self.spellCost ~= nil and self.spellCost > 0 then
+                local adjustedPrice = self.spellCost
+                if self.cost_modifier == nil or self.cost_modifier ~= false then
+                    adjustedPrice = adjustedPrice * getCostModifier()
+                end
+                local priceString = GetCoinTextureString(adjustedPrice)
+                local costColor = GetMoney() < adjustedPrice and "|cFFFF0000" or "|cFFFFFFFF" -- Modifies string to be red if player can't afford, white otherwise.
+                if self.spellId ~= nil then
+                    GameTooltip:AddLine(" ")
+                    GameTooltip:AddLine(self.spellCost ~= 0 and "Price: " .. costColor .. priceString or "Learned via quest(s)")
+                end
             end
 
             GameTooltip:Show()
