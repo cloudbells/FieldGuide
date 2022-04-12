@@ -109,6 +109,17 @@ local function toggleMinimapButton ()
         print("|cFFFFFF00Field Guide:|r Minimap button hidden. Type /fg minimap to show it again.")
     else
         minimapIcon:Show("FieldGuide")
+        print("|cFFFFFF00Field Guide:|r Minimap button shown. Type /fg minimap to hide it again.")
+    end
+end
+
+-- Toggles the startup message on or off.
+local function toggleStartupMessage ()
+    FieldGuideOptions.showStartupMessage = not FieldGuideOptions.showStartupMessage
+    if FieldGuideOptions.showStartupMessage then
+        print("|cFFFFFF00Field Guide|r startup message enabled")
+    else
+        print("|cFFFFFF00Field Guide|r startup message disabled")
     end
 end
 
@@ -121,14 +132,24 @@ local function initSlash ()
         if msg == "minimap" then
             toggleMinimapButton()
             return
-        elseif msg == "help" then
+        elseif msg == "startup" then
+            toggleStartupMessage()
+            return
+        elseif msg == "help" or msg == "h" then
             print("|cFFFFFF00Field Guide:|r\n"
                     .. "/fg or /fieldguide both work to toggle the addon.\n"
-                    .. "/fg minimap toggles the minimap button.\n"
+                    .. "/fg minimap - toggles the minimap button.\n"
+                    .. "/fg startup - toggles the 'Field Guide loaded!' message when your UI loads.\n"
+                    .. "/fg version - toggles the 'Field Guide loaded!' message when your UI loads.\n"
                     .. "You can drag any spell onto an action bar from the addon.")
             return
+        elseif msg == "version" or msg == "v" then
+            local version = GetAddOnMetadata("FieldGuide", "Version");
+            print("|cFFFFFF00Field Guide|r version " .. version)
+            return
+        else
+            toggleFrame()
         end
-        toggleFrame()
     end
 end
 
@@ -869,10 +890,13 @@ function FieldGuide_OnEvent (self, event, ...)
             FieldGuideOptions.showKnownSpells = FieldGuideOptions.showKnownSpells == nil and false or FieldGuideOptions.showKnownSpells
             FieldGuideOptions.unwantedSpells = FieldGuideOptions.unwantedSpells == nil and {} or FieldGuideOptions.unwantedSpells
             FieldGuideOptions.minimapTable = FieldGuideOptions.minimapTable == nil and {} or FieldGuideOptions.minimapTable
+            FieldGuideOptions.showStartupMessage = FieldGuideOptions.showStartupMessage == nil and false or FieldGuideOptions.showStartupMessage
 
             -- remove this when done 
             FieldGuideOptions.test = FieldGuideOptions.test == nil and {} or FieldGuideOptions.test
-            print("|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls.")
+            if FieldGuideOptions.showStartupMessage then
+                print("|cFFFFFF00Field Guide|r loaded! Type '/fg help' for commands and controls.")
+            end
 
             self:UnregisterEvent("ADDON_LOADED")
         end
