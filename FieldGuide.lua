@@ -307,7 +307,7 @@ local function setClass (class)
     elseif selectedClass == "HUNTER_PETS" then
         FieldGuideFrameEnemySpellsCheckBox:Hide()
         FieldGuideFrameTalentsCheckBox:Hide()
-    elseif selectedClass == "MINING" then
+    elseif selectedCategory == "PROFESSIONS" then
         FieldGuideFrameEnemySpellsCheckBox:Hide()
         FieldGuideFrameTalentsCheckBox:Hide()
     elseif selectedCategory == "GENERAL" then
