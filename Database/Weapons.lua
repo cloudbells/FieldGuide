@@ -168,13 +168,6 @@ FieldGuide.WEAPONS = {
             ["texture"] = "Interface/ICONS/ability_steelmelee",
         },
         [4] = {
-            ["id"] = 5019,
-            ["name"] = "Shoot",
-            ["rank"] = 0,
-            ["cost"] = 1000,
-            ["texture"] = "Interface/ICONS/ability_shootwand",
-        },
-        [5] = {
             ["id"] = 5009,
             ["name"] = "Wands",
             ["rank"] = 0,
@@ -270,13 +263,6 @@ FieldGuide.WEAPONS = {
             ["texture"] = "Interface/ICONS/ability_steelmelee",
         },
         [4] = {
-            ["id"] = 5019,
-            ["name"] = "Shoot",
-            ["rank"] = 0,
-            ["cost"] = 1000,
-            ["texture"] = "Interface/ICONS/ability_shootwand",
-        },
-        [5] = {
             ["id"] = 5009,
             ["name"] = "Wands",
             ["rank"] = 0,
@@ -361,13 +347,6 @@ FieldGuide.WEAPONS = {
             ["rank"] = 0,
             ["cost"] = 1000,
             ["texture"] = "Interface/ICONS/ability_throw",
-        },
-        [12] = {
-            ["id"] = 3018,
-            ["name"] = "Shoot",
-            ["rank"] = 0,
-            ["cost"] = 1000,
-            ["texture"] = "Interface/ICONS/ability_marksmanship",
         },
     },
     ["shaman"] = {
@@ -458,13 +437,6 @@ FieldGuide.WEAPONS = {
             ["texture"] = "Interface/ICONS/ability_steelmelee",
         },
         [4] = {
-            ["id"] = 5019,
-            ["name"] = "Shoot",
-            ["rank"] = 0,
-            ["cost"] = 1000,
-            ["texture"] = "Interface/ICONS/ability_shootwand",
-        },
-        [5] = {
             ["id"] = 5009,
             ["name"] = "Wands",
             ["rank"] = 0,
@@ -598,13 +570,6 @@ FieldGuide.WEAPONS = {
             ["rank"] = 0,
             ["cost"] = 1000,
             ["texture"] = "Interface/ICONS/ability_throw",
-        },
-        [19] = {
-            ["id"] = 3018,
-            ["name"] = "Shoot",
-            ["rank"] = 0,
-            ["cost"] = 1000,
-            ["texture"] = "Interface/ICONS/ability_marksmanship",
         }
-    }    
+    }
 }
