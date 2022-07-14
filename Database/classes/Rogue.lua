@@ -3,48 +3,34 @@ local _, FieldGuide = ...
 FieldGuide.ROGUE = {
     [1] = {
         [1] = {
-            ["id"] = 3127,
-            ["name"] = "Parry",
-            ["rank"] = 0,
-            ["cost"] = 0,
-            ["texture"] = "Interface/ICONS/ability_parry"
-        },
-        [2] = {
             ["id"] = 3018,
             ["name"] = "Shoot",
             ["rank"] = 0,
             ["cost"] = 0,
             ["texture"] = "Interface/ICONS/ability_marksmanship"
         },
-        [3] = {
+        [2] = {
             ["id"] = 2764,
             ["name"] = "Throw",
             ["rank"] = 0,
             ["cost"] = 0,
             ["texture"] = "Interface/ICONS/ability_throw"
         },
-        [4] = {
+        [3] = {
             ["id"] = 2098,
             ["name"] = "Eviscerate",
             ["rank"] = 1,
             ["cost"] = 0,
             ["texture"] = "Interface/ICONS/ability_rogue_eviscerate"
         },
-        [5] = {
-            ["id"] = 1804,
-            ["name"] = "Pick Lock",
-            ["rank"] = 0,
-            ["cost"] = 1800,
-            ["texture"] = "Interface/ICONS/spell_nature_moonkey"
-        },
-        [6] = {
+        [4] = {
             ["id"] = 1752,
             ["name"] = "Sinister Strike",
             ["rank"] = 1,
             ["cost"] = 0,
             ["texture"] = "Interface/ICONS/spell_shadow_ritualofsacrifice"
         },
-        [7] = {
+        [5] = {
             ["id"] = 1784,
             ["name"] = "Stealth",
             ["rank"] = 1,
@@ -138,6 +124,13 @@ FieldGuide.ROGUE = {
             ["cost"] = 800,
             ["texture"] = "Interface/ICONS/ability_kick"
         },
+        [3] = {
+            ["id"] = 3127,
+            ["name"] = "Parry",
+            ["rank"] = 0,
+            ["cost"] = 0,
+            ["texture"] = "Interface/ICONS/ability_parry"
+        },
     },
     [14] = {
         [1] = {
@@ -176,6 +169,13 @@ FieldGuide.ROGUE = {
             ["rank"] = 1,
             ["cost"] = 1800,
             ["texture"] = "Interface/ICONS/ability_rogue_feint"
+        },
+        [3] = {
+            ["id"] = 1804,
+            ["name"] = "Pick Lock",
+            ["rank"] = 0,
+            ["cost"] = 1800,
+            ["texture"] = "Interface/ICONS/spell_nature_moonkey"
         },
     },
     [18] = {

@@ -1491,10 +1491,11 @@ FieldGuide.SHAMAN = {
         },
         [2] = {
             ["id"] = 2825,
-            ["name"] = "Orc",
+            ["name"] = "Bloodlust",
             ["rank"] = 1,
             ["cost"] = 88000,
-            ["texture"] = "Interface/ICONS/spell_nature_bloodlust"
+            ["texture"] = "Interface/ICONS/spell_nature_bloodlust",
+            ["faction"] = "Horde"
         },
         [3] = {
             ["id"] = 25442,
@@ -1526,10 +1527,11 @@ FieldGuide.SHAMAN = {
         },
         [7] = {
             ["id"] = 32182,
-            ["name"] = "Draenei",
+            ["name"] = "Heroism",
             ["rank"] = 0,
             ["cost"] = 88000,
-            ["texture"] = "Interface/ICONS/ability_shaman_heroism"
+            ["texture"] = "Interface/ICONS/ability_shaman_heroism",
+            ["faction"] = "Alliance"
         },
         [8] = {
             ["id"] = 25472,

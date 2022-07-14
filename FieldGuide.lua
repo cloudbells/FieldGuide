@@ -309,7 +309,7 @@ local function setClass (class)
             FieldGuideFrameEnemySpellsCheckBoxText:SetText("Non-" .. race .. " spells")
             FieldGuideFrameEnemySpellsCheckBox:Show()
             FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth() - 5, 0)
-        elseif selectedClass == "MAGE" or selectedClass == "PRIEST" then
+        elseif selectedClass == "MAGE" or selectedClass == "PRIEST" or selectedClass == "SHAMAN" then
             FieldGuideFrameEnemySpellsCheckBoxText:SetText((isAlliance() and "Horde" or "Alliance") .. " spells")
             FieldGuideFrameEnemySpellsCheckBox:Show()
             FieldGuideFrameEnemySpellsCheckBox:SetPoint("RIGHT", FieldGuideFrameTalentsCheckBox, "LEFT", -FieldGuideFrameEnemySpellsCheckBoxText:GetWidth() - 5, 0)
