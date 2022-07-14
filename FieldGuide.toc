@@ -1,7 +1,7 @@
 ## Interface: 20504
 ## Title: Field Guide
 ## Notes: Shows when spells are trainable and how much each spell costs to train, and other stuff.
-## Author: cloudbells
+## Author: cloudbells, Serrol
 ## Version: 2.5.4
 ## SavedVariablesPerCharacter: FieldGuideOptions
 ## OptionalDeps: TomTom
