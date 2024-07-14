@@ -680,14 +680,14 @@ FieldGuide.PRIEST = {
         [6] = {
 			["name"] = "Mind Blast",
 			["rank"] = 5,
-			["cost"] = 0,
+			["cost"] = 12000,
 			["texture"] = "Interface/ICONS/spell_shadow_unholyfrenzy",
 			["id"] = 8105
 		},
         [7] = {
 			["name"] = "Shadow Word: Pain",
 			["rank"] = 5,
-			["cost"] = 0,
+			["cost"] = 12000,
 			["texture"] = "Interface/ICONS/spell_shadow_shadowwordpain",
 			["id"] = 2767
 		},
