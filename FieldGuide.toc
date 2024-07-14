@@ -5,6 +5,7 @@
 ## Version: @project-version@
 ## SavedVariablesPerCharacter: FieldGuideOptions
 ## OptionalDeps: TomTom
+## X-Curse-Project-ID: 333490
 ## X-WoWI-ID: 25176
 
 # Load libraries.
