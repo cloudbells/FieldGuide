@@ -37,7 +37,7 @@
     <Button name="FieldGuidePinTemplate" virtual="true" registerForClicks="RightButtonUp">
         <Size x="16" y="16" />
         <Layers>
-            <Layer level="OVERLAY" setAllPoints="true">
+            <Layer level="OVERLAY">
                 <Texture name="$parentTexture" file="Interface/Addons/FieldGuide/Media/Map/GoldGreenDot" />
             </Layer>
         </Layers>
@@ -67,9 +67,6 @@
         <Anchors>
             <Anchor point="CENTER" />
         </Anchors>
-        <Backdrop edgeFile="Interface/DialogFrame/UI-DialogBox-Border">
-			<EdgeSize val="32"/>
-		</Backdrop>
         <Layers>
             <Layer level="BACKGROUND">
                 <Texture name="$parentBackgroundTexture" file="Interface/Addons/FieldGuide/Media/Background/Background">
