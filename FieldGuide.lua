@@ -1,7 +1,7 @@
 local _, FieldGuide = ...
 
 local pairs, ipairs, select, floor = pairs, ipairs, select, math.floor
-local GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString = GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString
+local GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString, IsAddOnLoaded = GetFactionInfoByID, IsSpellKnown, GetMoney, GetCoinTextureString, C_AddOns.IsAddOnLoaded
 local hbd = LibStub("HereBeDragons-2.0")
 local hbdp = LibStub("HereBeDragons-Pins-2.0")
 local minimapIcon = LibStub("LibDBIcon-1.0")
@@ -887,7 +887,7 @@ end
 function FieldGuide_OnLoad(self)
     self:RegisterForDrag("LeftButton")
     self:RegisterEvent("ADDON_LOADED")
-    self:RegisterEvent("LEARNED_SPELL_IN_TAB")
+    self:RegisterEvent("LEARNED_SPELL_IN_SKILL_LINE")
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("SKILL_LINES_CHANGED")
     self:RegisterEvent("UNIT_PET")
@@ -911,7 +911,7 @@ function FieldGuide_OnEvent(self, event, ...)
             print(not tomtom and "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls. By the way, it is highly recommended to use TomTom with Field Guide." or "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls.")
             self:UnregisterEvent("ADDON_LOADED")
         end
-    elseif event == "LEARNED_SPELL_IN_TAB" then
+    elseif event == "LEARNED_SPELL_IN_SKILL_LINE" then
         if selectedClass ~= "WEAPONS" then
             hideUnwantedSpells()
             updateButtons()
