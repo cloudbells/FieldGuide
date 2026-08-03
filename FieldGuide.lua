@@ -225,6 +225,15 @@ local function toggleMinimapButton()
     end
 end
 
+local function toggleLoginMessage()
+    FieldGuideOptionsGlobal.disableLoginMessage = not FieldGuideOptionsGlobal.disableLoginMessage
+    if FieldGuideOptionsGlobal.disableLoginMessage then
+        print("|cFFFFFF00Field Guide:|r Login message disabled. Type /fg loginmessage to show it again.")
+    else
+        print("|cFFFFFF00Field Guide:|r Login message enabled.")
+    end
+end
+
 -- Sets slash commands.
 local function initSlash()
     SLASH_FIELDGUIDE1 = "/fieldguide"
@@ -234,10 +243,14 @@ local function initSlash()
         if msg == "minimap" then
             toggleMinimapButton()
             return
+        elseif msg == "loginmessage" then
+            toggleLoginMessage()
+            return
         elseif msg == "help" then
             print("|cFFFFFF00Field Guide:|r\n"
                     .. "/fg or /fieldguide both work to toggle the addon.\n"
                     .. "/fg minimap toggles the minimap button.\n"
+                    .. "/fg loginmessage toggles the login message.\n"
                     .. "Scroll horizontally by holding Shift and scrolling.\n"
                     .. "Left click a spell to mark the trainer for that spell on your map.\n"
                     .. "Right click a spell to mark it as unwanted.\n"
@@ -899,6 +912,7 @@ function FieldGuide_OnEvent(self, event, ...)
         if ... == "FieldGuide" then
             tomtom = IsAddOnLoaded("TomTom") and _G["TomTom"]
             FieldGuideOptions = FieldGuideOptions == nil and {} or FieldGuideOptions
+            FieldGuideOptionsGlobal = FieldGuideOptionsGlobal == nil and {} or FieldGuideOptionsGlobal
             if tomtom then
                 FieldGuideOptions.pins = {}
             end
@@ -908,7 +922,10 @@ function FieldGuide_OnEvent(self, event, ...)
             FieldGuideOptions.showKnownSpells = FieldGuideOptions.showKnownSpells == nil and false or FieldGuideOptions.showKnownSpells
             FieldGuideOptions.unwantedSpells = FieldGuideOptions.unwantedSpells == nil and {} or FieldGuideOptions.unwantedSpells
             FieldGuideOptions.minimapTable = FieldGuideOptions.minimapTable == nil and {} or FieldGuideOptions.minimapTable
-            print(not tomtom and "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls. By the way, it is highly recommended to use TomTom with Field Guide." or "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls.")
+            FieldGuideOptionsGlobal.disableLoginMessage = FieldGuideOptionsGlobal.disableLoginMessage == nil and false or FieldGuideOptionsGlobal.disableLoginMessage
+            if not FieldGuideOptionsGlobal.disableLoginMessage then
+                print(not tomtom and "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls. By the way, it is highly recommended to use TomTom with Field Guide." or "|cFFFFFF00Field Guide|r loaded! Type /fg help for commands and controls.")
+            end
             self:UnregisterEvent("ADDON_LOADED")
         end
     elseif event == "LEARNED_SPELL_IN_SKILL_LINE" then

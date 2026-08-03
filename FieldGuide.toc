@@ -15,6 +15,7 @@
 ## Category-zhCN: 其它
 ## Category-zhTW: 其他
 ## IconTexture: Interface\ICONS\INV_Misc_Book_09
+## SavedVariables: FieldGuideOptionsGlobal
 ## SavedVariablesPerCharacter: FieldGuideOptions
 ## OptionalDeps: TomTom
 ## X-Curse-Project-ID: 333490
